@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>پلتفرم پشتیبانی فنی فروشگاه‌ها</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #f4f5f3;
+    --surface: #ffffff;
+    --ink: #1c2321;
+    --ink-soft: #5b645f;
+    --line: #e3e6e2;
+    --accent: #2f6f5e;
+    --accent-soft: #e6efec;
+    --amber: #b8721f;
+    --amber-soft: #fbeedd;
+    --red: #a8382c;
+    --red-soft: #f8e9e7;
+    --blue: #2b5a8c;
+    --blue-soft: #e8eef5;
+    --radius: 14px;
+    --shadow: 0 1px 2px rgba(28,35,33,0.04), 0 6px 20px rgba(28,35,33,0.05);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{background:var(--bg);color:var(--ink);font-family:'Vazirmatn', sans-serif;min-height:100vh;}
+  .wrap{max-width:920px;margin:0 auto;padding:26px 16px 60px;}
+  .top{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:10px;}
+  .brand{display:flex;align-items:center;gap:10px;}
+  .brand .dot{width:10px;height:10px;border-radius:50%;background:var(--accent);flex-shrink:0;}
+  .brand h1{font-size:16px;font-weight:700;margin:0;}
+  .brand span{display:block;font-size:11px;color:var(--ink-soft);font-weight:500;}
+  .role-switch{display:flex;gap:6px;background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:4px;}
+  .role-switch button{border:none;background:transparent;padding:7px 14px;border-radius:999px;font-family:inherit;font-size:12.5px;font-weight:600;color:var(--ink-soft);cursor:pointer;}
+  .role-switch button.active{background:var(--ink);color:#fff;}
+
+  .gate{min-height:70vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:26px;}
+  .gate h2{font-size:21px;margin:0;font-weight:800;}
+  .gate p{color:var(--ink-soft);margin:0;font-size:13.5px;max-width:340px;}
+  .gate-cards{display:flex;gap:14px;flex-wrap:wrap;justify-content:center;}
+  .gate-card{width:190px;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:22px 16px;cursor:pointer;transition:.18s;box-shadow:var(--shadow);}
+  .gate-card:hover{transform:translateY(-3px);border-color:var(--accent);}
+  .gate-card .ic{font-size:26px;margin-bottom:10px;}
+  .gate-card b{font-size:14px;display:block;margin-bottom:4px;}
+  .gate-card span{font-size:11.5px;color:var(--ink-soft);}
+
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:20px;margin-bottom:16px;}
+  .card h3{margin:0 0 4px;font-size:14.5px;font-weight:700;}
+  .card .sub{margin:0 0 14px;font-size:11.5px;color:var(--ink-soft);}
+  label{display:block;font-size:12px;color:var(--ink-soft);margin:0 0 5px;font-weight:600;}
+  input,select,textarea{width:100%;font-family:inherit;font-size:13.5px;padding:10px 12px;border-radius:10px;border:1px solid var(--line);background:#fbfbfa;color:var(--ink);margin-bottom:12px;}
+  input:focus,select:focus,textarea:focus{outline:none;border-color:var(--accent);background:#fff;}
+  textarea{resize:vertical;min-height:64px;}
+  .btn{border:none;border-radius:10px;padding:11px 18px;font-family:inherit;font-weight:700;font-size:13px;cursor:pointer;}
+  .btn-primary{background:var(--ink);color:#fff;width:100%;}
+  .btn-primary:hover{background:#000;}
+  .btn-primary:disabled{opacity:.5;cursor:not-allowed;}
+  .btn-line{background:#fff;border:1px solid var(--line);color:var(--ink);width:100%;}
+  .btn-ghost{background:transparent;border:1px solid var(--line);color:var(--ink-soft);font-size:11.5px;padding:5px 10px;border-radius:8px;cursor:pointer;}
+
+  /* انتخاب نوع کار */
+  .choice-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;}
+  @media(max-width:480px){.choice-row{grid-template-columns:1fr;}}
+  .choice{border:1.5px solid var(--line);border-radius:12px;padding:14px;cursor:pointer;text-align:center;transition:.12s;}
+  .choice b{display:block;font-size:13px;margin-bottom:2px;}
+  .choice span{font-size:11px;color:var(--ink-soft);}
+  .choice.sel-internal{border-color:var(--accent);background:var(--accent-soft);}
+  .choice.sel-outsourced{border-color:var(--blue);background:var(--blue-soft);}
+
+  .radio-list{display:flex;flex-direction:column;gap:8px;margin-bottom:14px;}
+  .radio-item{display:flex;align-items:flex-start;gap:8px;border:1px solid var(--line);border-radius:10px;padding:10px 12px;cursor:pointer;font-size:12.5px;}
+  .radio-item.checked{border-color:var(--blue);background:var(--blue-soft);}
+  .radio-item input{width:auto;margin:2px 0 0;flex-shrink:0;}
+
+  .chip-grid{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px;}
+  .chip{border:1px solid var(--line);border-radius:999px;padding:7px 13px;font-size:12px;cursor:pointer;background:#fff;}
+  .chip.on{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:700;}
+
+  .part-row{display:grid;grid-template-columns:1fr 90px auto;gap:8px;align-items:center;margin-bottom:8px;}
+  .part-row input{margin-bottom:0;}
+  .rm-btn{border:none;background:var(--red-soft);color:var(--red);border-radius:8px;width:34px;height:34px;font-size:14px;cursor:pointer;}
+  .add-part{border:1px dashed var(--line);background:transparent;color:var(--ink-soft);border-radius:9px;padding:8px;width:100%;font-family:inherit;font-size:12px;font-weight:600;cursor:pointer;margin-bottom:14px;}
+
+  .visit-banner{display:flex;justify-content:space-between;align-items:center;background:var(--ink);color:#fff;border-radius:12px;padding:12px 16px;margin-bottom:16px;font-size:12.5px;}
+  .visit-banner b{font-size:15px;}
+  .visit-banner button{background:rgba(255,255,255,.15);border:none;color:#fff;border-radius:8px;padding:6px 10px;font-family:inherit;font-size:11px;cursor:pointer;}
+
+  .task{border:1px solid var(--line);border-radius:12px;padding:14px 15px;margin-bottom:10px;}
+  .task-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:6px;}
+  .task-store{font-weight:800;font-size:13.5px;}
+  .task-meta{font-size:11px;color:var(--ink-soft);margin-top:2px;}
+  .task-desc{font-size:12.5px;color:var(--ink);margin:8px 0;line-height:2;}
+  .task-desc b{font-weight:700;}
+  .badge{font-size:10.5px;font-weight:700;padding:3px 10px;border-radius:999px;white-space:nowrap;}
+  .b-internal{background:var(--accent-soft);color:var(--accent);}
+  .b-outsourced{background:var(--blue-soft);color:var(--blue);}
+  .review-badge{font-size:10px;font-weight:700;padding:2px 8px;border-radius:999px;margin-inline-start:6px;}
+  .r-pending{background:var(--amber-soft);color:var(--amber);}
+  .r-reviewed{background:var(--accent-soft);color:var(--accent);}
+  .r-rejected{background:var(--red-soft);color:var(--red);}
+  .actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;}
+  .a-btn{border:1px solid var(--line);background:#fff;border-radius:9px;padding:7px 12px;font-family:inherit;font-size:12px;font-weight:700;cursor:pointer;}
+  .a-ok{color:var(--accent);border-color:var(--accent-soft);}
+  .a-edit{color:var(--blue);border-color:var(--blue-soft);}
+  .a-reject{color:var(--red);border-color:var(--red-soft);}
+  .note{font-size:11.5px;color:var(--ink-soft);margin-top:6px;background:#fafafa;padding:6px 10px;border-radius:8px;}
+
+  .tabs{display:flex;gap:6px;margin-bottom:16px;background:var(--surface);border:1px solid var(--line);padding:4px;border-radius:12px;}
+  .tabs button{flex:1;border:none;background:transparent;padding:9px 4px;border-radius:9px;font-family:inherit;font-weight:700;font-size:12px;color:var(--ink-soft);cursor:pointer;}
+  .tabs button.active{background:var(--bg);color:var(--ink);}
+  .empty{text-align:center;padding:36px 10px;color:var(--ink-soft);font-size:13px;}
+
+  .stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px;}
+  .stat{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px;text-align:center;}
+  .stat b{display:block;font-size:22px;font-weight:800;}
+  .stat span{font-size:10.5px;color:var(--ink-soft);}
+  table{width:100%;border-collapse:collapse;font-size:12px;}
+  th,td{padding:8px 6px;text-align:right;border-bottom:1px solid var(--line);}
+  th{color:var(--ink-soft);font-weight:700;font-size:11px;}
+  .filter-row{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;}
+  .filter-row input,.filter-row select{width:auto;margin:0;flex:1;min-width:120px;}
+  .bar-row{display:flex;align-items:center;gap:8px;margin-bottom:8px;font-size:12px;}
+  .bar-label{width:150px;flex-shrink:0;color:var(--ink-soft);}
+  .bar-track{flex:1;height:8px;background:var(--bg);border-radius:99px;overflow:hidden;}
+  .bar-fill{height:100%;background:var(--accent);border-radius:99px;}
+  .bar-count{width:26px;text-align:left;font-weight:700;}
+
+  .toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 18px;border-radius:10px;font-size:12.5px;font-weight:600;opacity:0;pointer-events:none;transition:.25s;z-index:50;max-width:90%;text-align:center;}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(-6px);}
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script>
+// fallback: اگر فایل خارج از محیط آرتیفکت Claude باز شود، window.storage در دسترس نیست.
+// در آن حالت داده‌ها فقط روی همان مرورگر ذخیره می‌شوند (بدون اشتراک بین افراد).
+if (!window.storage) {
+  window.storage = {
+    async get(key, shared){
+      const raw = localStorage.getItem((shared?'shared:':'local:')+key);
+      if (raw === null) throw new Error('key not found');
+      return { key, value: raw, shared: !!shared };
+    },
+    async set(key, value, shared){
+      localStorage.setItem((shared?'shared:':'local:')+key, value);
+      return { key, value, shared: !!shared };
+    },
+    async delete(key, shared){
+      localStorage.removeItem((shared?'shared:':'local:')+key);
+      return { key, deleted: true, shared: !!shared };
+    },
+    async list(prefix, shared){
+      const p = (shared?'shared:':'local:')+(prefix||'');
+      const keys = Object.keys(localStorage).filter(k => k.startsWith(p)).map(k => k.slice((shared?'shared:':'local:').length));
+      return { keys, prefix, shared: !!shared };
+    }
+  };
+}
+
+const { useState, useEffect, useRef, useCallback } = React;
+
+/* ---------- اتصال به گوگل شیت ---------- */
+const SHEET_URL = 'https://script.google.com/macros/s/AKfycbx69ToVN-iY0opjKoC1P-DV3TUpDBmZ4fHhLTpAMyRaukCA5e4vXqlgo3lPAhG1PlnZ/exec';
+
+async function sendToSheet(t){
+  try{
+    const now = new Date(t.createdAt || Date.now());
+    await fetch(SHEET_URL, {
+      method: 'POST',
+      mode: 'no-cors', // چون Apps Script برای مرورگر هدر CORS برنمی‌گرداند؛ پاسخ را نمی‌خوانیم ولی داده می‌رسد
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify({
+        date: now.toLocaleDateString('fa-IR'),
+        time: now.toLocaleTimeString('fa-IR', {hour:'2-digit', minute:'2-digit'}),
+        storeCode: t.storeCode || '',
+        technician: t.technician || '',
+        type: t.type || '',
+        level1: t.level1 || '',
+        level2: t.level2 || [],
+        otherText: t.otherText || '',
+        consumedParts: t.consumedParts || [],
+        hotParts: t.hotParts || [],
+        outsourceReason: t.outsourceReason || '',
+        reviewStatus: t.reviewStatus || '',
+        managerNote: t.managerNote || '',
+      })
+    });
+  }catch(e){
+    // ارسال به گوگل شیت ناموفق بود (مثلاً قطعی اینترنت)؛ داده همچنان در خود پلتفرم امن است
+  }
+}
+
+/* ---------- داده‌های واقعی کسب‌وکار (برگرفته از فایل تیکت.xlsx و فلوچارت) ---------- */
+
+const CATEGORIES = [
+  { l1:"کرکره/درب اتوماتیک/درب معمولی", l2:["موتور","تیغه","ریموت","جاقفلی","ریل","چشمی‌ها","فریم","لولا","شیشه","دستگیره","آرام‌بند"] },
+  { l1:"بالابر", l2:["موتور و مشکلات برقی","بدنه و کف و ادوات فلزی","کابل‌های برقی","تسمه فلزی","نشت روغن","دکمه‌ها و سنسور"] },
+  { l1:"یخچال و فریزر سطح فروش", l2:["خاموشی","دما","پرده شب","روشنایی","مشکلات برقی","درین","فن کابین","کندانسور","برفک","شیشه و درب","بدنه","صدای ناهنجار"] },
+  { l1:"اسپلیت", l2:["دما","کنترل","کندانسور","آبریزی بیرون","آبریزی داخلی و درین","سرویس"] },
+  { l1:"هیتر گازی", l2:["لوله دودکش","شلنگ و اتصالات","خاموش بودن","قطع گاز","پایه","محل نصب"] },
+  { l1:"تابلو کامپوزیت و متعلقات برقی", l2:["حروف چلنیوم","روشنایی چلنیوم","کد و نوشته برچسبی","لامپ زیر تابلو","پرژکتور","لایت باکس","روشنایی لایت باکس","اتصال برق","شکستگی کامپوزیت","آب‌بندی"] },
+  { l1:"روشنایی و لامپ سطح فروشگاه", l2:["لامپ سطح فروشگاه","لامپ دپو و انبار","لامپ سرویس","کمبود نور"] },
+  { l1:"ایرادات برقی، کابل‌کشی و تابلو برق", l2:["قطع و اتصالی برق","خرابی فیوز","کنتور","داکت‌کشی","آویزان بودن"] },
+  { l1:"UPS", l2:["باتری و شارژ","اتصالی و قطع"] },
+  { l1:"ملزومات رفاهی پرسنلی", l2:["چای‌ساز","ماکروویو","یخچال پرسنلی","کمد","میز و صندلی"] },
+  { l1:"مانیتور دوربین‌ها", l2:["خاموش بودن","کنترل","شکستگی","تصویر"] },
+  { l1:"ادوات تاسیسات آب و فاضلاب", l2:["لوله‌کشی","شیرآلات","سینک و فاضلاب","پمپ","فلاش تانک","تصفیه آب","نشت آب لوله‌کشی و فاضلاب"] },
+  { l1:"ملزومات فلزی", l2:["پله فلزی","روکش آجدار پله","رمپ","پل","بالکن یا شاسی فلزی"] },
+  { l1:"ابنیه سطح فروشگاه/تهویه", l2:["دیوارها","سرامیک‌ها","رنگ‌آمیزی","سقف کاذب","سقف گچی","سرویس بهداشتی","پله سنگی","هواکش‌ها","نم و رطوبت"] },
+  { l1:"سایر موارد", l2:[] },
+];
+
+const OUTSOURCE_REASONS = [
+  "عدم وجود توانائی همکار فنی",
+  "عدم وجود ابزار فنی مورد نیاز برای این تعمیرات",
+  "عدم امکان تامین قطعه در محل به‌دلیل نقدینگی و تنخواه",
+  "عدم امکان تامین قطعه به‌دلیل در دسترس نبودن قطعه در این لوکیشن",
+  "عدم وجود زمان کافی به‌علت زمان‌بر بودن جزئیات تعمیرات",
+  "عدم وجود زمان کافی به‌علت حجم تعمیرات در دیگر فروشگاه‌ها",
+  "عدم وجود زمان کافی برای سفارش قطعه تا ارسال (عدم موجودی انبار)",
+  "فاصله زیاد از اعزام تا محل فروشگاه (عیب‌یابی اولیه تلفنی و دور از فروشگاه)",
+];
+
+function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,7); }
+function todayStr(){ return new Date().toLocaleDateString('fa-IR'); }
+function dateKey(iso){ return new Date(iso).toLocaleDateString('fa-IR'); }
+function timeStr(iso){ return new Date(iso).toLocaleTimeString('fa-IR',{hour:'2-digit',minute:'2-digit'}); }
+
+function Toast({msg}){ return React.createElement('div',{className:'toast'+(msg?' show':'')}, msg||''); }
+
+/* ---------- یک ساب‌فرم قابل استفاده در ثبت (فنی) و ویرایش (مدیر) ---------- */
+function TicketFields({ draft, setDraft }){
+  const setType = (type) => setDraft(d => ({...d, type, level1:'', level2:[], otherText:'', outsourceReason:'', consumedParts:[], hotParts:[]}));
+  const setLevel1 = (l1) => setDraft(d => ({...d, level1:l1, level2:[], otherText:''}));
+  const toggleLevel2 = (item) => setDraft(d => ({...d, level2: d.level2.includes(item) ? d.level2.filter(x=>x!==item) : [...d.level2, item]}));
+  const cat = CATEGORIES.find(c => c.l1 === draft.level1);
+
+  const addPart = (field) => setDraft(d => ({...d, [field]: [...d[field], {name:'', qty:1}]}));
+  const updatePart = (field, idx, key, val) => setDraft(d => {
+    const arr = d[field].slice(); arr[idx] = {...arr[idx], [key]: val}; return {...d, [field]: arr};
+  });
+  const removePart = (field, idx) => setDraft(d => ({...d, [field]: d[field].filter((_,i)=>i!==idx)}));
+
+  return React.createElement(React.Fragment, null,
+    React.createElement('label',null,'نوع کار'),
+    React.createElement('div',{className:'choice-row'},
+      React.createElement('div',{className:'choice'+(draft.type==='internal'?' sel-internal':''), onClick:()=>setType('internal')},
+        React.createElement('b',null,'درون‌سپاری'), React.createElement('span',null,'خودم انجام می‌دهم')
+      ),
+      React.createElement('div',{className:'choice'+(draft.type==='outsourced'?' sel-outsourced':''), onClick:()=>setType('outsourced')},
+        React.createElement('b',null,'برون‌سپاری'), React.createElement('span',null,'نیاز به ارجاع بیرون')
+      )
+    ),
+
+    draft.type==='outsourced' && React.createElement(React.Fragment, null,
+      React.createElement('label',null,'علت برون‌سپاری'),
+      React.createElement('div',{className:'radio-list'},
+        OUTSOURCE_REASONS.map((r,i) => React.createElement('label',{key:i, className:'radio-item'+(draft.outsourceReason===r?' checked':'')},
+          React.createElement('input',{type:'radio', name:'reason', checked:draft.outsourceReason===r, onChange:()=>setDraft(d=>({...d, outsourceReason:r}))}),
+          React.createElement('span',null, (i+1)+'. '+r)
+        ))
+      )
+    ),
+
+    draft.type==='internal' && React.createElement(React.Fragment, null,
+      React.createElement('label',null,'نوع اصلی خرابی (سطح ۱)'),
+      React.createElement('select',{value:draft.level1, onChange:e=>setLevel1(e.target.value)},
+        React.createElement('option',{value:''},'انتخاب کنید...'),
+        CATEGORIES.map(c => React.createElement('option',{key:c.l1, value:c.l1}, c.l1))
+      ),
+
+      draft.level1 === 'سایر موارد' && React.createElement(React.Fragment,null,
+        React.createElement('label',null,'شرح مورد'),
+        React.createElement('textarea',{value:draft.otherText, onChange:e=>setDraft(d=>({...d, otherText:e.target.value})), placeholder:'توضیح دهید...'})
+      ),
+
+      (cat && cat.l2.length>0) && React.createElement(React.Fragment, null,
+        React.createElement('label',null,'نوع فرعی خرابی (سطح ۲) — می‌توانید چند مورد را انتخاب کنید'),
+        React.createElement('div',{className:'chip-grid'},
+          cat.l2.map(item => React.createElement('div',{key:item, className:'chip'+(draft.level2.includes(item)?' on':''), onClick:()=>toggleLevel2(item)}, item))
+        )
+      ),
+
+      React.createElement('label',null,'قطعات مصرفی (اختیاری)'),
+      draft.consumedParts.map((p,idx) => React.createElement('div',{key:idx, className:'part-row'},
+        React.createElement('input',{placeholder:'نام قطعه', value:p.name, onChange:e=>updatePart('consumedParts',idx,'name',e.target.value)}),
+        React.createElement('input',{type:'number', min:1, value:p.qty, onChange:e=>updatePart('consumedParts',idx,'qty',e.target.value)}),
+        React.createElement('button',{className:'rm-btn', onClick:()=>removePart('consumedParts',idx)}, '✕')
+      )),
+      React.createElement('button',{className:'add-part', onClick:()=>addPart('consumedParts')}, '+ افزودن قطعه مصرفی'),
+
+      React.createElement('label',null,'قطعات داغی / معیوب (اختیاری)'),
+      draft.hotParts.map((p,idx) => React.createElement('div',{key:idx, className:'part-row'},
+        React.createElement('input',{placeholder:'نام قطعه', value:p.name, onChange:e=>updatePart('hotParts',idx,'name',e.target.value)}),
+        React.createElement('input',{type:'number', min:1, value:p.qty, onChange:e=>updatePart('hotParts',idx,'qty',e.target.value)}),
+        React.createElement('button',{className:'rm-btn', onClick:()=>removePart('hotParts',idx)}, '✕')
+      )),
+      React.createElement('button',{className:'add-part', onClick:()=>addPart('hotParts')}, '+ افزودن قطعه داغی/معیوب')
+    )
+  );
+}
+
+function emptyDraft(){
+  return { type:'', level1:'', level2:[], otherText:'', outsourceReason:'', consumedParts:[], hotParts:[] };
+}
+
+function validDraft(d){
+  if (d.type==='outsourced') return !!d.outsourceReason;
+  if (d.type==='internal') return !!d.level1 && (d.level1!=='سایر موارد' || d.otherText.trim());
+  return false;
+}
+
+/* ---------- محیط نیروی فنی ---------- */
+function TechView({ tasks, saveTasks, showToast }){
+  const [name, setName] = useState('');
+  const [storeCode, setStoreCode] = useState('');
+  const [visitActive, setVisitActive] = useState(false);
+  const [visitCount, setVisitCount] = useState(0);
+  const [draft, setDraft] = useState(emptyDraft());
+  const [askMore, setAskMore] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+
+  useEffect(()=>{ window.storage.get('my-name', false).then(r=>{ if(r) setName(r.value); }).catch(()=>{}); },[]);
+
+  const startVisit = () => {
+    if(!name.trim() || !storeCode.trim()){ showToast('نام و کد فروشگاه الزامی است'); return; }
+    window.storage.set('my-name', name.trim(), false).catch(()=>{});
+    setVisitActive(true); setVisitCount(0); setDraft(emptyDraft()); setAskMore(false);
+  };
+
+  const submitItem = async () => {
+    if(!validDraft(draft)){ showToast('لطفاً اطلاعات این کار را کامل کنید'); return; }
+    setSubmitting(true);
+    const newTicket = {
+      id: uid(), storeCode: storeCode.trim(), technician: name.trim(),
+      createdAt: new Date().toISOString(),
+      reviewStatus: 'pending', managerNote: '',
+      ...draft,
+    };
+    await saveTasks(list => [newTicket, ...list]);
+    sendToSheet(newTicket);
+    setSubmitting(false);
+    setVisitCount(c=>c+1);
+    setDraft(emptyDraft());
+    setAskMore(true);
+    showToast('کار ثبت شد');
+  };
+
+  const endVisit = () => { setVisitActive(false); setStoreCode(''); setAskMore(false); setVisitCount(0); };
+  const addAnother = () => { setAskMore(false); setDraft(emptyDraft()); };
+
+  const mine = tasks.filter(t => t.technician === name.trim()).slice(0,15);
+
+  if (!visitActive) {
+    return React.createElement(React.Fragment, null,
+      React.createElement('div',{className:'card'},
+        React.createElement('h3',null,'شروع ویزیت فروشگاه'),
+        React.createElement('p',{className:'sub'},'نام و کد فروشگاهی که در آن هستید را وارد کنید'),
+        React.createElement('label',null,'نام شما'),
+        React.createElement('input',{value:name, onChange:e=>setName(e.target.value), placeholder:'مثلاً: علی رضایی'}),
+        React.createElement('label',null,'کد فروشگاه'),
+        React.createElement('input',{value:storeCode, onChange:e=>setStoreCode(e.target.value), placeholder:'مثلاً: 1042'}),
+        React.createElement('button',{className:'btn btn-primary', onClick:startVisit}, 'شروع ویزیت')
+      ),
+      React.createElement('div',{className:'card'},
+        React.createElement('h3',null,'کارهای اخیر من'),
+        mine.length===0 ? React.createElement('div',{className:'empty'},'هنوز کاری ثبت نکرده‌اید')
+        : mine.map(t => React.createElement(TaskItem,{key:t.id, t}))
+      )
+    );
+  }
+
+  return React.createElement(React.Fragment, null,
+    React.createElement('div',{className:'visit-banner'},
+      React.createElement('div',null, 'ویزیت فعال — فروشگاه ', React.createElement('b',null,storeCode), ' · ', visitCount, ' کار ثبت‌شده'),
+      React.createElement('button',{onClick:endVisit}, 'پایان ویزیت')
+    ),
+    askMore
+      ? React.createElement('div',{className:'card'},
+          React.createElement('h3',null,'کار دیگری هم در این فروشگاه دارید؟'),
+          React.createElement('div',{className:'choice-row'},
+            React.createElement('button',{className:'btn btn-line', onClick:addAnother}, 'بله، کار جدید ثبت کن'),
+            React.createElement('button',{className:'btn btn-primary', onClick:endVisit}, 'خیر، پایان ویزیت')
+          )
+        )
+      : React.createElement('div',{className:'card'},
+          React.createElement('h3',null,'ثبت کار'),
+          React.createElement('p',{className:'sub'},'جزئیات کاری که انجام می‌دهید یا نیاز به ارجاع دارد را وارد کنید'),
+          React.createElement(TicketFields,{draft, setDraft}),
+          React.createElement('button',{className:'btn btn-primary', disabled:submitting || !validDraft(draft), onClick:submitItem}, submitting?'در حال ثبت...':'ثبت این کار')
+        ),
+    React.createElement('div',{className:'card'},
+      React.createElement('h3',null,'کارهای اخیر من'),
+      mine.length===0 ? React.createElement('div',{className:'empty'},'هنوز کاری ثبت نکرده‌اید')
+      : mine.map(t => React.createElement(TaskItem,{key:t.id, t}))
+    )
+  );
+}
+
+/* ---------- نمایش خلاصه‌ی یک تیکت ---------- */
+function ticketSummary(t){
+  if (t.type==='outsourced') return 'علت برون‌سپاری: ' + t.outsourceReason;
+  const l2 = t.level2 && t.level2.length ? ' («' + t.level2.join('، ') + '»)' : '';
+  const other = t.level1==='سایر موارد' && t.otherText ? ': ' + t.otherText : '';
+  const parts = [];
+  if (t.consumedParts && t.consumedParts.filter(p=>p.name).length) parts.push('قطعات مصرفی: ' + t.consumedParts.filter(p=>p.name).map(p=>p.name+' ×'+p.qty).join('، '));
+  if (t.hotParts && t.hotParts.filter(p=>p.name).length) parts.push('قطعات داغی: ' + t.hotParts.filter(p=>p.name).map(p=>p.name+' ×'+p.qty).join('، '));
+  return t.level1 + other + l2 + (parts.length ? ' — ' + parts.join(' | ') : '');
+}
+
+function TaskItem({ t, onReview, onReject, onEdit }){
+  const [editing, setEditing] = useState(false);
+  const [draft, setDraft] = useState(null);
+  const [note, setNote] = useState('');
+
+  const beginEdit = () => {
+    setDraft({ type:t.type, level1:t.level1||'', level2:t.level2||[], otherText:t.otherText||'',
+      outsourceReason:t.outsourceReason||'', consumedParts:t.consumedParts||[], hotParts:t.hotParts||[] });
+    setEditing(true);
+  };
+  const saveEdit = () => { onEdit(t.id, draft); setEditing(false); };
+
+  const rlabel = t.reviewStatus==='reviewed' ? 'بررسی‌شده' : t.reviewStatus==='rejected' ? 'رد شده' : 'در انتظار بررسی';
+  const rcls = t.reviewStatus==='reviewed' ? 'r-reviewed' : t.reviewStatus==='rejected' ? 'r-rejected' : 'r-pending';
+
+  return React.createElement('div',{className:'task'},
+    React.createElement('div',{className:'task-top'},
+      React.createElement('div',null,
+        React.createElement('div',{className:'task-store'}, 'فروشگاه '+t.storeCode),
+        React.createElement('div',{className:'task-meta'}, t.technician+' · '+dateKey(t.createdAt)+' '+timeStr(t.createdAt))
+      ),
+      React.createElement('div',null,
+        React.createElement('span',{className:'badge '+(t.type==='internal'?'b-internal':'b-outsourced')}, t.type==='internal'?'درون‌سپاری':'برون‌سپاری'),
+        onReview && React.createElement('span',{className:'review-badge '+rcls}, rlabel)
+      )
+    ),
+    !editing && React.createElement('div',{className:'task-desc'}, ticketSummary(t)),
+    t.managerNote && !editing && React.createElement('div',{className:'note'}, '📝 '+t.managerNote),
+
+    editing && React.createElement('div',{style:{marginTop:'10px'}},
+      React.createElement(TicketFields,{draft, setDraft}),
+      React.createElement('div',{className:'actions'},
+        React.createElement('button',{className:'a-btn a-ok', onClick:saveEdit}, 'ذخیره اصلاحات'),
+        React.createElement('button',{className:'a-btn', onClick:()=>setEditing(false)}, 'انصراف')
+      )
+    ),
+
+    onReview && !editing && React.createElement('div', null,
+      React.createElement('input',{placeholder:'یادداشت مدیر (اختیاری)', value:note, onChange:e=>setNote(e.target.value), style:{marginTop:'8px'}}),
+      React.createElement('div',{className:'actions'},
+        React.createElement('button',{className:'a-btn a-ok', onClick:()=>onReview(t.id, note)}, '✓ بررسی شد'),
+        React.createElement('button',{className:'a-btn a-edit', onClick:beginEdit}, '✎ اصلاح'),
+        React.createElement('button',{className:'a-btn a-reject', onClick:()=>onReject(t.id, note)}, '✕ رد کردن')
+      )
+    )
+  );
+}
+
+/* ---------- محیط مدیر فنی ---------- */
+function ManagerView({ tasks, saveTasks, showToast }){
+  const [tab, setTab] = useState('pending');
+  const [storeFilter, setStoreFilter] = useState('');
+
+  const review = async (id, note) => {
+    const next = await saveTasks(list => list.map(t => t.id===id ? {...t, reviewStatus:'reviewed', managerNote: note || t.managerNote} : t));
+    sendToSheet(next.find(t=>t.id===id));
+    showToast('به‌عنوان بررسی‌شده علامت خورد');
+  };
+  const reject = async (id, note) => {
+    const next = await saveTasks(list => list.map(t => t.id===id ? {...t, reviewStatus:'rejected', managerNote: note || t.managerNote} : t));
+    sendToSheet(next.find(t=>t.id===id));
+    showToast('رد شد');
+  };
+  const edit = async (id, newDraft) => {
+    const next = await saveTasks(list => list.map(t => t.id===id ? {...t, ...newDraft, reviewStatus:'reviewed'} : t));
+    sendToSheet(next.find(t=>t.id===id));
+    showToast('اصلاح شد و بررسی‌شده علامت خورد');
+  };
+
+  const filtered = tasks.filter(t => !storeFilter.trim() || t.storeCode.includes(storeFilter.trim()));
+  const pending = filtered.filter(t => t.reviewStatus==='pending' || !t.reviewStatus);
+  const all = filtered;
+
+  return React.createElement(React.Fragment, null,
+    React.createElement('div',{className:'tabs'},
+      React.createElement('button',{className: tab==='pending'?'active':'', onClick:()=>setTab('pending')}, 'در انتظار ('+pending.length+')'),
+      React.createElement('button',{className: tab==='all'?'active':'', onClick:()=>setTab('all')}, 'همه کارها'),
+      React.createElement('button',{className: tab==='report'?'active':'', onClick:()=>setTab('report')}, 'گزارش‌ها')
+    ),
+    tab!=='report' && React.createElement('div',{className:'filter-row'},
+      React.createElement('input',{placeholder:'فیلتر بر اساس کد فروشگاه...', value:storeFilter, onChange:e=>setStoreFilter(e.target.value)})
+    ),
+    tab==='pending' && (pending.length===0
+      ? React.createElement('div',{className:'card'}, React.createElement('div',{className:'empty'},'کاری در انتظار بررسی نیست ✨'))
+      : pending.map(t => React.createElement(TaskItem,{key:t.id, t, onReview:review, onReject:reject, onEdit:edit}))),
+    tab==='all' && (all.length===0
+      ? React.createElement('div',{className:'card'}, React.createElement('div',{className:'empty'},'هنوز کاری ثبت نشده'))
+      : all.map(t => React.createElement(TaskItem,{key:t.id, t, onReview:review, onReject:reject, onEdit:edit}))),
+    tab==='report' && React.createElement(ReportView,{tasks})
+  );
+}
+
+function ReportView({ tasks }){
+  const [day, setDay] = useState('all');
+  const relevant = day==='today' ? tasks.filter(t => dateKey(t.createdAt)===todayStr()) : tasks;
+  const total = relevant.length;
+  const internal = relevant.filter(t=>t.type==='internal').length;
+  const outsourced = relevant.filter(t=>t.type==='outsourced').length;
+
+  const groups = {};
+  relevant.forEach(t => {
+    const key = dateKey(t.createdAt) + '|' + t.storeCode;
+    if(!groups[key]) groups[key] = { date:dateKey(t.createdAt), store:t.storeCode, total:0, internal:0, outsourced:0 };
+    groups[key].total++;
+    groups[key][t.type]++;
+  });
+  const rows = Object.values(groups).sort((a,b)=> a.date===b.date ? a.store.localeCompare(b.store) : (a.date<b.date?1:-1));
+
+  const catCount = {};
+  relevant.filter(t=>t.type==='internal' && t.level1).forEach(t => { catCount[t.level1] = (catCount[t.level1]||0)+1; });
+  const catRows = Object.entries(catCount).sort((a,b)=>b[1]-a[1]).slice(0,8);
+  const maxCat = catRows.length ? catRows[0][1] : 1;
+
+  const reasonCount = {};
+  relevant.filter(t=>t.type==='outsourced' && t.outsourceReason).forEach(t => { reasonCount[t.outsourceReason] = (reasonCount[t.outsourceReason]||0)+1; });
+  const reasonRows = Object.entries(reasonCount).sort((a,b)=>b[1]-a[1]);
+  const maxReason = reasonRows.length ? reasonRows[0][1] : 1;
+
+  return React.createElement(React.Fragment, null,
+    React.createElement('div',{className:'filter-row'},
+      React.createElement('select',{value:day, onChange:e=>setDay(e.target.value)},
+        React.createElement('option',{value:'today'},'فقط امروز'),
+        React.createElement('option',{value:'all'},'کل بازه')
+      )
+    ),
+    React.createElement('div',{className:'stat-row'},
+      React.createElement('div',{className:'stat'}, React.createElement('b',null,total), React.createElement('span',null,'کل کارها')),
+      React.createElement('div',{className:'stat'}, React.createElement('b',{style:{color:'var(--accent)'}},internal), React.createElement('span',null,'درون‌سپاری')),
+      React.createElement('div',{className:'stat'}, React.createElement('b',{style:{color:'var(--blue)'}},outsourced), React.createElement('span',null,'برون‌سپاری'))
+    ),
+    React.createElement('div',{className:'card'},
+      React.createElement('h3',null,'ریز کارها به تفکیک فروشگاه و تاریخ'),
+      rows.length===0 ? React.createElement('div',{className:'empty'},'داده‌ای برای نمایش نیست')
+      : React.createElement('table',null,
+          React.createElement('thead',null, React.createElement('tr',null,
+            React.createElement('th',null,'تاریخ'), React.createElement('th',null,'فروشگاه'),
+            React.createElement('th',null,'کل'), React.createElement('th',null,'درون‌سپاری'), React.createElement('th',null,'برون‌سپاری')
+          )),
+          React.createElement('tbody',null, rows.map((r,i) => React.createElement('tr',{key:i},
+            React.createElement('td',null,r.date), React.createElement('td',null,r.store),
+            React.createElement('td',null,r.total), React.createElement('td',null,r.internal||0), React.createElement('td',null,r.outsourced||0)
+          )))
+        )
+    ),
+    catRows.length>0 && React.createElement('div',{className:'card'},
+      React.createElement('h3',null,'پرتکرارترین نوع خرابی (درون‌سپاری)'),
+      catRows.map(([name,count]) => React.createElement('div',{key:name, className:'bar-row'},
+        React.createElement('div',{className:'bar-label'}, name),
+        React.createElement('div',{className:'bar-track'}, React.createElement('div',{className:'bar-fill', style:{width:(count/maxCat*100)+'%'}})),
+        React.createElement('div',{className:'bar-count'}, count)
+      ))
+    ),
+    reasonRows.length>0 && React.createElement('div',{className:'card'},
+      React.createElement('h3',null,'پرتکرارترین علت برون‌سپاری'),
+      reasonRows.map(([name,count]) => React.createElement('div',{key:name, className:'bar-row'},
+        React.createElement('div',{className:'bar-label', style:{width:'220px'}}, name),
+        React.createElement('div',{className:'bar-track'}, React.createElement('div',{className:'bar-fill', style:{width:(count/maxReason*100)+'%', background:'var(--blue)'}})),
+        React.createElement('div',{className:'bar-count'}, count)
+      ))
+    )
+  );
+}
+
+/* ---------- اپ اصلی ---------- */
+function App(){
+  const [role, setRole] = useState(null);
+  const [tasks, setTasks] = useState([]);
+  const [loaded, setLoaded] = useState(false);
+  const [toastMsg, setToastMsg] = useState('');
+  const toastTimer = useRef(null);
+
+  const showToast = (m) => { setToastMsg(m); clearTimeout(toastTimer.current); toastTimer.current = setTimeout(()=>setToastMsg(''), 2200); };
+
+  const loadTasks = useCallback(async () => {
+    try{ const res = await window.storage.get('tasks', true); setTasks(res ? JSON.parse(res.value) : []); }
+    catch(e){ setTasks([]); }
+    setLoaded(true);
+  }, []);
+
+  useEffect(() => { loadTasks(); const iv = setInterval(loadTasks, 6000); return () => clearInterval(iv); }, [loadTasks]);
+
+  const saveTasks = async (updater) => {
+    let current = [];
+    try{ const res = await window.storage.get('tasks', true); current = res ? JSON.parse(res.value) : []; } catch(e){ current = []; }
+    const next = updater(current);
+    await window.storage.set('tasks', JSON.stringify(next), true);
+    setTasks(next);
+    return next;
+  };
+
+  if (!role) {
+    return React.createElement('div',{className:'wrap'},
+      React.createElement('div',{className:'gate'},
+        React.createElement('div',null,
+          React.createElement('h2',null,'پلتفرم پشتیبانی فنی فروشگاه‌ها'),
+          React.createElement('p',null,'برای ادامه نقش خود را انتخاب کنید')
+        ),
+        React.createElement('div',{className:'gate-cards'},
+          React.createElement('div',{className:'gate-card', onClick:()=>setRole('tech')},
+            React.createElement('div',{className:'ic'},'🧰'), React.createElement('b',null,'نیروی پشتیبانی فنی'), React.createElement('span',null,'ثبت کار در فروشگاه')
+          ),
+          React.createElement('div',{className:'gate-card', onClick:()=>setRole('manager')},
+            React.createElement('div',{className:'ic'},'📋'), React.createElement('b',null,'مدیر فنی'), React.createElement('span',null,'بررسی، اصلاح و گزارش‌ها')
+          )
+        )
+      )
+    );
+  }
+
+  return React.createElement('div',{className:'wrap'},
+    React.createElement('div',{className:'top'},
+      React.createElement('div',{className:'brand'},
+        React.createElement('span',{className:'dot'}),
+        React.createElement('div',null, React.createElement('h1',null,'پشتیبانی فنی فروشگاه‌ها'), React.createElement('span',null, role==='tech'?'محیط نیروی فنی':'محیط مدیر فنی'))
+      ),
+      React.createElement('div',{className:'role-switch'},
+        React.createElement('button',{className: role==='tech'?'active':'', onClick:()=>setRole('tech')},'نیروی فنی'),
+        React.createElement('button',{className: role==='manager'?'active':'', onClick:()=>setRole('manager')},'مدیر')
+      )
+    ),
+    !loaded ? React.createElement('div',{className:'empty'},'در حال بارگذاری...') :
+    (role==='tech' ? React.createElement(TechView,{tasks, saveTasks, showToast}) : React.createElement(ManagerView,{tasks, saveTasks, showToast})),
+    React.createElement(Toast,{msg:toastMsg})
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(React.createElement(App));
+</script>
+</body>
+</html>
