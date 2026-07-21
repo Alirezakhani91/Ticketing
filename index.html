@@ -579,6 +579,7 @@ function ReportView({ tasks }){
 
 /* ---------- اپ اصلی ---------- */
 function App(){
+  const MANAGER_PIN = '140504';
   const [role, setRole] = useState(null);
   const [tasks, setTasks] = useState([]);
   const [loaded, setLoaded] = useState(false);
@@ -586,6 +587,16 @@ function App(){
   const toastTimer = useRef(null);
 
   const showToast = (m) => { setToastMsg(m); clearTimeout(toastTimer.current); toastTimer.current = setTimeout(()=>setToastMsg(''), 2200); };
+
+  const enterManager = () => {
+    const pin = window.prompt('رمز ورود مدیر فنی را وارد کنید:');
+    if (pin === null) return;
+    if (pin === MANAGER_PIN) {
+      setRole('manager');
+      return;
+    }
+    window.alert('رمز واردشده صحیح نیست.');
+  };
 
   const loadTasks = useCallback(async () => {
     try{ const res = await window.storage.get('tasks', true); setTasks(res ? JSON.parse(res.value) : []); }
@@ -615,7 +626,7 @@ function App(){
           React.createElement('div',{className:'gate-card', onClick:()=>setRole('tech')},
             React.createElement('div',{className:'ic'},'🧰'), React.createElement('b',null,'نیروی پشتیبانی فنی'), React.createElement('span',null,'ثبت کار در فروشگاه')
           ),
-          React.createElement('div',{className:'gate-card', onClick:()=>setRole('manager')},
+          React.createElement('div',{className:'gate-card', onClick:enterManager},
             React.createElement('div',{className:'ic'},'📋'), React.createElement('b',null,'مدیر فنی'), React.createElement('span',null,'بررسی، اصلاح و گزارش‌ها')
           )
         )
@@ -631,7 +642,7 @@ function App(){
       ),
       React.createElement('div',{className:'role-switch'},
         React.createElement('button',{className: role==='tech'?'active':'', onClick:()=>setRole('tech')},'نیروی فنی'),
-        React.createElement('button',{className: role==='manager'?'active':'', onClick:()=>setRole('manager')},'مدیر')
+        React.createElement('button',{className: role==='manager'?'active':'', onClick:enterManager},'مدیر')
       )
     ),
     !loaded ? React.createElement('div',{className:'empty'},'در حال بارگذاری...') :
