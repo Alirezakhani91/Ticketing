@@ -47,6 +47,22 @@
   .gate-card b{font-size:14px;display:block;margin-bottom:4px;}
   .gate-card span{font-size:11.5px;color:var(--ink-soft);}
 
+  .login-wrap{min-height:82vh;display:flex;align-items:center;justify-content:center;padding:20px 0;}
+  .login-card{width:100%;max-width:390px;background:var(--surface);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow);padding:26px;}
+  .login-head{text-align:center;margin-bottom:22px;}
+  .login-icon{width:54px;height:54px;border-radius:16px;background:var(--accent-soft);display:flex;align-items:center;justify-content:center;font-size:25px;margin:0 auto 12px;}
+  .login-head h2{font-size:19px;margin:0 0 6px;font-weight:800;}
+  .login-head p{font-size:12px;color:var(--ink-soft);margin:0;line-height:1.9;}
+  .login-error{background:var(--red-soft);color:var(--red);border-radius:9px;padding:9px 11px;font-size:12px;margin-bottom:12px;text-align:center;}
+  .user-bar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+  .user-info{text-align:left;direction:rtl;}
+  .user-info b{display:block;font-size:12px;}
+  .user-info span{display:block;font-size:10.5px;color:var(--ink-soft);}
+  .logout-btn{border:1px solid var(--line);background:var(--surface);color:var(--ink-soft);border-radius:9px;padding:7px 11px;font-family:inherit;font-size:11px;font-weight:700;cursor:pointer;}
+  .fixed-user{background:var(--accent-soft);border:1px solid #d7e7e1;border-radius:10px;padding:10px 12px;margin-bottom:12px;}
+  .fixed-user b{display:block;font-size:13px;}
+  .fixed-user span{display:block;font-size:10.5px;color:var(--ink-soft);margin-top:2px;}
+
   .card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:20px;margin-bottom:16px;}
   .card h3{margin:0 0 4px;font-size:14.5px;font-weight:700;}
   .card .sub{margin:0 0 14px;font-size:11.5px;color:var(--ink-soft);}
@@ -167,6 +183,51 @@ const { useState, useEffect, useRef, useCallback } = React;
 
 /* ---------- اتصال به گوگل شیت ---------- */
 const SHEET_URL = 'https://script.google.com/macros/s/AKfycbx69ToVN-iY0opjKoC1P-DV3TUpDBmZ4fHhLTpAMyRaukCA5e4vXqlgo3lPAhG1PlnZ/exec';
+
+function loginWithSheet(username, password){
+  return new Promise((resolve, reject) => {
+    const callbackName = '__loginCallback_' + Date.now() + '_' + Math.random().toString(36).slice(2);
+    const script = document.createElement('script');
+    let finished = false;
+
+    const cleanup = () => {
+      if (script.parentNode) script.parentNode.removeChild(script);
+      try { delete window[callbackName]; } catch(e) { window[callbackName] = undefined; }
+    };
+
+    const timer = setTimeout(() => {
+      if (finished) return;
+      finished = true;
+      cleanup();
+      reject(new Error('timeout'));
+    }, 15000);
+
+    window[callbackName] = (result) => {
+      if (finished) return;
+      finished = true;
+      clearTimeout(timer);
+      cleanup();
+      resolve(result || {success:false, message:'پاسخ نامعتبر از سرور'});
+    };
+
+    script.onerror = () => {
+      if (finished) return;
+      finished = true;
+      clearTimeout(timer);
+      cleanup();
+      reject(new Error('network'));
+    };
+
+    const query = new URLSearchParams({
+      username: String(username || '').trim(),
+      password: String(password || '').trim(),
+      callback: callbackName,
+      _: String(Date.now())
+    });
+    script.src = SHEET_URL + '?' + query.toString();
+    document.body.appendChild(script);
+  });
+}
 
 async function sendToSheet(t){
   try{
@@ -317,8 +378,8 @@ function validDraft(d){
 }
 
 /* ---------- محیط نیروی فنی ---------- */
-function TechView({ tasks, saveTasks, showToast }){
-  const [name, setName] = useState('');
+function TechView({ tasks, saveTasks, showToast, currentUser }){
+  const name = currentUser.name;
   const [storeCode, setStoreCode] = useState('');
   const [visitActive, setVisitActive] = useState(false);
   const [visitCount, setVisitCount] = useState(0);
@@ -326,11 +387,9 @@ function TechView({ tasks, saveTasks, showToast }){
   const [askMore, setAskMore] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
-  useEffect(()=>{ window.storage.get('my-name', false).then(r=>{ if(r) setName(r.value); }).catch(()=>{}); },[]);
 
   const startVisit = () => {
-    if(!name.trim() || !storeCode.trim()){ showToast('نام و کد فروشگاه الزامی است'); return; }
-    window.storage.set('my-name', name.trim(), false).catch(()=>{});
+    if(!storeCode.trim()){ showToast('کد فروشگاه الزامی است'); return; }
     setVisitActive(true); setVisitCount(0); setDraft(emptyDraft()); setAskMore(false);
   };
 
@@ -338,7 +397,7 @@ function TechView({ tasks, saveTasks, showToast }){
     if(!validDraft(draft)){ showToast('لطفاً اطلاعات این کار را کامل کنید'); return; }
     setSubmitting(true);
     const newTicket = {
-      id: uid(), storeCode: storeCode.trim(), technician: name.trim(),
+      id: uid(), storeCode: storeCode.trim(), technician: name.trim(), technicianCode: currentUser.username,
       createdAt: new Date().toISOString(),
       reviewStatus: 'pending', managerNote: '',
       ...draft,
@@ -361,9 +420,12 @@ function TechView({ tasks, saveTasks, showToast }){
     return React.createElement(React.Fragment, null,
       React.createElement('div',{className:'card'},
         React.createElement('h3',null,'شروع ویزیت فروشگاه'),
-        React.createElement('p',{className:'sub'},'نام و کد فروشگاهی که در آن هستید را وارد کنید'),
-        React.createElement('label',null,'نام شما'),
-        React.createElement('input',{value:name, onChange:e=>setName(e.target.value), placeholder:'مثلاً: علی رضایی'}),
+        React.createElement('p',{className:'sub'},'کد فروشگاهی که در آن هستید را وارد کنید'),
+        React.createElement('label',null,'نیروی فنی'),
+        React.createElement('div',{className:'fixed-user'},
+          React.createElement('b',null,name),
+          React.createElement('span',null,'کد پرسنلی: '+currentUser.username)
+        ),
         React.createElement('label',null,'کد فروشگاه'),
         React.createElement('input',{value:storeCode, onChange:e=>setStoreCode(e.target.value), placeholder:'مثلاً: 1042'}),
         React.createElement('button',{className:'btn btn-primary', onClick:startVisit}, 'شروع ویزیت')
@@ -578,24 +640,105 @@ function ReportView({ tasks }){
 }
 
 /* ---------- اپ اصلی ---------- */
+function LoginView({ onLogin }){
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+
+  const submit = async () => {
+    if(!username.trim() || !password.trim()){
+      setError('کد پرسنلی و رمز عبور را وارد کنید');
+      return;
+    }
+    setLoading(true);
+    setError('');
+    try{
+      const result = await loginWithSheet(username, password);
+      if(result && result.success){
+        onLogin({
+          username: String(result.username || username).trim(),
+          name: String(result.name || '').trim(),
+          role: result.role === 'manager' ? 'manager' : 'technician'
+        });
+      }else{
+        setError((result && result.message) || 'نام کاربری یا رمز عبور اشتباه است');
+      }
+    }catch(e){
+      setError('ارتباط با سرور برقرار نشد؛ اینترنت را بررسی کنید');
+    }finally{
+      setLoading(false);
+    }
+  };
+
+  const onKeyDown = (e) => {
+    if(e.key === 'Enter' && !loading) submit();
+  };
+
+  return React.createElement('div',{className:'wrap'},
+    React.createElement('div',{className:'login-wrap'},
+      React.createElement('div',{className:'login-card'},
+        React.createElement('div',{className:'login-head'},
+          React.createElement('div',{className:'login-icon'},'🧰'),
+          React.createElement('h2',null,'ورود به پشتیبانی فنی'),
+          React.createElement('p',null,'با کد پرسنلی و رمز اختصاصی خود وارد شوید')
+        ),
+        error && React.createElement('div',{className:'login-error'},error),
+        React.createElement('label',null,'کد پرسنلی'),
+        React.createElement('input',{
+          value:username,
+          onChange:e=>setUsername(e.target.value),
+          onKeyDown,
+          inputMode:'numeric',
+          autoComplete:'username',
+          placeholder:'کد پرسنلی'
+        }),
+        React.createElement('label',null,'رمز عبور'),
+        React.createElement('input',{
+          type:'password',
+          value:password,
+          onChange:e=>setPassword(e.target.value),
+          onKeyDown,
+          inputMode:'numeric',
+          autoComplete:'current-password',
+          placeholder:'رمز ۶ رقمی'
+        }),
+        React.createElement('button',{
+          className:'btn btn-primary',
+          disabled:loading,
+          onClick:submit
+        },loading?'در حال بررسی...':'ورود')
+      )
+    )
+  );
+}
+
+/* ---------- اپ اصلی ---------- */
 function App(){
-  const MANAGER_PIN = '140504';
-  const [role, setRole] = useState(null);
+  const [currentUser, setCurrentUser] = useState(() => {
+    try{
+      const raw = sessionStorage.getItem('ticketing-user');
+      return raw ? JSON.parse(raw) : null;
+    }catch(e){ return null; }
+  });
   const [tasks, setTasks] = useState([]);
   const [loaded, setLoaded] = useState(false);
   const [toastMsg, setToastMsg] = useState('');
   const toastTimer = useRef(null);
 
+  const role = currentUser ? (currentUser.role === 'manager' ? 'manager' : 'tech') : null;
   const showToast = (m) => { setToastMsg(m); clearTimeout(toastTimer.current); toastTimer.current = setTimeout(()=>setToastMsg(''), 2200); };
 
-  const enterManager = () => {
-    const pin = window.prompt('رمز ورود مدیر فنی را وارد کنید:');
-    if (pin === null) return;
-    if (pin === MANAGER_PIN) {
-      setRole('manager');
-      return;
-    }
-    window.alert('رمز واردشده صحیح نیست.');
+  const handleLogin = (user) => {
+    sessionStorage.setItem('ticketing-user', JSON.stringify(user));
+    setCurrentUser(user);
+  };
+
+  const logout = () => {
+    sessionStorage.removeItem('ticketing-user');
+    setCurrentUser(null);
+    setTasks([]);
+    setLoaded(false);
   };
 
   const loadTasks = useCallback(async () => {
@@ -604,7 +747,12 @@ function App(){
     setLoaded(true);
   }, []);
 
-  useEffect(() => { loadTasks(); const iv = setInterval(loadTasks, 6000); return () => clearInterval(iv); }, [loadTasks]);
+  useEffect(() => {
+    if(!currentUser) return;
+    loadTasks();
+    const iv = setInterval(loadTasks, 6000);
+    return () => clearInterval(iv);
+  }, [currentUser, loadTasks]);
 
   const saveTasks = async (updater) => {
     let current = [];
@@ -615,38 +763,32 @@ function App(){
     return next;
   };
 
-  if (!role) {
-    return React.createElement('div',{className:'wrap'},
-      React.createElement('div',{className:'gate'},
-        React.createElement('div',null,
-          React.createElement('h2',null,'پلتفرم پشتیبانی فنی فروشگاه‌ها'),
-          React.createElement('p',null,'برای ادامه نقش خود را انتخاب کنید')
-        ),
-        React.createElement('div',{className:'gate-cards'},
-          React.createElement('div',{className:'gate-card', onClick:()=>setRole('tech')},
-            React.createElement('div',{className:'ic'},'🧰'), React.createElement('b',null,'نیروی پشتیبانی فنی'), React.createElement('span',null,'ثبت کار در فروشگاه')
-          ),
-          React.createElement('div',{className:'gate-card', onClick:enterManager},
-            React.createElement('div',{className:'ic'},'📋'), React.createElement('b',null,'مدیر فنی'), React.createElement('span',null,'بررسی، اصلاح و گزارش‌ها')
-          )
-        )
-      )
-    );
+  if (!currentUser) {
+    return React.createElement(LoginView,{onLogin:handleLogin});
   }
 
   return React.createElement('div',{className:'wrap'},
     React.createElement('div',{className:'top'},
       React.createElement('div',{className:'brand'},
         React.createElement('span',{className:'dot'}),
-        React.createElement('div',null, React.createElement('h1',null,'پشتیبانی فنی فروشگاه‌ها'), React.createElement('span',null, role==='tech'?'محیط نیروی فنی':'محیط مدیر فنی'))
+        React.createElement('div',null,
+          React.createElement('h1',null,'پشتیبانی فنی فروشگاه‌ها'),
+          React.createElement('span',null,role==='tech'?'محیط نیروی فنی':'محیط مدیر فنی')
+        )
       ),
-      React.createElement('div',{className:'role-switch'},
-        React.createElement('button',{className: role==='tech'?'active':'', onClick:()=>setRole('tech')},'نیروی فنی'),
-        React.createElement('button',{className: role==='manager'?'active':'', onClick:enterManager},'مدیر')
+      React.createElement('div',{className:'user-bar'},
+        React.createElement('div',{className:'user-info'},
+          React.createElement('b',null,currentUser.name),
+          React.createElement('span',null,role==='manager'?'مدیر فنی':'کد پرسنلی: '+currentUser.username)
+        ),
+        React.createElement('button',{className:'logout-btn',onClick:logout},'خروج')
       )
     ),
     !loaded ? React.createElement('div',{className:'empty'},'در حال بارگذاری...') :
-    (role==='tech' ? React.createElement(TechView,{tasks, saveTasks, showToast}) : React.createElement(ManagerView,{tasks, saveTasks, showToast})),
+    (role==='tech'
+      ? React.createElement(TechView,{tasks, saveTasks, showToast, currentUser})
+      : React.createElement(ManagerView,{tasks, saveTasks, showToast})
+    ),
     React.createElement(Toast,{msg:toastMsg})
   );
 }
