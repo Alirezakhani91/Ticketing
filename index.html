@@ -293,7 +293,7 @@ function fetchManagerTickets(token){
   return jsonpRequest({action:'tickets', token:String(token||'')}, 30000);
 }
 function fetchTechnicianTickets(token){
-  return jsonpRequest({action:'myTickets', token:String(token||'')}, 30000);
+  return jsonpRequest({action:'mytickets', token:String(token||'')}, 30000);
 }
 
 function lookupStoreWithSheet(code, token){
@@ -328,6 +328,7 @@ async function sendToSheet(t){
       mode: 'no-cors', // چون Apps Script برای مرورگر هدر CORS برنمی‌گرداند؛ پاسخ را نمی‌خوانیم ولی داده می‌رسد
       headers: { 'Content-Type': 'text/plain' },
       body: JSON.stringify({
+        action: 'createTicket',
         date: now.toLocaleDateString('fa-IR'),
         time: now.toLocaleTimeString('fa-IR', {hour:'2-digit', minute:'2-digit'}),
         storeCode: t.storeCode || '',
@@ -590,15 +591,20 @@ function TechView({ tasks, saveTasks, showToast, currentUser, refreshTasks }){
       await sendToSheet(newTicket);
       setVisitCount(c=>c+1);setDraft(emptyDraft());setAskMore(true);
       showToast(draft.type==='outsourced'?'برون‌سپاری ثبت و در فهرست کارهای باز قرار گرفت':'کار با موفقیت ثبت شد');
-      setTimeout(refreshTasks,1200);
+      setTimeout(refreshTasks,700);setTimeout(refreshTasks,2200);setTimeout(refreshTasks,5000);
     }finally{setSubmitting(false);}
   };
 
   const completeOutsource=async(ticket,completion)=>{
-    await saveTasks(list=>list.map(t=>t.id===ticket.id?{...t,workStatus:'completed',completedAt:new Date().toISOString(),...completion}:t));
+    if(!ticket.rowNumber){
+      showToast('تیکت هنوز با سرور همگام نشده است؛ چند ثانیه بعد دوباره امتحان کنید');
+      refreshTasks();
+      return;
+    }
     await sendOutsourceCompletion(ticket,completion,currentUser.token);
+    await saveTasks(list=>list.map(t=>t.id===ticket.id?{...t,workStatus:'completed',completedAt:new Date().toISOString(),...completion}:t));
     showToast('پایان کار برون‌سپاری ثبت شد');
-    setTimeout(refreshTasks,1000);
+    setTimeout(refreshTasks,700);setTimeout(refreshTasks,2200);
   };
 
   const endVisit=()=>{setVisitActive(false);setStoreCode('');setStoreInfo(null);setStoreError('');setAskMore(false);setVisitCount(0);};
@@ -1050,6 +1056,7 @@ function App(){
   const [lastUpdated,setLastUpdated]=useState('');
   const [toastMsg,setToastMsg]=useState('');
   const toastTimer=useRef(null);
+  const lastSyncError=useRef('');
   const role=currentUser?(currentUser.role==='manager'?'manager':'tech'):null;
   const showToast=m=>{setToastMsg(m);clearTimeout(toastTimer.current);toastTimer.current=setTimeout(()=>setToastMsg(''),2600);};
 
@@ -1058,26 +1065,67 @@ function App(){
 
   const loadTasks=useCallback(async()=>{
     if(!currentUser)return;
+
+    const showSyncErrorOnce=(message)=>{
+      const msg=String(message||'').trim();
+      if(!msg||lastSyncError.current===msg)return;
+      lastSyncError.current=msg;
+      showToast(msg);
+    };
+
     if(currentUser.role==='manager'){
       if(!currentUser.token){logout();return;}
       setManagerLoading(true);
       try{
         const result=await fetchManagerTickets(currentUser.token);
-        if(result&&result.success){setTasks(result.tickets||[]);setLastUpdated(result.updatedAt||new Date().toISOString());setLoaded(true);}
-        else if(result&&result.sessionExpired){showToast(result.message||'دوباره وارد شوید');logout();}
-        else{showToast((result&&result.message)||'دریافت داده‌ها انجام نشد');setLoaded(true);}
-      }catch(e){showToast('ارتباط با داده‌های مدیریتی برقرار نشد');setLoaded(true);}
-      finally{setManagerLoading(false);}
+        if(result&&result.success){
+          lastSyncError.current='';
+          setTasks(result.tickets||[]);
+          setLastUpdated(result.updatedAt||new Date().toISOString());
+          setLoaded(true);
+        }else if(result&&result.sessionExpired){
+          showToast(result.message||'دوباره وارد شوید');
+          logout();
+        }else{
+          // خطاهای silent مربوط به درخواست‌های پس‌زمینه به کاربر نمایش داده نمی‌شوند.
+          if(!(result&&result.silent)){
+            showSyncErrorOnce((result&&result.message)||'دریافت داده‌ها انجام نشد');
+          }
+          setLoaded(true);
+        }
+      }catch(e){
+        showSyncErrorOnce('ارتباط با داده‌های مدیریتی برقرار نشد');
+        setLoaded(true);
+      }finally{
+        setManagerLoading(false);
+      }
     }else{
       if(!currentUser.token){logout();return;}
       try{
         const result=await fetchTechnicianTickets(currentUser.token);
-        if(result&&result.success){setTasks(result.tickets||[]);setLastUpdated(result.updatedAt||new Date().toISOString());setLoaded(true);}
-        else if(result&&result.sessionExpired){showToast(result.message||'دوباره وارد شوید');logout();}
-        else{showToast((result&&result.message)||'دریافت کارهای شما انجام نشد');setLoaded(true);}
+        if(result&&result.success){
+          lastSyncError.current='';
+          setTasks(result.tickets||[]);
+          setLastUpdated(result.updatedAt||new Date().toISOString());
+          setLoaded(true);
+        }else if(result&&result.sessionExpired){
+          showToast(result.message||'دوباره وارد شوید');
+          logout();
+        }else{
+          if(!(result&&result.silent)){
+            showSyncErrorOnce((result&&result.message)||'دریافت کارهای شما انجام نشد');
+          }
+          setLoaded(true);
+        }
       }catch(e){
-        try{const res=await window.storage.get('tasks',true);setTasks(res?JSON.parse(res.value):[]);}catch(_){setTasks([]);}
-        showToast('ارتباط با سرور برقرار نشد؛ اطلاعات محلی نمایش داده شد');setLoaded(true);
+        try{
+          const res=await window.storage.get('tasks',true);
+          setTasks(res?JSON.parse(res.value):[]);
+        }catch(_){
+          setTasks([]);
+        }
+        showSyncErrorOnce('ارتباط با سرور برقرار نشد؛ اطلاعات محلی نمایش داده شد');
+        setLoaded(true);
       }
     }
   },[currentUser]);
