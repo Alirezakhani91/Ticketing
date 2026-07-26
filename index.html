@@ -2,8 +2,12 @@
 <html lang="fa" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>پلتفرم پشتیبانی فنی فروشگاه‌ها</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>پلتفرم پشتیبانی فنی فروشگاه‌ها - v3.5</title>
+<!-- Direct blank quantity input build: 3.5 -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
@@ -95,9 +99,36 @@
   .chip{border:1px solid var(--line);border-radius:999px;padding:7px 13px;font-size:12px;cursor:pointer;background:#fff;}
   .chip.on{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:700;}
 
-  .part-row{display:grid;grid-template-columns:1fr 90px auto;gap:8px;align-items:center;margin-bottom:8px;}
-  .part-row input{margin-bottom:0;}
-  .rm-btn{border:none;background:var(--red-soft);color:var(--red);border-radius:8px;width:34px;height:34px;font-size:14px;cursor:pointer;}
+  .part-row{display:grid;grid-template-columns:minmax(0,1fr) 130px 44px;gap:8px;align-items:center;margin-bottom:8px;}
+  .part-row>input{margin-bottom:0;}
+  .qty-direct{
+    display:block!important;
+    width:100%!important;
+    min-width:0!important;
+    height:46px!important;
+    margin:0!important;
+    padding:0 10px!important;
+    border:1px solid var(--line)!important;
+    border-radius:10px!important;
+    background:#fff!important;
+    color:var(--ink)!important;
+    text-align:center!important;
+    font-family:inherit!important;
+    font-size:16px!important;
+    font-weight:800!important;
+    direction:ltr!important;
+    -webkit-appearance:none!important;
+    appearance:none!important;
+  }
+  .qty-direct:focus{outline:none!important;border-color:var(--accent)!important;box-shadow:0 0 0 2px rgba(47,111,94,.08)!important;}
+  .qty-direct::placeholder{font-size:12px;font-weight:600;color:#9aa19d;opacity:1;}
+  .rm-btn{border:none;background:var(--red-soft);color:var(--red);border-radius:10px;width:44px;height:46px;font-size:16px;cursor:pointer;}
+  @media(max-width:520px){
+    .part-row{grid-template-columns:minmax(0,1fr) 44px;gap:8px;align-items:stretch;}
+    .part-row>input{grid-column:1 / -1;height:48px;}
+    .qty-direct{grid-column:1;grid-row:2;height:50px!important;font-size:18px!important;}
+    .rm-btn{grid-column:2;grid-row:2;width:44px;height:50px;}
+  }
   .add-part{border:1px dashed var(--line);background:transparent;color:var(--ink-soft);border-radius:9px;padding:8px;width:100%;font-family:inherit;font-size:12px;font-weight:600;cursor:pointer;margin-bottom:14px;}
 
   .visit-banner{display:flex;justify-content:space-between;align-items:center;background:var(--ink);color:#fff;border-radius:12px;padding:12px 16px;margin-bottom:16px;font-size:12.5px;}
@@ -397,6 +428,36 @@ function normalizeStoreCodeClient(v){ return String(v||'').replace(/[۰-۹]/g,d=
 
 function Toast({msg}){ return React.createElement('div',{className:'toast'+(msg?' show':'')}, msg||''); }
 
+function normalizeQtyInput(value){
+  return String(value ?? '')
+    .replace(/[۰-۹]/g,d=>'۰۱۲۳۴۵۶۷۸۹'.indexOf(d))
+    .replace(/[٠-٩]/g,d=>'٠١٢٣٤٥٦٧٨٩'.indexOf(d))
+    .replace(/[^0-9]/g,'');
+}
+function finalQty(value){
+  const n=parseInt(normalizeQtyInput(value),10);
+  return Number.isFinite(n)&&n>0?n:1;
+}
+function hasInvalidPartQty(parts){
+  return (parts||[]).some(p=>String(p.name||'').trim() && !/^[1-9][0-9]*$/.test(normalizeQtyInput(p.qty)));
+}
+function normalizePartsQty(parts){
+  return (parts||[]).map(p=>({...p,qty:finalQty(p.qty)}));
+}
+function QuantityControl({value,onChange}){
+  return React.createElement('input',{
+    className:'qty-direct',
+    type:'text',
+    inputMode:'numeric',
+    pattern:'[0-9]*',
+    value:normalizeQtyInput(value),
+    onChange:e=>onChange(normalizeQtyInput(e.target.value)),
+    placeholder:'تعداد',
+    autoComplete:'off',
+    'aria-label':'تعداد قطعه'
+  });
+}
+
 /* ---------- فرم ثبت: خرابی/خدمت ← نحوه انجام ← جزئیات ---------- */
 function TicketFields({ draft, setDraft }){
   const setType = (type) => setDraft(d => ({
@@ -410,10 +471,10 @@ function TicketFields({ draft, setDraft }){
   const toggleLevel2 = (item) => setDraft(d => ({...d, level2: d.level2.includes(item) ? d.level2.filter(x=>x!==item) : [...d.level2, item]}));
   const cat = CATEGORIES.find(c => c.l1 === draft.level1);
 
-  const addPart = (field) => setDraft(d => ({...d, [field]: [...d[field], {name:'', qty:1}]}));
+  const addPart = (field) => setDraft(d => ({...d, [field]: [...d[field], {name:'', qty:''}]}));
   const updatePart = (field, idx, key, val) => setDraft(d => {
     const arr = d[field].slice();
-    arr[idx] = {...arr[idx], [key]: key==='qty' ? Math.max(1,Number(val)||1) : val};
+    arr[idx] = {...arr[idx], [key]: val};
     return {...d, [field]: arr};
   });
   const removePart = (field, idx) => setDraft(d => ({...d, [field]: d[field].filter((_,i)=>i!==idx)}));
@@ -458,18 +519,18 @@ function TicketFields({ draft, setDraft }){
     ),
 
     draft.type==='internal' && React.createElement(React.Fragment,null,
-      React.createElement('label',null,'قطعات مصرفی (اختیاری)'),
+      React.createElement('label',null,'قطعات مصرفی (اختیاری) — تعداد را مستقیم وارد کنید'),
       draft.consumedParts.map((p,idx)=>React.createElement('div',{key:idx,className:'part-row'},
         React.createElement('input',{placeholder:'نام قطعه',value:p.name,onChange:e=>updatePart('consumedParts',idx,'name',e.target.value)}),
-        React.createElement('input',{type:'number',min:1,value:p.qty,onChange:e=>updatePart('consumedParts',idx,'qty',e.target.value)}),
+        React.createElement(QuantityControl,{value:p.qty,onChange:value=>updatePart('consumedParts',idx,'qty',value)}),
         React.createElement('button',{type:'button',className:'rm-btn',onClick:()=>removePart('consumedParts',idx)},'✕')
       )),
       React.createElement('button',{type:'button',className:'add-part',onClick:()=>addPart('consumedParts')},'+ افزودن قطعه مصرفی'),
 
-      React.createElement('label',null,'قطعات داغی / معیوب (اختیاری)'),
+      React.createElement('label',null,'قطعات داغی / معیوب (اختیاری) — تعداد را مستقیم وارد کنید'),
       draft.hotParts.map((p,idx)=>React.createElement('div',{key:idx,className:'part-row'},
         React.createElement('input',{placeholder:'نام قطعه',value:p.name,onChange:e=>updatePart('hotParts',idx,'name',e.target.value)}),
-        React.createElement('input',{type:'number',min:1,value:p.qty,onChange:e=>updatePart('hotParts',idx,'qty',e.target.value)}),
+        React.createElement(QuantityControl,{value:p.qty,onChange:value=>updatePart('hotParts',idx,'qty',value)}),
         React.createElement('button',{type:'button',className:'rm-btn',onClick:()=>removePart('hotParts',idx)},'✕')
       )),
       React.createElement('button',{type:'button',className:'add-part',onClick:()=>addPart('hotParts')},'+ افزودن قطعه داغی/معیوب')
@@ -488,6 +549,7 @@ function validDraft(d){
   if(cat&&cat.l2.length>0&&(!d.level2||d.level2.length===0))return false;
   if(!d.type)return false;
   if(d.type==='outsourced'&&!d.outsourceReason)return false;
+  if(hasInvalidPartQty(d.consumedParts)||hasInvalidPartQty(d.hotParts))return false;
   return true;
 }
 
@@ -496,13 +558,14 @@ function OutsourceOpenItem({t,onComplete}){
   const [note,setNote]=useState('');
   const [parts,setParts]=useState([]);
   const [submitting,setSubmitting]=useState(false);
-  const addPart=()=>setParts(x=>[...x,{name:'',qty:1}]);
-  const updatePart=(idx,key,val)=>setParts(x=>x.map((p,i)=>i===idx?{...p,[key]:key==='qty'?Math.max(1,Number(val)||1):val}:p));
+  const invalidParts=hasInvalidPartQty(parts);
+  const addPart=()=>setParts(x=>[...x,{name:'',qty:''}]);
+  const updatePart=(idx,key,val)=>setParts(x=>x.map((p,i)=>i===idx?{...p,[key]:val}:p));
   const removePart=idx=>setParts(x=>x.filter((_,i)=>i!==idx));
   const submit=async()=>{
-    if(!note.trim())return;
+    if(!note.trim()||invalidParts)return;
     setSubmitting(true);
-    try{await onComplete(t,{completionNote:note.trim(),completionParts:parts.filter(p=>p.name)});setOpen(false);setNote('');setParts([]);}finally{setSubmitting(false);}
+    try{await onComplete(t,{completionNote:note.trim(),completionParts:normalizePartsQty(parts.filter(p=>p.name))});setOpen(false);setNote('');setParts([]);}finally{setSubmitting(false);}
   };
   return React.createElement('div',{className:'outsource-open-card'},
     React.createElement('div',{className:'outsource-open-head'},
@@ -523,12 +586,12 @@ function OutsourceOpenItem({t,onComplete}){
             React.createElement('label',null,'قطعات مصرفی در پایان کار (اختیاری)'),
             parts.map((p,idx)=>React.createElement('div',{key:idx,className:'part-row'},
               React.createElement('input',{placeholder:'نام قطعه',value:p.name,onChange:e=>updatePart(idx,'name',e.target.value)}),
-              React.createElement('input',{type:'number',min:1,value:p.qty,onChange:e=>updatePart(idx,'qty',e.target.value)}),
+              React.createElement(QuantityControl,{value:p.qty,onChange:value=>updatePart(idx,'qty',value)}),
               React.createElement('button',{type:'button',className:'rm-btn',onClick:()=>removePart(idx)},'✕')
             )),
             React.createElement('button',{type:'button',className:'add-part',onClick:addPart},'+ افزودن قطعه'),
             React.createElement('div',{className:'actions'},
-              React.createElement('button',{className:'a-btn a-ok',disabled:submitting||!note.trim(),onClick:submit},submitting?'در حال ثبت...':'ثبت پایان کار'),
+              React.createElement('button',{className:'a-btn a-ok',disabled:submitting||!note.trim()||invalidParts,onClick:submit},submitting?'در حال ثبت...':'ثبت پایان کار'),
               React.createElement('button',{className:'a-btn',disabled:submitting,onClick:()=>setOpen(false)},'انصراف')
             )
           )
@@ -579,12 +642,16 @@ function TechView({ tasks, saveTasks, showToast, currentUser, refreshTasks }){
     if(!storeInfo){showToast('اطلاعات فروشگاه پیدا نشد');return;}
     setSubmitting(true);
     const createdAt=new Date().toISOString();
+    const cleanDraft={...draft,
+      consumedParts:normalizePartsQty(draft.consumedParts),
+      hotParts:normalizePartsQty(draft.hotParts)
+    };
     const newTicket={
       id:uid(),storeCode:storeInfo.code,storeName:storeInfo.name,region:storeInfo.region,
       technician:name.trim(),technicianCode:currentUser.username,token:currentUser.token,
       createdAt,reviewStatus:'pending',managerNote:'',
-      workStatus:draft.type==='outsourced'?'open':'completed',
-      completedAt:draft.type==='internal'?createdAt:'',...draft
+      workStatus:cleanDraft.type==='outsourced'?'open':'completed',
+      completedAt:cleanDraft.type==='internal'?createdAt:'',...cleanDraft
     };
     try{
       await saveTasks(list=>[newTicket,...list]);
@@ -677,7 +744,7 @@ function TaskItem({t,onReview,onReject,onEdit}){
   const [draft,setDraft]=useState(null);
   const [note,setNote]=useState('');
   const beginEdit=()=>{setDraft({type:t.type,level1:t.level1||'',level2:t.level2||[],otherText:t.otherText||'',outsourceReason:t.outsourceReason||'',consumedParts:t.consumedParts||[],hotParts:t.hotParts||[]});setEditing(true);};
-  const saveEdit=()=>{if(!validDraft(draft))return;onEdit(t.id,draft);setEditing(false);};
+  const saveEdit=()=>{if(!validDraft(draft))return;onEdit(t.id,{...draft,consumedParts:normalizePartsQty(draft.consumedParts),hotParts:normalizePartsQty(draft.hotParts)});setEditing(false);};
   const rlabel=t.reviewStatus==='reviewed'?'بررسی‌شده':t.reviewStatus==='rejected'?'رد شده':'در انتظار بررسی';
   const rcls=t.reviewStatus==='reviewed'?'r-reviewed':t.reviewStatus==='rejected'?'r-rejected':'r-pending';
   const workDone=t.type!=='outsourced'||t.workStatus==='completed';
@@ -1145,7 +1212,7 @@ function App(){
 
   return React.createElement('div',{className:'wrap'},
     React.createElement('div',{className:'top'},
-      React.createElement('div',{className:'brand'},React.createElement('span',{className:'dot'}),React.createElement('div',null,React.createElement('h1',null,'پشتیبانی فنی فروشگاه‌ها'),React.createElement('span',null,role==='tech'?'محیط نیروی فنی':'مرکز کنترل مدیریت فنی'))),
+      React.createElement('div',{className:'brand'},React.createElement('span',{className:'dot'}),React.createElement('div',null,React.createElement('h1',null,'پشتیبانی فنی فروشگاه‌ها'),React.createElement('span',null,(role==='tech'?'محیط نیروی فنی':'مرکز کنترل مدیریت فنی')+' • نسخه 3.5'))),
       React.createElement('div',{className:'user-bar'},React.createElement('div',{className:'user-info'},React.createElement('b',null,currentUser.name),React.createElement('span',null,role==='manager'?'مدیر فنی':'کد پرسنلی: '+currentUser.username)),React.createElement('button',{className:'logout-btn',onClick:logout},'خروج'))
     ),
     !loaded?React.createElement('div',{className:'empty'},'در حال بارگذاری اطلاعات...'):(role==='tech'?React.createElement(TechView,{tasks,saveTasks,showToast,currentUser,refreshTasks:loadTasks}):React.createElement(ManagerView,{tasks,updateTask:updateManagerTask,showToast,refreshTasks:loadTasks,managerLoading,lastUpdated})),
