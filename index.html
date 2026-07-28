@@ -6,8 +6,8 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<title>پلتفرم پشتیبانی فنی فروشگاه‌ها - v3.5</title>
-<!-- Direct blank quantity input build: 3.5 -->
+<title>پلتفرم پشتیبانی فنی فروشگاه‌ها - v3.6</title>
+<!-- Retry-safe mobile login build: 3.6 -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
@@ -58,6 +58,10 @@
   .login-head h2{font-size:19px;margin:0 0 6px;font-weight:800;}
   .login-head p{font-size:12px;color:var(--ink-soft);margin:0;line-height:1.9;}
   .login-error{background:var(--red-soft);color:var(--red);border-radius:9px;padding:9px 11px;font-size:12px;margin-bottom:12px;text-align:center;}
+  .login-actions{display:grid;grid-template-columns:1fr;gap:8px;margin-top:10px;}
+  .login-reset{border:0;background:transparent;color:var(--ink-soft);font-family:inherit;font-size:11px;font-weight:700;padding:8px;cursor:pointer;}
+  .login-reset:hover{color:var(--accent);}
+  .login-note{margin-top:10px;text-align:center;color:var(--ink-soft);font-size:10px;line-height:1.8;}
   .user-bar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
   .user-info{text-align:left;direction:rtl;}
   .user-info b{display:block;font-size:12px;}
@@ -316,8 +320,20 @@ function jsonpRequest(params, timeoutMs=20000){
   });
 }
 
+function normalizeLoginDigits(value){
+  return String(value||'')
+    .replace(/[۰-۹]/g,d=>'۰۱۲۳۴۵۶۷۸۹'.indexOf(d))
+    .replace(/[٠-٩]/g,d=>'٠١٢٣٤٥٦٧٨٩'.indexOf(d))
+    .replace(/[\u200c\u200f\u202a-\u202e\s]/g,'')
+    .trim();
+}
 function loginWithSheet(username, password){
-  return jsonpRequest({action:'login', username:String(username||'').trim(), password:String(password||'').trim()});
+  return jsonpRequest({
+    action:'login',
+    username:normalizeLoginDigits(username),
+    password:normalizeLoginDigits(password),
+    attempt:String(Date.now())
+  },15000);
 }
 
 function fetchManagerTickets(token){
@@ -1045,70 +1061,143 @@ function LoginView({ onLogin }){
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const usernameRef = useRef(null);
+  const passwordRef = useRef(null);
+  const requestSeq = useRef(0);
 
-  const submit = async () => {
-    if(!username.trim() || !password.trim()){
+  useEffect(()=>{
+    // هیچ تلاش ناموفقی در مرورگر ذخیره یا قفل نمی‌شود.
+    // ورود قبلیِ ناقص نیز پاک می‌شود تا کاربران فعلی بتوانند دوباره تلاش کنند.
+    try{ sessionStorage.removeItem('ticketing-user'); }catch(e){}
+  },[]);
+
+  const clearError = () => {
+    if(error) setError('');
+  };
+
+  const resetLoginForm = () => {
+    requestSeq.current += 1; // پاسخ هر درخواست قبلی دیگر اثری ندارد
+    setLoading(false);
+    setError('');
+    setUsername('');
+    setPassword('');
+    try{ sessionStorage.removeItem('ticketing-user'); }catch(e){}
+    setTimeout(()=>usernameRef.current && usernameRef.current.focus(),30);
+  };
+
+  const submit = async (event) => {
+    if(event && event.preventDefault) event.preventDefault();
+    if(loading) return;
+
+    // مقدار واقعی داخل کادر خوانده می‌شود تا Autofill موبایل مقدار قدیمی نفرستد.
+    const rawUsername = usernameRef.current ? usernameRef.current.value : username;
+    const rawPassword = passwordRef.current ? passwordRef.current.value : password;
+    const cleanUsername = normalizeLoginDigits(rawUsername);
+    const cleanPassword = normalizeLoginDigits(rawPassword);
+
+    setUsername(cleanUsername);
+    setPassword(cleanPassword);
+
+    if(!cleanUsername || !cleanPassword){
       setError('کد پرسنلی و رمز عبور را وارد کنید');
+      if(!cleanUsername){
+        setTimeout(()=>usernameRef.current && usernameRef.current.focus(),30);
+      }else{
+        setTimeout(()=>passwordRef.current && passwordRef.current.focus(),30);
+      }
       return;
     }
+
+    const myRequest = ++requestSeq.current;
     setLoading(true);
     setError('');
+
     try{
-      const result = await loginWithSheet(username, password);
+      const result = await loginWithSheet(cleanUsername, cleanPassword);
+      if(myRequest !== requestSeq.current) return;
+
       if(result && result.success){
+        // هیچ خطای قبلی یا نشست ناقصی به ورود درست منتقل نمی‌شود.
+        try{ sessionStorage.removeItem('ticketing-user'); }catch(e){}
         onLogin({
-          username: String(result.username || username).trim(),
+          username: String(result.username || cleanUsername).trim(),
           name: String(result.name || '').trim(),
           role: result.role === 'manager' ? 'manager' : 'technician',
           token: String(result.token || '')
         });
-      }else{
-        setError((result && result.message) || 'نام کاربری یا رمز عبور اشتباه است');
+        return;
       }
-    }catch(e){
-      setError('ارتباط با سرور برقرار نشد؛ اینترنت را بررسی کنید');
-    }finally{
-      setLoading(false);
-    }
-  };
 
-  const onKeyDown = (e) => {
-    if(e.key === 'Enter' && !loading) submit();
+      setError((result && result.message) || 'نام کاربری یا رمز عبور اشتباه است');
+      // بعد از اشتباه، رمز پاک می‌شود و کاربر فوراً می‌تواند دوباره وارد کند.
+      setPassword('');
+      if(passwordRef.current) passwordRef.current.value='';
+      setTimeout(()=>passwordRef.current && passwordRef.current.focus(),30);
+    }catch(e){
+      if(myRequest !== requestSeq.current) return;
+      setError('ارتباط با سرور برقرار نشد؛ دوباره تلاش کنید');
+      setTimeout(()=>passwordRef.current && passwordRef.current.focus(),30);
+    }finally{
+      if(myRequest === requestSeq.current) setLoading(false);
+    }
   };
 
   return React.createElement('div',{className:'wrap'},
     React.createElement('div',{className:'login-wrap'},
-      React.createElement('div',{className:'login-card'},
+      React.createElement('form',{className:'login-card',onSubmit:submit,noValidate:true,autoComplete:'off'},
         React.createElement('div',{className:'login-head'},
           React.createElement('div',{className:'login-icon'},'🧰'),
           React.createElement('h2',null,'ورود به پشتیبانی فنی'),
           React.createElement('p',null,'با کد پرسنلی و رمز اختصاصی خود وارد شوید')
         ),
-        error && React.createElement('div',{className:'login-error'},error),
-        React.createElement('label',null,'کد پرسنلی'),
+        error && React.createElement('div',{className:'login-error',role:'alert'},error),
+        React.createElement('label',{htmlFor:'ticketing-personnel-code'},'کد پرسنلی'),
         React.createElement('input',{
+          id:'ticketing-personnel-code',
+          ref:usernameRef,
+          name:'ticketing_personnel_code_v36',
+          type:'text',
           value:username,
-          onChange:e=>setUsername(e.target.value),
-          onKeyDown,
+          onChange:e=>{setUsername(e.target.value);clearError();},
           inputMode:'numeric',
-          autoComplete:'username',
+          pattern:'[0-9۰-۹٠-٩]*',
+          autoComplete:'off',
+          autoCapitalize:'none',
+          spellCheck:false,
+          'data-lpignore':'true',
+          'data-1p-ignore':'true',
           placeholder:'کد پرسنلی'
         }),
-        React.createElement('label',null,'رمز عبور'),
+        React.createElement('label',{htmlFor:'ticketing-password'},'رمز عبور'),
         React.createElement('input',{
+          id:'ticketing-password',
+          ref:passwordRef,
+          name:'ticketing_password_v36',
           type:'password',
           value:password,
-          onChange:e=>setPassword(e.target.value),
-          onKeyDown,
+          onChange:e=>{setPassword(e.target.value);clearError();},
           inputMode:'numeric',
-          autoComplete:'current-password',
+          pattern:'[0-9۰-۹٠-٩]*',
+          autoComplete:'new-password',
+          autoCapitalize:'none',
+          spellCheck:false,
+          'data-lpignore':'true',
+          'data-1p-ignore':'true',
           placeholder:'رمز ۶ رقمی'
         }),
-        React.createElement('button',{
-          className:'btn btn-primary',
-          disabled:loading,
-          onClick:submit
-        },loading?'در حال بررسی...':'ورود')
+        React.createElement('div',{className:'login-actions'},
+          React.createElement('button',{
+            type:'submit',
+            className:'btn btn-primary',
+            disabled:loading
+          },loading?'در حال بررسی...':'ورود'),
+          React.createElement('button',{
+            type:'button',
+            className:'login-reset',
+            onClick:resetLoginForm
+          },'پاک کردن فرم و تلاش دوباره')
+        ),
+        React.createElement('div',{className:'login-note'},'تعداد ورود اشتباه باعث قفل شدن حساب نمی‌شود؛ هر زمان اطلاعات درست وارد شود، ورود انجام خواهد شد.')
       )
     )
   );
@@ -1212,7 +1301,7 @@ function App(){
 
   return React.createElement('div',{className:'wrap'},
     React.createElement('div',{className:'top'},
-      React.createElement('div',{className:'brand'},React.createElement('span',{className:'dot'}),React.createElement('div',null,React.createElement('h1',null,'پشتیبانی فنی فروشگاه‌ها'),React.createElement('span',null,(role==='tech'?'محیط نیروی فنی':'مرکز کنترل مدیریت فنی')+' • نسخه 3.5'))),
+      React.createElement('div',{className:'brand'},React.createElement('span',{className:'dot'}),React.createElement('div',null,React.createElement('h1',null,'پشتیبانی فنی فروشگاه‌ها'),React.createElement('span',null,(role==='tech'?'محیط نیروی فنی':'مرکز کنترل مدیریت فنی')+' • نسخه 3.6'))),
       React.createElement('div',{className:'user-bar'},React.createElement('div',{className:'user-info'},React.createElement('b',null,currentUser.name),React.createElement('span',null,role==='manager'?'مدیر فنی':'کد پرسنلی: '+currentUser.username)),React.createElement('button',{className:'logout-btn',onClick:logout},'خروج'))
     ),
     !loaded?React.createElement('div',{className:'empty'},'در حال بارگذاری اطلاعات...'):(role==='tech'?React.createElement(TechView,{tasks,saveTasks,showToast,currentUser,refreshTasks:loadTasks}):React.createElement(ManagerView,{tasks,updateTask:updateManagerTask,showToast,refreshTasks:loadTasks,managerLoading,lastUpdated})),
