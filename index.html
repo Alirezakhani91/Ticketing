@@ -238,9 +238,33 @@
   .mini-fill{height:100%;border-radius:99px;background:var(--accent);}
   .leader-total{text-align:left;font-weight:800;font-size:13px;}
   .leader-total span{display:block;font-size:9px;color:var(--ink-soft);font-weight:500;}
-  .store-table-wrap{overflow:auto;max-height:360px;}
-  .store-table{min-width:520px;}
+  .store-table-wrap{overflow:auto;max-height:520px;}
+  .store-table{min-width:760px;}
+  .store-summary-row{cursor:pointer;transition:background .18s ease;}
+  .store-summary-row:hover,.store-summary-row.expanded{background:#f7faf8;}
+  .store-summary-row td:first-child{font-weight:800;color:var(--accent);}
+  .store-expand-cell{white-space:nowrap;min-width:150px;}
+  .store-main-ticket{display:inline-block;font-size:10.5px;font-weight:900;color:var(--accent);direction:ltr;}
+  .store-expand-icon{display:inline-flex;width:22px;height:22px;border-radius:7px;align-items:center;justify-content:center;background:var(--accent-soft);color:var(--accent);font-size:12px;margin-left:7px;transition:transform .18s ease;}
+  .store-summary-row.expanded .store-expand-icon{transform:rotate(180deg);}
+  .store-detail-row td{padding:0!important;background:#fbfcfb;}
+  .store-ticket-panel{padding:14px 16px 18px;border-bottom:1px solid var(--line);}
+  .store-ticket-panel-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:10px;}
+  .store-ticket-panel-head b{font-size:12px;}.store-ticket-panel-head span{font-size:10px;color:var(--ink-soft);}
+  .ticket-detail-list{display:flex;flex-direction:column;gap:8px;}
+  .ticket-detail-item{display:grid;grid-template-columns:145px 105px 135px minmax(180px,1fr) 110px 110px;gap:10px;align-items:start;background:#fff;border:1px solid var(--line);border-radius:11px;padding:11px 12px;}
+  .ticket-detail-item>div{min-width:0;}
+  .ticket-detail-label{display:block;font-size:8.5px;color:var(--ink-soft);margin-bottom:3px;}
+  .ticket-detail-value{display:block;font-size:10.5px;font-weight:700;line-height:1.7;word-break:break-word;}
+  .ticket-detail-number{font-size:11px;font-weight:900;color:var(--accent);direction:ltr;text-align:right;}
+  .ticket-extra{grid-column:1 / -1;border-top:1px dashed var(--line);padding-top:8px;margin-top:2px;font-size:10px;color:var(--ink-soft);line-height:1.8;}
+  .ticket-extra b{color:var(--ink);}
   .status-pill{display:inline-flex;padding:3px 8px;border-radius:99px;font-size:9.5px;font-weight:700;}
+  @media(max-width:760px){
+    .store-table{min-width:720px;}
+    .ticket-detail-item{grid-template-columns:1fr 1fr;}
+    .ticket-extra{grid-column:1 / -1;}
+  }
   .status-good{background:var(--accent-soft);color:var(--accent);}.status-warn{background:var(--amber-soft);color:var(--amber);}.status-bad{background:var(--red-soft);color:var(--red);}
   .attention-list{display:flex;flex-direction:column;gap:8px;}
   .attention{border:1px solid var(--line);border-radius:10px;padding:10px 11px;display:flex;justify-content:space-between;gap:10px;align-items:center;}
@@ -1035,6 +1059,7 @@ function ReportView({tasks,onRefresh,loading,lastUpdated}){
   const [type,setType]=useState('all');
   const [status,setStatus]=useState('all');
   const [work,setWork]=useState('all');
+  const [expandedStore,setExpandedStore]=useState('');
 
   const allDates=[...new Set(tasks.map(ticketDate).filter(Boolean))].sort();
   const today=normalizeFaDigits(new Date().toLocaleDateString('fa-IR'));
@@ -1121,8 +1146,8 @@ function ReportView({tasks,onRefresh,loading,lastUpdated}){
   const storeMap={};
   relevant.forEach(t=>{
     const k=String(t.storeCode||'نامشخص');
-    if(!storeMap[k])storeMap[k]={store:k,name:t.storeName||('فروشگاه '+k),region:t.region||'',total:0,internal:0,outsourced:0,pending:0};
-    const x=storeMap[k];x.total++;
+    if(!storeMap[k])storeMap[k]={store:k,name:t.storeName||('فروشگاه '+k),region:t.region||'',total:0,internal:0,outsourced:0,pending:0,tickets:[]};
+    const x=storeMap[k];x.total++;x.tickets.push(t);
     if(t.type==='internal')x.internal++;
     if(t.type==='outsourced')x.outsourced++;
     if(!t.reviewStatus||t.reviewStatus==='pending')x.pending++;
@@ -1209,19 +1234,76 @@ function ReportView({tasks,onRefresh,loading,lastUpdated}){
     h('div',{className:'dash-card'},h('div',{className:'dash-card-head'},h('div',null,h('h3',null,'علل اصلی برون‌سپاری'),h('p',null,'موانع پرتکرار اجرای داخلی'))),reasonRows.length?h(ChartBox,{type:'bar',data:reasonData,options:barOptions}):h('div',{className:'dash-empty'},'برون‌سپاری ثبت نشده است'))
   );
 
-  const storeTrs=storeRows.map((r,i)=>{
+  const detailStatus=(t)=>{
+    const s=t.reviewStatus||'pending';
+    if(s==='reviewed')return {label:'بررسی‌شده',cls:'status-good'};
+    if(s==='rejected')return {label:'ردشده',cls:'status-bad'};
+    if(s==='cancelled')return {label:'لغوشده',cls:'status-bad'};
+    return {label:'در انتظار',cls:'status-warn'};
+  };
+  const formatParts=(parts)=>Array.isArray(parts)&&parts.length?parts.filter(p=>p&&p.name).map(p=>p.name+' ×'+(p.qty||1)).join('، '):'';
+  const storeTrs=[];
+  storeRows.forEach((r)=>{
     const rate=pct(r.outsourced,r.total);
     const cls=r.pending>2||rate>=60?'status-bad':r.pending>0||rate>=35?'status-warn':'status-good';
     const lab=cls==='status-bad'?'نیازمند توجه':cls==='status-warn'?'قابل پیگیری':'عادی';
-    return h('tr',{key:r.store},h('td',null,i+1),h('td',null,h('b',null,r.store),h('div',{className:'store-submeta'},r.name)),h('td',null,r.region||'—'),h('td',null,r.total),h('td',null,r.internal),h('td',null,r.outsourced),h('td',null,r.pending),h('td',null,h('span',{className:'status-pill '+cls},lab)));
+    const isOpen=expandedStore===r.store;
+    const sortedTickets=[...(r.tickets||[])].sort((a,b)=>String(b.createdAt||'').localeCompare(String(a.createdAt||''))||Number(b.rowNumber||0)-Number(a.rowNumber||0));
+    storeTrs.push(h('tr',{
+      key:'store-'+r.store,
+      className:'store-summary-row'+(isOpen?' expanded':''),
+      onClick:()=>setExpandedStore(isOpen?'':r.store),
+      title:'برای مشاهده تیکت‌های این فروشگاه کلیک کنید'
+    },
+      h('td',{className:'store-expand-cell'},h('span',{className:'store-expand-icon'},'⌄'),h('span',{className:'store-main-ticket'},sortedTickets[0]?(sortedTickets[0].ticketNumber||('DM-'+String(Math.max(1,(sortedTickets[0].rowNumber||1)-1)).padStart(7,'0'))):'—'),h('div',{className:'store-submeta'},r.total+' تیکت ثبت‌شده')),
+      h('td',null,h('b',null,r.store),h('div',{className:'store-submeta'},r.name)),
+      h('td',null,r.region||'—'),
+      h('td',null,r.total),
+      h('td',null,r.internal),
+      h('td',null,r.outsourced),
+      h('td',null,r.pending),
+      h('td',null,h('span',{className:'status-pill '+cls},lab))
+    ));
+    if(isOpen){
+      const details=sortedTickets.map((t)=>{
+        const st=detailStatus(t);
+        const issue=[t.level1,Array.isArray(t.level2)?t.level2.join('، '):t.level2,t.otherText].filter(Boolean).join(' — ');
+        const consumed=formatParts(t.consumedParts);
+        const hot=formatParts(t.hotParts);
+        const completion=formatParts(t.completionParts);
+        const extras=[];
+        if(consumed)extras.push('قطعات مصرفی: '+consumed);
+        if(hot)extras.push('قطعات داغی/معیوب: '+hot);
+        if(t.outsourceReason)extras.push('علت برون‌سپاری: '+t.outsourceReason);
+        if(t.completionNote)extras.push('شرح پایان کار: '+t.completionNote);
+        if(completion)extras.push('قطعات پایان کار: '+completion);
+        if(t.managerNote)extras.push('یادداشت مدیر: '+t.managerNote);
+        return h('div',{className:'ticket-detail-item',key:t.id||t.ticketNumber||t.rowNumber},
+          h('div',null,h('span',{className:'ticket-detail-label'},'شماره تیکت'),h('span',{className:'ticket-detail-number'},t.ticketNumber||('DM-'+String(Math.max(1,(t.rowNumber||1)-1)).padStart(7,'0')))),
+          h('div',null,h('span',{className:'ticket-detail-label'},'تاریخ و ساعت'),h('span',{className:'ticket-detail-value'},(t.dateText||ticketDate(t)||'—')+' '+(t.timeText||''))),
+          h('div',null,h('span',{className:'ticket-detail-label'},'کارشناس فنی'),h('span',{className:'ticket-detail-value'},t.technician||'—')),
+          h('div',null,h('span',{className:'ticket-detail-label'},'خرابی یا خدمت ثبت‌شده'),h('span',{className:'ticket-detail-value'},issue||'جزئیات تکمیلی ثبت نشده')),
+          h('div',null,h('span',{className:'ticket-detail-label'},'نحوه انجام'),h('span',{className:'ticket-detail-value'},t.type==='outsourced'?'برون‌سپاری':'درون‌سپاری')),
+          h('div',null,h('span',{className:'ticket-detail-label'},'وضعیت بررسی'),h('span',{className:'status-pill '+st.cls},st.label)),
+          extras.length?h('div',{className:'ticket-extra'},h('b',null,'جزئیات بیشتر: '),extras.join(' | ')):null
+        );
+      });
+      storeTrs.push(h('tr',{key:'details-'+r.store,className:'store-detail-row'},
+        h('td',{colSpan:8},h('div',{className:'store-ticket-panel'},
+          h('div',{className:'store-ticket-panel-head'},h('b',null,'تیکت‌های '+r.name),h('span',null,sortedTickets.length+' مورد؛ شماره تیکت جایگزین شماره ردیف شده است')),
+          h('div',{className:'ticket-detail-list'},...details)
+        ))
+      ));
+    }
   });
   const storesTable=h('div',{className:'dash-card'},
-    h('div',{className:'dash-card-head'},h('div',null,h('h3',null,'فروشگاه‌های پرتیکت'),h('p',null,'فروشگاه‌هایی که بیشترین حجم درخواست را داشته‌اند'))),
+    h('div',{className:'dash-card-head'},h('div',null,h('h3',null,'فروشگاه‌های پرتیکت'),h('p',null,'برای مشاهده شماره و جزئیات تیکت‌ها روی هر ردیف کلیک کنید'))),
     h('div',{className:'store-table-wrap'},h('table',{className:'store-table'},
-      h('thead',null,h('tr',null,h('th',null,'رتبه'),h('th',null,'فروشگاه'),h('th',null,'منطقه'),h('th',null,'کل'),h('th',null,'درون‌سپاری'),h('th',null,'برون‌سپاری'),h('th',null,'در انتظار'),h('th',null,'وضعیت'))),
+      h('thead',null,h('tr',null,h('th',null,'شماره تیکت'),h('th',null,'فروشگاه'),h('th',null,'منطقه'),h('th',null,'کل'),h('th',null,'درون‌سپاری'),h('th',null,'برون‌سپاری'),h('th',null,'در انتظار'),h('th',null,'وضعیت'))),
       h('tbody',null,...storeTrs)
     ))
   );
+
 
   return h(React.Fragment,null,head,filters,kpis,overview,people,regionsSection,patterns,storesTable);
 }
@@ -1473,7 +1555,7 @@ function App(){
 
   return React.createElement('div',{className:'wrap'},
     React.createElement('div',{className:'top'},
-      React.createElement('div',{className:'brand'},React.createElement('span',{className:'dot'}),React.createElement('div',null,React.createElement('h1',null,'پشتیبانی فنی فروشگاه‌ها'),React.createElement('span',null,(role==='tech'?'محیط نیروی فنی':'مرکز کنترل مدیریت فنی')+' • نسخه 4.0'))),
+      React.createElement('div',{className:'brand'},React.createElement('span',{className:'dot'}),React.createElement('div',null,React.createElement('h1',null,'پشتیبانی فنی فروشگاه‌ها'),React.createElement('span',null,(role==='tech'?'محیط نیروی فنی':'مرکز کنترل مدیریت فنی')+' • نسخه 4.1'))),
       React.createElement('div',{className:'user-bar'},React.createElement('div',{className:'user-info'},React.createElement('b',null,currentUser.name),React.createElement('span',null,role==='manager'?'مدیر فنی':'کد پرسنلی: '+currentUser.username)),React.createElement('button',{className:'logout-btn',onClick:logout},'خروج'))
     ),
     !loaded?React.createElement('div',{className:'empty'},'در حال بارگذاری اطلاعات...'):(role==='tech'?React.createElement(TechView,{tasks,saveTasks,showToast,currentUser,refreshTasks:loadTasks}):React.createElement(ManagerView,{tasks,updateTask:updateManagerTask,showToast,refreshTasks:loadTasks,managerLoading,lastUpdated})),
