@@ -6,8 +6,8 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<title>پلتفرم پشتیبانی فنی فروشگاه‌ها - v3.6</title>
-<!-- Retry-safe mobile login build: 3.6 -->
+<title>پلتفرم پشتیبانی فنی فروشگاه‌ها - v4.0</title>
+<!-- Ticket numbering and technician edit/cancel build: 4.0 -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
@@ -143,6 +143,15 @@
   .task-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:6px;}
   .task-store{font-weight:800;font-size:13.5px;}
   .task-meta{font-size:11px;color:var(--ink-soft);margin-top:2px;}
+  .ticket-number{display:inline-flex;align-items:center;direction:ltr;background:#eef1ef;color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:4px 8px;font-size:10px;font-weight:800;letter-spacing:.3px;margin-bottom:5px;}
+  .ticket-number.pending-number{direction:rtl;color:var(--ink-soft);font-weight:600;letter-spacing:0;}
+  .r-cancelled{background:#eceeed;color:#59605c;}
+  .cancelled-box{background:#f0f1f0;border:1px solid #dde0de;border-radius:9px;padding:9px 11px;font-size:11.5px;color:#59605c;margin-top:8px;line-height:1.9;}
+  .ticket-lock{font-size:10.5px;color:var(--ink-soft);background:#fafafa;border:1px dashed var(--line);border-radius:8px;padding:7px 9px;margin-top:8px;}
+  .tech-edit-panel{margin-top:11px;padding-top:12px;border-top:1px solid var(--line);}
+  .tech-edit-store{background:#fafafa;border:1px solid var(--line);border-radius:11px;padding:11px;margin-bottom:12px;}
+  .tech-edit-store input{margin-bottom:8px;}
+  .danger-confirm{background:var(--red-soft)!important;color:var(--red)!important;border-color:#efc9c4!important;}
   .task-desc{font-size:12.5px;color:var(--ink);margin:8px 0;line-height:2;}
   .task-desc b{font-weight:700;}
   .badge{font-size:10.5px;font-weight:700;padding:3px 10px;border-radius:999px;white-space:nowrap;}
@@ -367,6 +376,28 @@ async function sendManagerUpdate(ticket, token){
   });
 }
 
+async function sendTechnicianUpdate(ticket, draft, store, token){
+  await fetch(SHEET_URL, {
+    method:'POST', mode:'no-cors', headers:{'Content-Type':'text/plain'},
+    body:JSON.stringify({
+      action:'technicianUpdateTicket', token:String(token||''), rowNumber:ticket.rowNumber,
+      storeCode:store.code, type:draft.type, level1:draft.level1||'', level2:draft.level2||[],
+      otherText:draft.otherText||'', consumedParts:draft.consumedParts||[], hotParts:draft.hotParts||[],
+      outsourceReason:draft.outsourceReason||''
+    })
+  });
+}
+
+async function sendTechnicianCancel(ticket, token){
+  await fetch(SHEET_URL, {
+    method:'POST', mode:'no-cors', headers:{'Content-Type':'text/plain'},
+    body:JSON.stringify({
+      action:'technicianCancelTicket', token:String(token||''), rowNumber:ticket.rowNumber,
+      cancelReason:'لغو توسط کارشناس فنی'
+    })
+  });
+}
+
 async function sendToSheet(t){
   try{
     const now = new Date(t.createdAt || Date.now());
@@ -396,6 +427,7 @@ async function sendToSheet(t){
         region: t.region || '',
         workStatus: t.workStatus || '',
         completedAt: t.completedAt || '',
+        ticketNumber: t.ticketNumber || '',
         token: t.token || '',
       })
     });
@@ -437,6 +469,14 @@ const OUTSOURCE_REASONS = [
 ];
 
 function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,7); }
+function makeTicketNumber(){
+  const d=new Date();
+  const p=n=>String(n).padStart(2,'0');
+  const date=String(d.getFullYear()).slice(-2)+p(d.getMonth()+1)+p(d.getDate());
+  const time=p(d.getHours())+p(d.getMinutes())+p(d.getSeconds());
+  const random=String(Math.floor(10+Math.random()*90));
+  return 'DM-'+date+'-'+time+'-'+random;
+}
 function todayStr(){ return new Date().toLocaleDateString('fa-IR'); }
 function dateKey(iso){ return new Date(iso).toLocaleDateString('fa-IR'); }
 function timeStr(iso){ return new Date(iso).toLocaleTimeString('fa-IR',{hour:'2-digit',minute:'2-digit'}); }
@@ -586,6 +626,7 @@ function OutsourceOpenItem({t,onComplete}){
   return React.createElement('div',{className:'outsource-open-card'},
     React.createElement('div',{className:'outsource-open-head'},
       React.createElement('div',null,
+        React.createElement('div',{className:'ticket-number'+(t.ticketNumber?'':' pending-number')},t.ticketNumber||'در حال صدور شماره تیکت'),
         React.createElement('b',null,t.storeName||('فروشگاه '+t.storeCode)),
         React.createElement('span',null,'کد '+t.storeCode+(t.region?' · '+t.region:'')+' · '+(t.level1||'بدون عنوان'))
       ),
@@ -663,7 +704,7 @@ function TechView({ tasks, saveTasks, showToast, currentUser, refreshTasks }){
       hotParts:normalizePartsQty(draft.hotParts)
     };
     const newTicket={
-      id:uid(),storeCode:storeInfo.code,storeName:storeInfo.name,region:storeInfo.region,
+      id:uid(),ticketNumber:makeTicketNumber(),storeCode:storeInfo.code,storeName:storeInfo.name,region:storeInfo.region,
       technician:name.trim(),technicianCode:currentUser.username,token:currentUser.token,
       createdAt,reviewStatus:'pending',managerNote:'',
       workStatus:cleanDraft.type==='outsourced'?'open':'completed',
@@ -690,10 +731,34 @@ function TechView({ tasks, saveTasks, showToast, currentUser, refreshTasks }){
     setTimeout(refreshTasks,700);setTimeout(refreshTasks,2200);
   };
 
+  const editOwnTicket=async(ticket,updatedDraft,updatedStore)=>{
+    if(!ticket.rowNumber){showToast('تیکت هنوز با سرور همگام نشده است');refreshTasks();return;}
+    await sendTechnicianUpdate(ticket,updatedDraft,updatedStore,currentUser.token);
+    const nextWorkStatus=updatedDraft.type==='internal'?'completed':(ticket.type==='outsourced'&&ticket.workStatus==='completed'?'completed':'open');
+    await saveTasks(list=>list.map(x=>x.id===ticket.id?{
+      ...x,...updatedDraft,storeCode:updatedStore.code,storeName:updatedStore.name,region:updatedStore.region,
+      workStatus:nextWorkStatus,managerNote:'',reviewStatus:'pending'
+    }:x));
+    showToast('تیکت '+(ticket.ticketNumber||'')+' ویرایش شد');
+    setTimeout(refreshTasks,700);setTimeout(refreshTasks,2200);
+  };
+
+  const cancelOwnTicket=async(ticket)=>{
+    if(!ticket.rowNumber){showToast('تیکت هنوز با سرور همگام نشده است');refreshTasks();return;}
+    await sendTechnicianCancel(ticket,currentUser.token);
+    const cancelledAt=new Date().toISOString();
+    await saveTasks(list=>list.map(x=>x.id===ticket.id?{
+      ...x,reviewStatus:'cancelled',workStatus:'cancelled',managerNote:'لغو توسط کارشناس فنی',
+      cancelledAt,cancelledBy:name
+    }:x));
+    showToast('تیکت '+(ticket.ticketNumber||'')+' لغو شد');
+    setTimeout(refreshTasks,700);setTimeout(refreshTasks,2200);
+  };
+
   const endVisit=()=>{setVisitActive(false);setStoreCode('');setStoreInfo(null);setStoreError('');setAskMore(false);setVisitCount(0);};
   const addAnother=()=>{setAskMore(false);setDraft(emptyDraft());};
   const mine=tasks.filter(t=>String(t.technicianCode||'')===String(currentUser.username)||t.technician===name).slice(0,20);
-  const openOutsources=tasks.filter(t=>(String(t.technicianCode||'')===String(currentUser.username)||t.technician===name)&&t.type==='outsourced'&&t.workStatus!=='completed');
+  const openOutsources=tasks.filter(t=>(String(t.technicianCode||'')===String(currentUser.username)||t.technician===name)&&t.type==='outsourced'&&t.workStatus!=='completed'&&t.reviewStatus!=='cancelled');
 
   const storeResult=storeLoading
     ? React.createElement('div',{className:'store-search-status loading'},'در حال شناسایی فروشگاه...')
@@ -722,7 +787,7 @@ function TechView({ tasks, saveTasks, showToast, currentUser, refreshTasks }){
         React.createElement('button',{className:'btn btn-primary',disabled:storeLoading||!storeInfo,onClick:startVisit},'ادامه ثبت کار')
       ),
       openSection,
-      React.createElement('div',{className:'card'},React.createElement('h3',null,'کارهای اخیر من'),mine.length===0?React.createElement('div',{className:'empty'},'هنوز کاری ثبت نکرده‌اید'):mine.map(t=>React.createElement(TaskItem,{key:t.id,t})))
+      React.createElement('div',{className:'card'},React.createElement('h3',null,'کارهای اخیر من'),mine.length===0?React.createElement('div',{className:'empty'},'هنوز کاری ثبت نکرده‌اید'):mine.map(t=>React.createElement(TechnicianTicketItem,{key:t.id,t,currentUser,showToast,onEdit:editOwnTicket,onCancel:cancelOwnTicket})))
     );
   }
 
@@ -740,7 +805,7 @@ function TechView({ tasks, saveTasks, showToast, currentUser, refreshTasks }){
           React.createElement('button',{className:'btn btn-primary',disabled:submitting||!validDraft(draft),onClick:submitItem},submitting?'در حال ثبت...':'ثبت این کار')
         ),
     openSection,
-    React.createElement('div',{className:'card'},React.createElement('h3',null,'کارهای اخیر من'),mine.length===0?React.createElement('div',{className:'empty'},'هنوز کاری ثبت نکرده‌اید'):mine.map(t=>React.createElement(TaskItem,{key:t.id,t})))
+    React.createElement('div',{className:'card'},React.createElement('h3',null,'کارهای اخیر من'),mine.length===0?React.createElement('div',{className:'empty'},'هنوز کاری ثبت نکرده‌اید'):mine.map(t=>React.createElement(TechnicianTicketItem,{key:t.id,t,currentUser,showToast,onEdit:editOwnTicket,onCancel:cancelOwnTicket})))
   );
 }
 
@@ -755,33 +820,138 @@ function ticketSummary(t){
   return chunks.join(' — ');
 }
 
-function TaskItem({t,onReview,onReject,onEdit}){
+function TechnicianTicketItem({t,currentUser,showToast,onEdit,onCancel}){
   const [editing,setEditing]=useState(false);
   const [draft,setDraft]=useState(null);
-  const [note,setNote]=useState('');
-  const beginEdit=()=>{setDraft({type:t.type,level1:t.level1||'',level2:t.level2||[],otherText:t.otherText||'',outsourceReason:t.outsourceReason||'',consumedParts:t.consumedParts||[],hotParts:t.hotParts||[]});setEditing(true);};
-  const saveEdit=()=>{if(!validDraft(draft))return;onEdit(t.id,{...draft,consumedParts:normalizePartsQty(draft.consumedParts),hotParts:normalizePartsQty(draft.hotParts)});setEditing(false);};
-  const rlabel=t.reviewStatus==='reviewed'?'بررسی‌شده':t.reviewStatus==='rejected'?'رد شده':'در انتظار بررسی';
-  const rcls=t.reviewStatus==='reviewed'?'r-reviewed':t.reviewStatus==='rejected'?'r-rejected':'r-pending';
+  const [editStoreCode,setEditStoreCode]=useState(t.storeCode||'');
+  const [editStoreInfo,setEditStoreInfo]=useState(t.storeCode?{code:t.storeCode,name:t.storeName||'',region:t.region||''}:null);
+  const [storeLoading,setStoreLoading]=useState(false);
+  const [storeError,setStoreError]=useState('');
+  const [saving,setSaving]=useState(false);
+  const normalizedCode=normalizeStoreCodeClient(editStoreCode);
+  const reviewStatus=t.reviewStatus||'pending';
+  const canChange=reviewStatus==='pending';
+
+  useEffect(()=>{
+    if(!editing)return;
+    if(editStoreInfo&&normalizeStoreCodeClient(editStoreInfo.code)===normalizedCode)return;
+    setEditStoreInfo(null);setStoreError('');
+    if(!normalizedCode)return;
+    let cancelled=false;
+    const timer=setTimeout(async()=>{
+      setStoreLoading(true);
+      try{
+        const result=await lookupStoreWithSheet(normalizedCode,currentUser.token);
+        if(cancelled)return;
+        if(result&&result.success&&result.store){setEditStoreInfo(result.store);setStoreError('');}
+        else{setEditStoreInfo(null);setStoreError((result&&result.message)||'کد فروشگاه پیدا نشد');}
+      }catch(e){if(!cancelled){setEditStoreInfo(null);setStoreError('ارتباط با فهرست فروشگاه‌ها برقرار نشد');}}
+      finally{if(!cancelled)setStoreLoading(false);}
+    },450);
+    return()=>{cancelled=true;clearTimeout(timer);};
+  },[editing,normalizedCode,currentUser.token]);
+
+  const beginEdit=()=>{
+    if(!t.rowNumber){showToast('چند ثانیه صبر کنید تا تیکت با سرور همگام شود');return;}
+    setDraft({type:t.type,level1:t.level1||'',level2:t.level2||[],otherText:t.otherText||'',outsourceReason:t.outsourceReason||'',consumedParts:(t.consumedParts||[]).map(x=>({...x,qty:String(x.qty||'')})),hotParts:(t.hotParts||[]).map(x=>({...x,qty:String(x.qty||'')}))});
+    setEditStoreCode(t.storeCode||'');
+    setEditStoreInfo({code:t.storeCode,name:t.storeName||'',region:t.region||''});
+    setStoreError('');setEditing(true);
+  };
+
+  const saveEdit=async()=>{
+    if(!validDraft(draft)||!editStoreInfo||normalizeStoreCodeClient(editStoreInfo.code)!==normalizedCode)return;
+    setSaving(true);
+    try{
+      const clean={...draft,consumedParts:normalizePartsQty(draft.consumedParts),hotParts:normalizePartsQty(draft.hotParts)};
+      await onEdit(t,clean,editStoreInfo);setEditing(false);
+    }finally{setSaving(false);}
+  };
+
+  const cancelTicket=async()=>{
+    if(!t.rowNumber){showToast('چند ثانیه صبر کنید تا تیکت با سرور همگام شود');return;}
+    if(!window.confirm('تیکت '+(t.ticketNumber||'')+' لغو شود؟ تیکت حذف نمی‌شود و با وضعیت «لغو شده» در سوابق باقی می‌ماند.'))return;
+    setSaving(true);try{await onCancel(t);}finally{setSaving(false);}
+  };
+
+  const statusLabel=reviewStatus==='reviewed'?'بررسی‌شده':reviewStatus==='rejected'?'رد شده':reviewStatus==='cancelled'?'لغو شده':'در انتظار بررسی';
+  const statusClass=reviewStatus==='reviewed'?'r-reviewed':reviewStatus==='rejected'?'r-rejected':reviewStatus==='cancelled'?'r-cancelled':'r-pending';
   const workDone=t.type!=='outsourced'||t.workStatus==='completed';
+  const lookupResult=storeLoading
+    ? React.createElement('div',{className:'store-search-status loading'},'در حال شناسایی فروشگاه...')
+    : editStoreInfo
+      ? React.createElement('div',{className:'store-found'},React.createElement('div',null,React.createElement('b',null,editStoreInfo.name),React.createElement('span',null,'منطقه: '+editStoreInfo.region)),React.createElement('div',{className:'store-code-badge'},editStoreInfo.code))
+      : storeError?React.createElement('div',{className:'store-invalid'},storeError):null;
 
   return React.createElement('div',{className:'task'},
     React.createElement('div',{className:'task-top'},
       React.createElement('div',null,
+        React.createElement('div',{className:'ticket-number'+(t.ticketNumber?'':' pending-number')},t.ticketNumber||'در حال صدور شماره تیکت'),
+        React.createElement('div',{className:'task-store'},t.storeName||('فروشگاه '+t.storeCode)),
+        React.createElement('div',{className:'task-meta'},'کد '+t.storeCode+(t.region?' · '+t.region:'')+' · '+(t.dateText||dateKey(t.createdAt))+' '+(t.timeText||timeStr(t.createdAt)))
+      ),
+      React.createElement('div',null,
+        React.createElement('span',{className:'badge '+(t.type==='internal'?'b-internal':'b-outsourced')},t.type==='internal'?'درون‌سپاری':'برون‌سپاری'),
+        t.type==='outsourced'&&reviewStatus!=='cancelled'&&React.createElement('span',{className:'work-badge '+(workDone?'work-done':'work-open')},workDone?'تکمیل‌شده':'در حال انجام'),
+        React.createElement('span',{className:'review-badge '+statusClass},statusLabel)
+      )
+    ),
+    !editing&&React.createElement('div',{className:'task-desc'},ticketSummary(t)),
+    t.completionNote&&!editing&&React.createElement('div',{className:'completion-note'},React.createElement('b',null,'پایان کار: '),t.completionNote),
+    reviewStatus==='cancelled'&&!editing&&React.createElement('div',{className:'cancelled-box'},React.createElement('b',null,'این تیکت توسط کارشناس لغو شده است.'),t.cancelledAt?React.createElement('div',null,'زمان لغو: '+new Date(t.cancelledAt).toLocaleString('fa-IR')):null),
+    t.managerNote&&reviewStatus!=='cancelled'&&!editing&&React.createElement('div',{className:'note'},'📝 '+t.managerNote),
+    editing&&React.createElement('div',{className:'tech-edit-panel'},
+      React.createElement('div',{className:'tech-edit-store'},
+        React.createElement('label',null,'اصلاح کد فروشگاه'),
+        React.createElement('input',{value:editStoreCode,onChange:e=>setEditStoreCode(normalizeStoreCodeClient(e.target.value)),placeholder:'کد فروشگاه یا انبار',autoComplete:'off'}),
+        lookupResult
+      ),
+      React.createElement(TicketFields,{draft,setDraft}),
+      React.createElement('div',{className:'actions'},
+        React.createElement('button',{className:'a-btn a-ok',disabled:saving||storeLoading||!editStoreInfo||!validDraft(draft),onClick:saveEdit},saving?'در حال ذخیره...':'ذخیره ویرایش'),
+        React.createElement('button',{className:'a-btn',disabled:saving,onClick:()=>setEditing(false)},'انصراف')
+      )
+    ),
+    !editing&&canChange&&React.createElement('div',{className:'actions'},
+      React.createElement('button',{className:'a-btn a-edit',disabled:saving||!t.rowNumber,onClick:beginEdit},'✎ ویرایش تیکت'),
+      React.createElement('button',{className:'a-btn a-reject danger-confirm',disabled:saving||!t.rowNumber,onClick:cancelTicket},'✕ لغو تیکت')
+    ),
+    !editing&&canChange&&!t.rowNumber&&React.createElement('div',{className:'ticket-lock'},'در حال همگام‌سازی؛ پس از دریافت شماره و ردیف سرور، ویرایش و لغو فعال می‌شود.'),
+    !editing&&!canChange&&reviewStatus!=='cancelled'&&React.createElement('div',{className:'ticket-lock'},'این تیکت توسط مدیر فنی بررسی شده و دیگر قابل ویرایش یا لغو نیست.')
+  );
+}
+
+function TaskItem({t,onReview,onReject,onEdit}){
+  const [editing,setEditing]=useState(false);
+  const [draft,setDraft]=useState(null);
+  const [note,setNote]=useState('');
+  const reviewStatus=t.reviewStatus||'pending';
+  const beginEdit=()=>{setDraft({type:t.type,level1:t.level1||'',level2:t.level2||[],otherText:t.otherText||'',outsourceReason:t.outsourceReason||'',consumedParts:t.consumedParts||[],hotParts:t.hotParts||[]});setEditing(true);};
+  const saveEdit=()=>{if(!validDraft(draft))return;onEdit(t.id,{...draft,consumedParts:normalizePartsQty(draft.consumedParts),hotParts:normalizePartsQty(draft.hotParts)});setEditing(false);};
+  const rlabel=reviewStatus==='reviewed'?'بررسی‌شده':reviewStatus==='rejected'?'رد شده':reviewStatus==='cancelled'?'لغو شده':'در انتظار بررسی';
+  const rcls=reviewStatus==='reviewed'?'r-reviewed':reviewStatus==='rejected'?'r-rejected':reviewStatus==='cancelled'?'r-cancelled':'r-pending';
+  const workDone=t.type!=='outsourced'||t.workStatus==='completed';
+  const managerCanAct=!!onReview&&reviewStatus==='pending';
+
+  return React.createElement('div',{className:'task'},
+    React.createElement('div',{className:'task-top'},
+      React.createElement('div',null,
+        React.createElement('div',{className:'ticket-number'+(t.ticketNumber?'':' pending-number')},t.ticketNumber||'شماره قدیمی: '+('DM-'+String(Math.max(1,(t.rowNumber||1)-1)).padStart(7,'0'))),
         React.createElement('div',{className:'task-store'},t.storeName||('فروشگاه '+t.storeCode)),
         React.createElement('div',{className:'task-meta'},'کد '+t.storeCode+(t.region?' · '+t.region:'')+' · '+t.technician+' · '+(t.dateText||dateKey(t.createdAt))+' '+(t.timeText||timeStr(t.createdAt)))
       ),
       React.createElement('div',null,
         React.createElement('span',{className:'badge '+(t.type==='internal'?'b-internal':'b-outsourced')},t.type==='internal'?'درون‌سپاری':'برون‌سپاری'),
-        t.type==='outsourced'&&React.createElement('span',{className:'work-badge '+(workDone?'work-done':'work-open')},workDone?'تکمیل‌شده':'در حال انجام'),
+        t.type==='outsourced'&&reviewStatus!=='cancelled'&&React.createElement('span',{className:'work-badge '+(workDone?'work-done':'work-open')},workDone?'تکمیل‌شده':'در حال انجام'),
         onReview&&React.createElement('span',{className:'review-badge '+rcls},rlabel)
       )
     ),
     !editing&&React.createElement('div',{className:'task-desc'},ticketSummary(t)),
     t.completionNote&&!editing&&React.createElement('div',{className:'completion-note'},React.createElement('b',null,'پایان کار: '),t.completionNote,t.completedAt?React.createElement('div',{className:'store-submeta'},'ثبت پایان: '+new Date(t.completedAt).toLocaleString('fa-IR')):null,t.completionParts&&t.completionParts.length?React.createElement('div',{className:'store-submeta'},'قطعات پایان کار: '+t.completionParts.map(p=>p.name+' ×'+p.qty).join('، ')):null),
-    t.managerNote&&!editing&&React.createElement('div',{className:'note'},'📝 '+t.managerNote),
+    reviewStatus==='cancelled'&&!editing&&React.createElement('div',{className:'cancelled-box'},React.createElement('b',null,'لغوشده توسط کارشناس فنی'),t.cancelledBy?React.createElement('div',null,'لغو توسط: '+t.cancelledBy):null,t.cancelledAt?React.createElement('div',null,'زمان لغو: '+new Date(t.cancelledAt).toLocaleString('fa-IR')):null),
+    t.managerNote&&reviewStatus!=='cancelled'&&!editing&&React.createElement('div',{className:'note'},'📝 '+t.managerNote),
     editing&&React.createElement('div',{style:{marginTop:'10px'}},React.createElement(TicketFields,{draft,setDraft}),React.createElement('div',{className:'actions'},React.createElement('button',{className:'a-btn a-ok',disabled:!validDraft(draft),onClick:saveEdit},'ذخیره اصلاحات'),React.createElement('button',{className:'a-btn',onClick:()=>setEditing(false)},'انصراف'))),
-    onReview&&!editing&&React.createElement('div',null,
+    managerCanAct&&!editing&&React.createElement('div',null,
       React.createElement('input',{placeholder:'یادداشت مدیر (اختیاری)',value:note,onChange:e=>setNote(e.target.value),style:{marginTop:'8px'}}),
       React.createElement('div',{className:'actions'},React.createElement('button',{className:'a-btn a-ok',onClick:()=>onReview(t.id,note)},'✓ بررسی شد'),React.createElement('button',{className:'a-btn a-edit',onClick:beginEdit},'✎ اصلاح'),React.createElement('button',{className:'a-btn a-reject',onClick:()=>onReject(t.id,note)},'✕ رد کردن'))
     )
@@ -806,7 +976,7 @@ function ManagerView({ tasks, updateTask, showToast, refreshTasks, managerLoadin
     showToast('تیکت اصلاح و تأیید شد');
   };
 
-  const filtered = tasks.filter(t => {const q=storeFilter.trim().toLowerCase();return !q||String(t.storeCode||'').toLowerCase().includes(q)||String(t.storeName||'').toLowerCase().includes(q)||String(t.region||'').toLowerCase().includes(q);});
+  const filtered = tasks.filter(t => {const q=storeFilter.trim().toLowerCase();return !q||String(t.storeCode||'').toLowerCase().includes(q)||String(t.storeName||'').toLowerCase().includes(q)||String(t.region||'').toLowerCase().includes(q)||String(t.ticketNumber||'').toLowerCase().includes(q);});
   const pending = filtered.filter(t => !t.reviewStatus || t.reviewStatus==='pending');
 
   return React.createElement(React.Fragment,null,
@@ -816,7 +986,7 @@ function ManagerView({ tasks, updateTask, showToast, refreshTasks, managerLoadin
       React.createElement('button',{className:tab==='all'?'active':'',onClick:()=>setTab('all')},'همه تیکت‌ها')
     ),
     tab!=='report' && React.createElement('div',{className:'filter-row'},
-      React.createElement('input',{placeholder:'جست‌وجوی کد، نام فروشگاه یا منطقه...',value:storeFilter,onChange:e=>setStoreFilter(e.target.value)}),
+      React.createElement('input',{placeholder:'جست‌وجوی شماره تیکت، کد، نام فروشگاه یا منطقه...',value:storeFilter,onChange:e=>setStoreFilter(e.target.value)}),
       React.createElement('button',{className:'refresh-btn',onClick:refreshTasks,disabled:managerLoading},managerLoading?'در حال دریافت...':'↻ تازه‌سازی')
     ),
     tab==='pending' && (pending.length===0
@@ -831,7 +1001,7 @@ function ManagerView({ tasks, updateTask, showToast, refreshTasks, managerLoadin
 
 function normalizeFaDigits(v){return String(v||'').replace(/[۰-۹]/g,d=>'۰۱۲۳۴۵۶۷۸۹'.indexOf(d)).replace(/[٠-٩]/g,d=>'٠١٢٣٤٥٦٧٨٩'.indexOf(d));}
 function ticketDate(t){return normalizeFaDigits(t.dateText || (t.createdAt?dateKey(t.createdAt):''));}
-function reviewLabel(v){return v==='reviewed'?'بررسی‌شده':v==='rejected'?'ردشده':'در انتظار';}
+function reviewLabel(v){return v==='reviewed'?'بررسی‌شده':v==='rejected'?'ردشده':v==='cancelled'?'لغوشده':'در انتظار';}
 function pct(n,d){return d?Math.round(n/d*100):0;}
 function countBy(list,keyFn){const out={};list.forEach(x=>{const k=keyFn(x);if(k)out[k]=(out[k]||0)+1;});return out;}
 function sortedEntries(obj,limit){return Object.entries(obj).sort((a,b)=>b[1]-a[1]).slice(0,limit||999);}
@@ -894,7 +1064,8 @@ function ReportView({tasks,onRefresh,loading,lastUpdated}){
   const pending=relevant.filter(t=>!t.reviewStatus||t.reviewStatus==='pending').length;
   const reviewed=relevant.filter(t=>t.reviewStatus==='reviewed').length;
   const rejected=relevant.filter(t=>t.reviewStatus==='rejected').length;
-  const openOutsource=relevant.filter(t=>t.type==='outsourced'&&t.workStatus!=='completed').length;
+  const cancelledCount=relevant.filter(t=>t.reviewStatus==='cancelled').length;
+  const openOutsource=relevant.filter(t=>t.type==='outsourced'&&t.workStatus!=='completed'&&t.reviewStatus!=='cancelled').length;
   const completedOutsource=relevant.filter(t=>t.type==='outsourced'&&t.workStatus==='completed').length;
   const activeTech=new Set(relevant.map(t=>t.technician).filter(Boolean)).size;
   const activeStores=new Set(relevant.map(t=>String(t.storeCode||'')).filter(Boolean)).size;
@@ -960,7 +1131,7 @@ function ReportView({tasks,onRefresh,loading,lastUpdated}){
   const attention=leaders.filter(x=>x.pending>0||(x.total>=2&&x.outsourced/x.total>=.5)).slice(0,6);
 
   const typeData={labels:['درون‌سپاری','برون‌سپاری'],datasets:[{data:[internal,outsourced],backgroundColor:['#2f6f5e','#2b5a8c'],borderWidth:0,hoverOffset:5}]};
-  const reviewData={labels:['در انتظار','بررسی‌شده','ردشده'],datasets:[{data:[pending,reviewed,rejected],backgroundColor:['#b8721f','#2f6f5e','#a8382c'],borderWidth:0,hoverOffset:5}]};
+  const reviewData={labels:['در انتظار','بررسی‌شده','ردشده','لغوشده'],datasets:[{data:[pending,reviewed,rejected,cancelledCount],backgroundColor:['#b8721f','#2f6f5e','#a8382c','#7b827e'],borderWidth:0,hoverOffset:5}]};
   const donutOptions={responsive:true,maintainAspectRatio:false,cutout:'66%',plugins:{legend:{position:'bottom',labels:{usePointStyle:true,boxWidth:7,font:{size:10}}}}};
   const catData={labels:catRows.map(x=>x[0]),datasets:[{label:'تعداد',data:catRows.map(x=>x[1]),backgroundColor:'#2f6f5e',borderRadius:7,borderSkipped:false}]};
   const reasonData={labels:reasonRows.map(x=>x[0]),datasets:[{label:'تعداد',data:reasonRows.map(x=>x[1]),backgroundColor:'#2b5a8c',borderRadius:7,borderSkipped:false}]};
@@ -982,7 +1153,7 @@ function ReportView({tasks,onRefresh,loading,lastUpdated}){
     h('select',{value:region,onChange:e=>{setRegion(e.target.value);setStore('all');}},h('option',{value:'all'},'همه مناطق'),...regions.map(n=>h('option',{key:n,value:n},n))),
     h('select',{value:store,onChange:e=>setStore(e.target.value)},h('option',{value:'all'},'همه فروشگاه‌ها'),...stores.filter(s=>region==='all'||s.region===region).map(s=>h('option',{key:s.code,value:s.code},s.code+' — '+s.name.replace(/^فروشگاه\s*/,'') ))),
     h('select',{value:type,onChange:e=>setType(e.target.value)},h('option',{value:'all'},'همه انواع کار'),h('option',{value:'internal'},'درون‌سپاری'),h('option',{value:'outsourced'},'برون‌سپاری')),
-    h('select',{value:status,onChange:e=>setStatus(e.target.value)},h('option',{value:'all'},'همه وضعیت‌های بررسی'),h('option',{value:'pending'},'در انتظار بررسی'),h('option',{value:'reviewed'},'بررسی‌شده'),h('option',{value:'rejected'},'ردشده')),
+    h('select',{value:status,onChange:e=>setStatus(e.target.value)},h('option',{value:'all'},'همه وضعیت‌های بررسی'),h('option',{value:'pending'},'در انتظار بررسی'),h('option',{value:'reviewed'},'بررسی‌شده'),h('option',{value:'rejected'},'ردشده'),h('option',{value:'cancelled'},'لغوشده')),
     h('select',{value:work,onChange:e=>setWork(e.target.value)},h('option',{value:'all'},'همه وضعیت‌های انجام'),h('option',{value:'open'},'برون‌سپاری باز'),h('option',{value:'completed'},'تکمیل‌شده'))
   );
 
@@ -994,7 +1165,8 @@ function ReportView({tasks,onRefresh,loading,lastUpdated}){
     h(Kpi,{label:'برون‌سپاری تکمیل‌شده',value:completedOutsource,note:pct(completedOutsource,outsourced)+'٪ از برون‌سپاری‌ها',icon:'✅'}),
     h(Kpi,{label:'در انتظار بررسی',value:pending,note:pending?'نیازمند اقدام مدیر':'صف بررسی خالی است',icon:'🔎',tone:'amber'}),
     h(Kpi,{label:'نیروی فعال',value:activeTech,note:'در بازه انتخاب‌شده',icon:'👷'}),
-    h(Kpi,{label:'منطقه فعال',value:activeRegions,note:'دارای فعالیت ثبت‌شده',icon:'🗺️',tone:'blue'})
+    h(Kpi,{label:'منطقه فعال',value:activeRegions,note:'دارای فعالیت ثبت‌شده',icon:'🗺️',tone:'blue'}),
+    h(Kpi,{label:'تیکت لغوشده',value:cancelledCount,note:'در سوابق محفوظ است',icon:'🚫',tone:'red'})
   );
 
   if(total===0){
@@ -1301,7 +1473,7 @@ function App(){
 
   return React.createElement('div',{className:'wrap'},
     React.createElement('div',{className:'top'},
-      React.createElement('div',{className:'brand'},React.createElement('span',{className:'dot'}),React.createElement('div',null,React.createElement('h1',null,'پشتیبانی فنی فروشگاه‌ها'),React.createElement('span',null,(role==='tech'?'محیط نیروی فنی':'مرکز کنترل مدیریت فنی')+' • نسخه 3.6'))),
+      React.createElement('div',{className:'brand'},React.createElement('span',{className:'dot'}),React.createElement('div',null,React.createElement('h1',null,'پشتیبانی فنی فروشگاه‌ها'),React.createElement('span',null,(role==='tech'?'محیط نیروی فنی':'مرکز کنترل مدیریت فنی')+' • نسخه 4.0'))),
       React.createElement('div',{className:'user-bar'},React.createElement('div',{className:'user-info'},React.createElement('b',null,currentUser.name),React.createElement('span',null,role==='manager'?'مدیر فنی':'کد پرسنلی: '+currentUser.username)),React.createElement('button',{className:'logout-btn',onClick:logout},'خروج'))
     ),
     !loaded?React.createElement('div',{className:'empty'},'در حال بارگذاری اطلاعات...'):(role==='tech'?React.createElement(TechView,{tasks,saveTasks,showToast,currentUser,refreshTasks:loadTasks}):React.createElement(ManagerView,{tasks,updateTask:updateManagerTask,showToast,refreshTasks:loadTasks,managerLoading,lastUpdated})),
