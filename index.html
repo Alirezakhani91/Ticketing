@@ -6,8 +6,8 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<title>پلتفرم پشتیبانی فنی فروشگاه‌ها - v4.2</title>
-<!-- Root-cause analysis build: 4.2 -->
+<title>پلتفرم پشتیبانی فنی فروشگاه‌ها - v4.0</title>
+<!-- Ticket numbering and technician edit/cancel build: 4.0 -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
@@ -238,33 +238,9 @@
   .mini-fill{height:100%;border-radius:99px;background:var(--accent);}
   .leader-total{text-align:left;font-weight:800;font-size:13px;}
   .leader-total span{display:block;font-size:9px;color:var(--ink-soft);font-weight:500;}
-  .store-table-wrap{overflow:auto;max-height:520px;}
-  .store-table{min-width:760px;}
-  .store-summary-row{cursor:pointer;transition:background .18s ease;}
-  .store-summary-row:hover,.store-summary-row.expanded{background:#f7faf8;}
-  .store-summary-row td:first-child{font-weight:800;color:var(--accent);}
-  .store-expand-cell{white-space:nowrap;min-width:150px;}
-  .store-main-ticket{display:inline-block;font-size:10.5px;font-weight:900;color:var(--accent);direction:ltr;}
-  .store-expand-icon{display:inline-flex;width:22px;height:22px;border-radius:7px;align-items:center;justify-content:center;background:var(--accent-soft);color:var(--accent);font-size:12px;margin-left:7px;transition:transform .18s ease;}
-  .store-summary-row.expanded .store-expand-icon{transform:rotate(180deg);}
-  .store-detail-row td{padding:0!important;background:#fbfcfb;}
-  .store-ticket-panel{padding:14px 16px 18px;border-bottom:1px solid var(--line);}
-  .store-ticket-panel-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:10px;}
-  .store-ticket-panel-head b{font-size:12px;}.store-ticket-panel-head span{font-size:10px;color:var(--ink-soft);}
-  .ticket-detail-list{display:flex;flex-direction:column;gap:8px;}
-  .ticket-detail-item{display:grid;grid-template-columns:145px 105px 135px minmax(180px,1fr) 110px 110px;gap:10px;align-items:start;background:#fff;border:1px solid var(--line);border-radius:11px;padding:11px 12px;}
-  .ticket-detail-item>div{min-width:0;}
-  .ticket-detail-label{display:block;font-size:8.5px;color:var(--ink-soft);margin-bottom:3px;}
-  .ticket-detail-value{display:block;font-size:10.5px;font-weight:700;line-height:1.7;word-break:break-word;}
-  .ticket-detail-number{font-size:11px;font-weight:900;color:var(--accent);direction:ltr;text-align:right;}
-  .ticket-extra{grid-column:1 / -1;border-top:1px dashed var(--line);padding-top:8px;margin-top:2px;font-size:10px;color:var(--ink-soft);line-height:1.8;}
-  .ticket-extra b{color:var(--ink);}
+  .store-table-wrap{overflow:auto;max-height:360px;}
+  .store-table{min-width:520px;}
   .status-pill{display:inline-flex;padding:3px 8px;border-radius:99px;font-size:9.5px;font-weight:700;}
-  @media(max-width:760px){
-    .store-table{min-width:720px;}
-    .ticket-detail-item{grid-template-columns:1fr 1fr;}
-    .ticket-extra{grid-column:1 / -1;}
-  }
   .status-good{background:var(--accent-soft);color:var(--accent);}.status-warn{background:var(--amber-soft);color:var(--amber);}.status-bad{background:var(--red-soft);color:var(--red);}
   .attention-list{display:flex;flex-direction:column;gap:8px;}
   .attention{border:1px solid var(--line);border-radius:10px;padding:10px 11px;display:flex;justify-content:space-between;gap:10px;align-items:center;}
@@ -284,12 +260,6 @@
   .outsource-open-head b{font-size:13px;display:block;}
   .outsource-open-head span{font-size:10.5px;color:var(--ink-soft);}
   .completion-box{margin-top:12px;border-top:1px solid var(--line);padding-top:12px;}
-  .cause-box{margin:12px 0 14px;padding:12px;border:1px solid var(--line);border-radius:12px;background:#fafbf9;}
-  .cause-box label:first-child{margin-top:0;}
-  .cause-help{font-size:10px;color:var(--ink-soft);line-height:1.7;margin:-4px 0 8px;}
-  .cause-required{color:var(--red);font-weight:800;}
-  .cause-summary{margin-top:8px;padding:9px 10px;border-radius:9px;background:var(--accent-soft);color:var(--ink);font-size:11px;line-height:1.8;}
-  .cause-summary b{color:var(--accent);}
   .completion-note{background:var(--accent-soft);border-radius:9px;padding:8px 10px;font-size:11.5px;margin-top:8px;line-height:1.9;}
   .section-title-row{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:10px;}
   .count-pill{font-size:10px;font-weight:800;background:var(--amber-soft);color:var(--amber);padding:4px 9px;border-radius:99px;}
@@ -391,7 +361,7 @@ async function sendOutsourceCompletion(ticket, completion, token){
     method:'POST', mode:'no-cors', headers:{'Content-Type':'text/plain'},
     body:JSON.stringify({
       action:'completeOutsource', token:String(token||''), rowNumber:ticket.rowNumber,
-      completionNote:completion.completionNote||'', completionParts:completion.completionParts||[], finalCause:completion.finalCause||'', finalCauseDetails:completion.finalCauseDetails||''
+      completionNote:completion.completionNote||'', completionParts:completion.completionParts||[]
     })
   });
 }
@@ -402,7 +372,7 @@ async function sendManagerUpdate(ticket, token){
     body:JSON.stringify({action:'updateTicket', token, rowNumber:ticket.rowNumber,
       type:ticket.type, level1:ticket.level1||'', level2:ticket.level2||[], otherText:ticket.otherText||'',
       consumedParts:ticket.consumedParts||[], hotParts:ticket.hotParts||[], outsourceReason:ticket.outsourceReason||'',
-      reviewStatus:ticket.reviewStatus||'', managerNote:ticket.managerNote||'', initialCause:ticket.initialCause||'', initialCauseDetails:ticket.initialCauseDetails||'', finalCause:ticket.finalCause||'', finalCauseDetails:ticket.finalCauseDetails||''})
+      reviewStatus:ticket.reviewStatus||'', managerNote:ticket.managerNote||''})
   });
 }
 
@@ -413,7 +383,7 @@ async function sendTechnicianUpdate(ticket, draft, store, token){
       action:'technicianUpdateTicket', token:String(token||''), rowNumber:ticket.rowNumber,
       storeCode:store.code, type:draft.type, level1:draft.level1||'', level2:draft.level2||[],
       otherText:draft.otherText||'', consumedParts:draft.consumedParts||[], hotParts:draft.hotParts||[],
-      outsourceReason:draft.outsourceReason||'', initialCause:draft.initialCause||'', initialCauseDetails:draft.initialCauseDetails||''
+      outsourceReason:draft.outsourceReason||''
     })
   });
 }
@@ -448,10 +418,6 @@ async function sendToSheet(t){
         consumedParts: t.consumedParts || [],
         hotParts: t.hotParts || [],
         outsourceReason: t.outsourceReason || '',
-        initialCause: t.initialCause || '',
-        initialCauseDetails: t.initialCauseDetails || '',
-        finalCause: t.finalCause || '',
-        finalCauseDetails: t.finalCauseDetails || '',
         reviewStatus: t.reviewStatus || '',
         managerNote: t.managerNote || '',
         id: t.id || '',
@@ -501,22 +467,6 @@ const OUTSOURCE_REASONS = [
   "عدم وجود زمان کافی برای سفارش قطعه تا ارسال (عدم موجودی انبار)",
   "فاصله زیاد از اعزام تا محل فروشگاه (عیب‌یابی اولیه تلفنی و دور از فروشگاه)",
 ];
-
-const FAILURE_CAUSES = [
-  "استهلاک طبیعی",
-  "خرابی قطعه",
-  "نوسان برق",
-  "نصب یا اجرای نامناسب",
-  "استفاده نادرست",
-  "عدم سرویس دوره‌ای",
-  "سرویس دوره‌ای / نگهداری پیشگیرانه",
-  "آسیب فیزیکی",
-  "گرفتگی یا آلودگی",
-  "تنظیم نبودن دستگاه",
-  "علت نامشخص",
-  "سایر"
-];
-
 
 function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,7); }
 function makeTicketNumber(){
@@ -614,17 +564,6 @@ function TicketFields({ draft, setDraft }){
       )
     ),
 
-    draft.type && React.createElement('div',{className:'cause-box'},
-      React.createElement('label',null,draft.type==='outsourced'?'مرحله ۵ — تشخیص اولیه / علت احتمالی خرابی':'مرحله ۵ — علت نهایی خرابی'),
-      React.createElement('div',{className:'cause-help'},draft.type==='outsourced'?'علتی را که بر اساس عیب‌یابی اولیه محتمل می‌دانید انتخاب کنید؛ علت نهایی هنگام پایان کار ثبت می‌شود.':'علت اصلی خرابی را بر اساس عیب‌یابی انجام‌شده مشخص کنید.'),
-      React.createElement('select',{value:draft.initialCause||'',onChange:e=>setDraft(d=>({...d,initialCause:e.target.value,initialCauseDetails:e.target.value==='سایر'?d.initialCauseDetails:''}))},
-        React.createElement('option',{value:''},'انتخاب علت خرابی...'),
-        FAILURE_CAUSES.map(c=>React.createElement('option',{key:c,value:c},c))
-      ),
-      React.createElement('label',null,'توضیحات تکمیلی '+((draft.initialCause||'')==='سایر'?'(الزامی)':'(اختیاری)')),
-      React.createElement('textarea',{value:draft.initialCauseDetails||'',onChange:e=>setDraft(d=>({...d,initialCauseDetails:e.target.value})),placeholder:draft.type==='outsourced'?'نشانه‌ها، بررسی اولیه و دلیل تشخیص خود را بنویسید...':'شرح کوتاه علت و نتیجه عیب‌یابی را بنویسید...'})
-    ),
-
     draft.type==='outsourced' && React.createElement(React.Fragment,null,
       React.createElement('label',null,'علت برون‌سپاری'),
       React.createElement('div',{className:'radio-list'},
@@ -656,7 +595,7 @@ function TicketFields({ draft, setDraft }){
 }
 
 function emptyDraft(){
-  return {type:'',level1:'',level2:[],otherText:'',outsourceReason:'',initialCause:'',initialCauseDetails:'',consumedParts:[],hotParts:[]};
+  return {type:'',level1:'',level2:[],otherText:'',outsourceReason:'',consumedParts:[],hotParts:[]};
 }
 
 function validDraft(d){
@@ -665,8 +604,6 @@ function validDraft(d){
   const cat=CATEGORIES.find(c=>c.l1===d.level1);
   if(cat&&cat.l2.length>0&&(!d.level2||d.level2.length===0))return false;
   if(!d.type)return false;
-  if(!String(d.initialCause||'').trim())return false;
-  if(d.initialCause==='سایر'&&!String(d.initialCauseDetails||'').trim())return false;
   if(d.type==='outsourced'&&!d.outsourceReason)return false;
   if(hasInvalidPartQty(d.consumedParts)||hasInvalidPartQty(d.hotParts))return false;
   return true;
@@ -675,19 +612,16 @@ function validDraft(d){
 function OutsourceOpenItem({t,onComplete}){
   const [open,setOpen]=useState(false);
   const [note,setNote]=useState('');
-  const [finalCause,setFinalCause]=useState('');
-  const [finalCauseDetails,setFinalCauseDetails]=useState('');
   const [parts,setParts]=useState([]);
   const [submitting,setSubmitting]=useState(false);
   const invalidParts=hasInvalidPartQty(parts);
-  const invalidCause=!finalCause||(finalCause==='سایر'&&!finalCauseDetails.trim());
   const addPart=()=>setParts(x=>[...x,{name:'',qty:''}]);
   const updatePart=(idx,key,val)=>setParts(x=>x.map((p,i)=>i===idx?{...p,[key]:val}:p));
   const removePart=idx=>setParts(x=>x.filter((_,i)=>i!==idx));
   const submit=async()=>{
-    if(!note.trim()||invalidParts||invalidCause)return;
+    if(!note.trim()||invalidParts)return;
     setSubmitting(true);
-    try{await onComplete(t,{completionNote:note.trim(),completionParts:normalizePartsQty(parts.filter(p=>p.name)),finalCause,finalCauseDetails:finalCauseDetails.trim()});setOpen(false);setNote('');setFinalCause('');setFinalCauseDetails('');setParts([]);}finally{setSubmitting(false);}
+    try{await onComplete(t,{completionNote:note.trim(),completionParts:normalizePartsQty(parts.filter(p=>p.name))});setOpen(false);setNote('');setParts([]);}finally{setSubmitting(false);}
   };
   return React.createElement('div',{className:'outsource-open-card'},
     React.createElement('div',{className:'outsource-open-head'},
@@ -699,19 +633,11 @@ function OutsourceOpenItem({t,onComplete}){
       React.createElement('span',{className:'work-badge work-open'},'در حال انجام')
     ),
     React.createElement('div',{className:'task-desc'},ticketSummary(t)),
-    t.initialCause&&React.createElement('div',{className:'cause-summary'},React.createElement('b',null,'تشخیص اولیه: '),t.initialCause,t.initialCauseDetails?' — '+t.initialCauseDetails:''),
     !t.rowNumber
       ? React.createElement('div',{className:'note'},'در حال همگام‌سازی با سرور...')
       : !open
         ? React.createElement('button',{className:'a-btn a-ok',onClick:()=>setOpen(true)},'✓ ثبت پایان کار')
         : React.createElement('div',{className:'completion-box'},
-            React.createElement('label',null,'علت نهایی خرابی'),
-            React.createElement('select',{value:finalCause,onChange:e=>{setFinalCause(e.target.value);if(e.target.value!=='سایر')setFinalCauseDetails('');}},
-              React.createElement('option',{value:''},'انتخاب علت نهایی...'),
-              FAILURE_CAUSES.map(c=>React.createElement('option',{key:c,value:c},c))
-            ),
-            React.createElement('label',null,'توضیحات علت نهایی '+(finalCause==='سایر'?'(الزامی)':'(اختیاری)')),
-            React.createElement('textarea',{value:finalCauseDetails,onChange:e=>setFinalCauseDetails(e.target.value),placeholder:'علت اعلام‌شده توسط پیمانکار یا نتیجه نهایی عیب‌یابی...'}),
             React.createElement('label',null,'شرح اقدام انجام‌شده و نتیجه نهایی'),
             React.createElement('textarea',{value:note,onChange:e=>setNote(e.target.value),placeholder:'مثلاً: پیمانکار مراجعه کرد، موتور تعویض و عملکرد نهایی تست شد...'}),
             React.createElement('label',null,'قطعات مصرفی در پایان کار (اختیاری)'),
@@ -722,7 +648,7 @@ function OutsourceOpenItem({t,onComplete}){
             )),
             React.createElement('button',{type:'button',className:'add-part',onClick:addPart},'+ افزودن قطعه'),
             React.createElement('div',{className:'actions'},
-              React.createElement('button',{className:'a-btn a-ok',disabled:submitting||!note.trim()||invalidParts||invalidCause,onClick:submit},submitting?'در حال ثبت...':'ثبت پایان کار'),
+              React.createElement('button',{className:'a-btn a-ok',disabled:submitting||!note.trim()||invalidParts,onClick:submit},submitting?'در حال ثبت...':'ثبت پایان کار'),
               React.createElement('button',{className:'a-btn',disabled:submitting,onClick:()=>setOpen(false)},'انصراف')
             )
           )
@@ -782,7 +708,7 @@ function TechView({ tasks, saveTasks, showToast, currentUser, refreshTasks }){
       technician:name.trim(),technicianCode:currentUser.username,token:currentUser.token,
       createdAt,reviewStatus:'pending',managerNote:'',
       workStatus:cleanDraft.type==='outsourced'?'open':'completed',
-      completedAt:cleanDraft.type==='internal'?createdAt:'',finalCause:cleanDraft.type==='internal'?cleanDraft.initialCause:'',finalCauseDetails:cleanDraft.type==='internal'?cleanDraft.initialCauseDetails:'',...cleanDraft
+      completedAt:cleanDraft.type==='internal'?createdAt:'',...cleanDraft
     };
     try{
       await saveTasks(list=>[newTicket,...list]);
@@ -811,9 +737,7 @@ function TechView({ tasks, saveTasks, showToast, currentUser, refreshTasks }){
     const nextWorkStatus=updatedDraft.type==='internal'?'completed':(ticket.type==='outsourced'&&ticket.workStatus==='completed'?'completed':'open');
     await saveTasks(list=>list.map(x=>x.id===ticket.id?{
       ...x,...updatedDraft,storeCode:updatedStore.code,storeName:updatedStore.name,region:updatedStore.region,
-      workStatus:nextWorkStatus,managerNote:'',reviewStatus:'pending',
-      finalCause:updatedDraft.type==='internal'?updatedDraft.initialCause:(x.type==='outsourced'&&x.workStatus==='completed'?(x.finalCause||''):''),
-      finalCauseDetails:updatedDraft.type==='internal'?updatedDraft.initialCauseDetails:(x.type==='outsourced'&&x.workStatus==='completed'?(x.finalCauseDetails||''):'')
+      workStatus:nextWorkStatus,managerNote:'',reviewStatus:'pending'
     }:x));
     showToast('تیکت '+(ticket.ticketNumber||'')+' ویرایش شد');
     setTimeout(refreshTasks,700);setTimeout(refreshTasks,2200);
@@ -929,7 +853,7 @@ function TechnicianTicketItem({t,currentUser,showToast,onEdit,onCancel}){
 
   const beginEdit=()=>{
     if(!t.rowNumber){showToast('چند ثانیه صبر کنید تا تیکت با سرور همگام شود');return;}
-    setDraft({type:t.type,level1:t.level1||'',level2:t.level2||[],otherText:t.otherText||'',outsourceReason:t.outsourceReason||'',initialCause:t.initialCause||'',initialCauseDetails:t.initialCauseDetails||'',consumedParts:(t.consumedParts||[]).map(x=>({...x,qty:String(x.qty||'')})),hotParts:(t.hotParts||[]).map(x=>({...x,qty:String(x.qty||'')}))});
+    setDraft({type:t.type,level1:t.level1||'',level2:t.level2||[],otherText:t.otherText||'',outsourceReason:t.outsourceReason||'',consumedParts:(t.consumedParts||[]).map(x=>({...x,qty:String(x.qty||'')})),hotParts:(t.hotParts||[]).map(x=>({...x,qty:String(x.qty||'')}))});
     setEditStoreCode(t.storeCode||'');
     setEditStoreInfo({code:t.storeCode,name:t.storeName||'',region:t.region||''});
     setStoreError('');setEditing(true);
@@ -973,8 +897,6 @@ function TechnicianTicketItem({t,currentUser,showToast,onEdit,onCancel}){
       )
     ),
     !editing&&React.createElement('div',{className:'task-desc'},ticketSummary(t)),
-    !editing&&t.initialCause&&React.createElement('div',{className:'cause-summary'},React.createElement('b',null,t.type==='outsourced'?'تشخیص اولیه: ':'علت خرابی: '),t.initialCause,t.initialCauseDetails?' — '+t.initialCauseDetails:''),
-    !editing&&t.type==='outsourced'&&t.finalCause&&React.createElement('div',{className:'cause-summary'},React.createElement('b',null,'علت نهایی خرابی: '),t.finalCause,t.finalCauseDetails?' — '+t.finalCauseDetails:''),
     t.completionNote&&!editing&&React.createElement('div',{className:'completion-note'},React.createElement('b',null,'پایان کار: '),t.completionNote),
     reviewStatus==='cancelled'&&!editing&&React.createElement('div',{className:'cancelled-box'},React.createElement('b',null,'این تیکت توسط کارشناس لغو شده است.'),t.cancelledAt?React.createElement('div',null,'زمان لغو: '+new Date(t.cancelledAt).toLocaleString('fa-IR')):null),
     t.managerNote&&reviewStatus!=='cancelled'&&!editing&&React.createElement('div',{className:'note'},'📝 '+t.managerNote),
@@ -1004,7 +926,7 @@ function TaskItem({t,onReview,onReject,onEdit}){
   const [draft,setDraft]=useState(null);
   const [note,setNote]=useState('');
   const reviewStatus=t.reviewStatus||'pending';
-  const beginEdit=()=>{setDraft({type:t.type,level1:t.level1||'',level2:t.level2||[],otherText:t.otherText||'',outsourceReason:t.outsourceReason||'',initialCause:t.initialCause||'',initialCauseDetails:t.initialCauseDetails||'',consumedParts:t.consumedParts||[],hotParts:t.hotParts||[]});setEditing(true);};
+  const beginEdit=()=>{setDraft({type:t.type,level1:t.level1||'',level2:t.level2||[],otherText:t.otherText||'',outsourceReason:t.outsourceReason||'',consumedParts:t.consumedParts||[],hotParts:t.hotParts||[]});setEditing(true);};
   const saveEdit=()=>{if(!validDraft(draft))return;onEdit(t.id,{...draft,consumedParts:normalizePartsQty(draft.consumedParts),hotParts:normalizePartsQty(draft.hotParts)});setEditing(false);};
   const rlabel=reviewStatus==='reviewed'?'بررسی‌شده':reviewStatus==='rejected'?'رد شده':reviewStatus==='cancelled'?'لغو شده':'در انتظار بررسی';
   const rcls=reviewStatus==='reviewed'?'r-reviewed':reviewStatus==='rejected'?'r-rejected':reviewStatus==='cancelled'?'r-cancelled':'r-pending';
@@ -1025,8 +947,6 @@ function TaskItem({t,onReview,onReject,onEdit}){
       )
     ),
     !editing&&React.createElement('div',{className:'task-desc'},ticketSummary(t)),
-    !editing&&t.initialCause&&React.createElement('div',{className:'cause-summary'},React.createElement('b',null,t.type==='outsourced'?'تشخیص اولیه: ':'علت خرابی: '),t.initialCause,t.initialCauseDetails?' — '+t.initialCauseDetails:''),
-    !editing&&t.type==='outsourced'&&t.finalCause&&React.createElement('div',{className:'cause-summary'},React.createElement('b',null,'علت نهایی خرابی: '),t.finalCause,t.finalCauseDetails?' — '+t.finalCauseDetails:''),
     t.completionNote&&!editing&&React.createElement('div',{className:'completion-note'},React.createElement('b',null,'پایان کار: '),t.completionNote,t.completedAt?React.createElement('div',{className:'store-submeta'},'ثبت پایان: '+new Date(t.completedAt).toLocaleString('fa-IR')):null,t.completionParts&&t.completionParts.length?React.createElement('div',{className:'store-submeta'},'قطعات پایان کار: '+t.completionParts.map(p=>p.name+' ×'+p.qty).join('، ')):null),
     reviewStatus==='cancelled'&&!editing&&React.createElement('div',{className:'cancelled-box'},React.createElement('b',null,'لغوشده توسط کارشناس فنی'),t.cancelledBy?React.createElement('div',null,'لغو توسط: '+t.cancelledBy):null,t.cancelledAt?React.createElement('div',null,'زمان لغو: '+new Date(t.cancelledAt).toLocaleString('fa-IR')):null),
     t.managerNote&&reviewStatus!=='cancelled'&&!editing&&React.createElement('div',{className:'note'},'📝 '+t.managerNote),
@@ -1052,13 +972,7 @@ function ManagerView({ tasks, updateTask, showToast, refreshTasks, managerLoadin
     showToast('تیکت رد شد');
   };
   const edit = async (id, newDraft) => {
-    const original=tasks.find(t=>t.id===id)||{};
-    const causePatch=newDraft.type==='internal'
-      ? {finalCause:newDraft.initialCause||'',finalCauseDetails:newDraft.initialCauseDetails||''}
-      : (original.type==='outsourced'&&original.workStatus==='completed'
-          ? {finalCause:original.finalCause||'',finalCauseDetails:original.finalCauseDetails||''}
-          : {finalCause:'',finalCauseDetails:''});
-    await updateTask(id,{...newDraft,...causePatch,reviewStatus:'reviewed'});
+    await updateTask(id,{...newDraft,reviewStatus:'reviewed'});
     showToast('تیکت اصلاح و تأیید شد');
   };
 
@@ -1121,7 +1035,6 @@ function ReportView({tasks,onRefresh,loading,lastUpdated}){
   const [type,setType]=useState('all');
   const [status,setStatus]=useState('all');
   const [work,setWork]=useState('all');
-  const [expandedStore,setExpandedStore]=useState('');
 
   const allDates=[...new Set(tasks.map(ticketDate).filter(Boolean))].sort();
   const today=normalizeFaDigits(new Date().toLocaleDateString('fa-IR'));
@@ -1205,12 +1118,11 @@ function ReportView({tasks,onRefresh,loading,lastUpdated}){
 
   const catRows=sortedEntries(countBy(relevant.filter(t=>t.level1),t=>t.level1),8);
   const reasonRows=sortedEntries(countBy(relevant.filter(t=>t.outsourceReason),t=>t.outsourceReason),6);
-  const causeRows=sortedEntries(countBy(relevant.filter(t=>t.reviewStatus!=='cancelled'&&(t.finalCause||t.initialCause)),t=>t.finalCause||t.initialCause),10);
   const storeMap={};
   relevant.forEach(t=>{
     const k=String(t.storeCode||'نامشخص');
-    if(!storeMap[k])storeMap[k]={store:k,name:t.storeName||('فروشگاه '+k),region:t.region||'',total:0,internal:0,outsourced:0,pending:0,tickets:[]};
-    const x=storeMap[k];x.total++;x.tickets.push(t);
+    if(!storeMap[k])storeMap[k]={store:k,name:t.storeName||('فروشگاه '+k),region:t.region||'',total:0,internal:0,outsourced:0,pending:0};
+    const x=storeMap[k];x.total++;
     if(t.type==='internal')x.internal++;
     if(t.type==='outsourced')x.outsourced++;
     if(!t.reviewStatus||t.reviewStatus==='pending')x.pending++;
@@ -1223,7 +1135,6 @@ function ReportView({tasks,onRefresh,loading,lastUpdated}){
   const donutOptions={responsive:true,maintainAspectRatio:false,cutout:'66%',plugins:{legend:{position:'bottom',labels:{usePointStyle:true,boxWidth:7,font:{size:10}}}}};
   const catData={labels:catRows.map(x=>x[0]),datasets:[{label:'تعداد',data:catRows.map(x=>x[1]),backgroundColor:'#2f6f5e',borderRadius:7,borderSkipped:false}]};
   const reasonData={labels:reasonRows.map(x=>x[0]),datasets:[{label:'تعداد',data:reasonRows.map(x=>x[1]),backgroundColor:'#2b5a8c',borderRadius:7,borderSkipped:false}]};
-  const causeData={labels:causeRows.map(x=>x[0]),datasets:[{label:'تعداد',data:causeRows.map(x=>x[1]),backgroundColor:'#a8382c',borderRadius:7,borderSkipped:false}]};
   const regionData={labels:regionRows.slice(0,10).map(x=>x.name),datasets:[{label:'تعداد تیکت',data:regionRows.slice(0,10).map(x=>x.total),backgroundColor:'#b8721f',borderRadius:7,borderSkipped:false}]};
   const barOptions={responsive:true,maintainAspectRatio:false,indexAxis:'y',plugins:{legend:{display:false}},scales:{x:{beginAtZero:true,ticks:{precision:0},grid:{color:'rgba(0,0,0,.05)'}},y:{grid:{display:false},ticks:{font:{size:9}}}}};
 
@@ -1293,86 +1204,24 @@ function ReportView({tasks,onRefresh,loading,lastUpdated}){
     h('div',{className:'dash-card'},h('div',{className:'dash-card-head'},h('div',null,h('h3',null,'پرتیکت‌ترین مناطق'),h('p',null,'۱۰ منطقه با بیشترین تیکت'))),h(ChartBox,{type:'bar',data:regionData,options:barOptions}))
   );
 
-  const patterns=h(React.Fragment,null,
-    h('div',{className:'dash-grid equal'},
-      h('div',{className:'dash-card'},h('div',{className:'dash-card-head'},h('div',null,h('h3',null,'پرتکرارترین خرابی‌ها'),h('p',null,'۸ دسته اصلی پرتکرار'))),h(ChartBox,{type:'bar',data:catData,options:barOptions})),
-      h('div',{className:'dash-card'},h('div',{className:'dash-card-head'},h('div',null,h('h3',null,'علل اصلی برون‌سپاری'),h('p',null,'موانع پرتکرار اجرای داخلی'))),reasonRows.length?h(ChartBox,{type:'bar',data:reasonData,options:barOptions}):h('div',{className:'dash-empty'},'برون‌سپاری ثبت نشده است'))
-    ),
-    h('div',{className:'dash-card'},h('div',{className:'dash-card-head'},h('div',null,h('h3',null,'پرتکرارترین علل خرابی'),h('p',null,'بر اساس علت نهایی؛ در نبود آن از تشخیص اولیه استفاده می‌شود'))),causeRows.length?h(ChartBox,{type:'bar',data:causeData,options:barOptions}):h('div',{className:'dash-empty'},'هنوز علت خرابی ثبت نشده است'))
+  const patterns=h('div',{className:'dash-grid equal'},
+    h('div',{className:'dash-card'},h('div',{className:'dash-card-head'},h('div',null,h('h3',null,'پرتکرارترین خرابی‌ها'),h('p',null,'۸ دسته اصلی پرتکرار'))),h(ChartBox,{type:'bar',data:catData,options:barOptions})),
+    h('div',{className:'dash-card'},h('div',{className:'dash-card-head'},h('div',null,h('h3',null,'علل اصلی برون‌سپاری'),h('p',null,'موانع پرتکرار اجرای داخلی'))),reasonRows.length?h(ChartBox,{type:'bar',data:reasonData,options:barOptions}):h('div',{className:'dash-empty'},'برون‌سپاری ثبت نشده است'))
   );
 
-  const detailStatus=(t)=>{
-    const s=t.reviewStatus||'pending';
-    if(s==='reviewed')return {label:'بررسی‌شده',cls:'status-good'};
-    if(s==='rejected')return {label:'ردشده',cls:'status-bad'};
-    if(s==='cancelled')return {label:'لغوشده',cls:'status-bad'};
-    return {label:'در انتظار',cls:'status-warn'};
-  };
-  const formatParts=(parts)=>Array.isArray(parts)&&parts.length?parts.filter(p=>p&&p.name).map(p=>p.name+' ×'+(p.qty||1)).join('، '):'';
-  const storeTrs=[];
-  storeRows.forEach((r)=>{
+  const storeTrs=storeRows.map((r,i)=>{
     const rate=pct(r.outsourced,r.total);
     const cls=r.pending>2||rate>=60?'status-bad':r.pending>0||rate>=35?'status-warn':'status-good';
     const lab=cls==='status-bad'?'نیازمند توجه':cls==='status-warn'?'قابل پیگیری':'عادی';
-    const isOpen=expandedStore===r.store;
-    const sortedTickets=[...(r.tickets||[])].sort((a,b)=>String(b.createdAt||'').localeCompare(String(a.createdAt||''))||Number(b.rowNumber||0)-Number(a.rowNumber||0));
-    storeTrs.push(h('tr',{
-      key:'store-'+r.store,
-      className:'store-summary-row'+(isOpen?' expanded':''),
-      onClick:()=>setExpandedStore(isOpen?'':r.store),
-      title:'برای مشاهده تیکت‌های این فروشگاه کلیک کنید'
-    },
-      h('td',{className:'store-expand-cell'},h('span',{className:'store-expand-icon'},'⌄'),h('span',{className:'store-main-ticket'},sortedTickets[0]?(sortedTickets[0].ticketNumber||('DM-'+String(Math.max(1,(sortedTickets[0].rowNumber||1)-1)).padStart(7,'0'))):'—'),h('div',{className:'store-submeta'},r.total+' تیکت ثبت‌شده')),
-      h('td',null,h('b',null,r.store),h('div',{className:'store-submeta'},r.name)),
-      h('td',null,r.region||'—'),
-      h('td',null,r.total),
-      h('td',null,r.internal),
-      h('td',null,r.outsourced),
-      h('td',null,r.pending),
-      h('td',null,h('span',{className:'status-pill '+cls},lab))
-    ));
-    if(isOpen){
-      const details=sortedTickets.map((t)=>{
-        const st=detailStatus(t);
-        const issue=[t.level1,Array.isArray(t.level2)?t.level2.join('، '):t.level2,t.otherText].filter(Boolean).join(' — ');
-        const consumed=formatParts(t.consumedParts);
-        const hot=formatParts(t.hotParts);
-        const completion=formatParts(t.completionParts);
-        const extras=[];
-        if(consumed)extras.push('قطعات مصرفی: '+consumed);
-        if(hot)extras.push('قطعات داغی/معیوب: '+hot);
-        if(t.outsourceReason)extras.push('علت برون‌سپاری: '+t.outsourceReason);
-        if(t.completionNote)extras.push('شرح پایان کار: '+t.completionNote);
-        if(completion)extras.push('قطعات پایان کار: '+completion);
-        if(t.managerNote)extras.push('یادداشت مدیر: '+t.managerNote);
-        return h('div',{className:'ticket-detail-item',key:t.id||t.ticketNumber||t.rowNumber},
-          h('div',null,h('span',{className:'ticket-detail-label'},'شماره تیکت'),h('span',{className:'ticket-detail-number'},t.ticketNumber||('DM-'+String(Math.max(1,(t.rowNumber||1)-1)).padStart(7,'0')))),
-          h('div',null,h('span',{className:'ticket-detail-label'},'تاریخ و ساعت'),h('span',{className:'ticket-detail-value'},(t.dateText||ticketDate(t)||'—')+' '+(t.timeText||''))),
-          h('div',null,h('span',{className:'ticket-detail-label'},'کارشناس فنی'),h('span',{className:'ticket-detail-value'},t.technician||'—')),
-          h('div',null,h('span',{className:'ticket-detail-label'},'خرابی یا خدمت ثبت‌شده'),h('span',{className:'ticket-detail-value'},issue||'جزئیات تکمیلی ثبت نشده')),
-          t.initialCause?h('div',null,h('span',{className:'ticket-detail-label'},t.type==='outsourced'?'تشخیص اولیه خرابی':'علت خرابی'),h('span',{className:'ticket-detail-value'},t.initialCause+(t.initialCauseDetails?' — '+t.initialCauseDetails:''))):null,
-          t.type==='outsourced'?h('div',null,h('span',{className:'ticket-detail-label'},'علت نهایی خرابی'),h('span',{className:'ticket-detail-value'},t.finalCause?(t.finalCause+(t.finalCauseDetails?' — '+t.finalCauseDetails:'')):'هنوز پایان کار ثبت نشده')):null,
-          h('div',null,h('span',{className:'ticket-detail-label'},'نحوه انجام'),h('span',{className:'ticket-detail-value'},t.type==='outsourced'?'برون‌سپاری':'درون‌سپاری')),
-          h('div',null,h('span',{className:'ticket-detail-label'},'وضعیت بررسی'),h('span',{className:'status-pill '+st.cls},st.label)),
-          extras.length?h('div',{className:'ticket-extra'},h('b',null,'جزئیات بیشتر: '),extras.join(' | ')):null
-        );
-      });
-      storeTrs.push(h('tr',{key:'details-'+r.store,className:'store-detail-row'},
-        h('td',{colSpan:8},h('div',{className:'store-ticket-panel'},
-          h('div',{className:'store-ticket-panel-head'},h('b',null,'تیکت‌های '+r.name),h('span',null,sortedTickets.length+' مورد؛ شماره تیکت جایگزین شماره ردیف شده است')),
-          h('div',{className:'ticket-detail-list'},...details)
-        ))
-      ));
-    }
+    return h('tr',{key:r.store},h('td',null,i+1),h('td',null,h('b',null,r.store),h('div',{className:'store-submeta'},r.name)),h('td',null,r.region||'—'),h('td',null,r.total),h('td',null,r.internal),h('td',null,r.outsourced),h('td',null,r.pending),h('td',null,h('span',{className:'status-pill '+cls},lab)));
   });
   const storesTable=h('div',{className:'dash-card'},
-    h('div',{className:'dash-card-head'},h('div',null,h('h3',null,'فروشگاه‌های پرتیکت'),h('p',null,'برای مشاهده شماره و جزئیات تیکت‌ها روی هر ردیف کلیک کنید'))),
+    h('div',{className:'dash-card-head'},h('div',null,h('h3',null,'فروشگاه‌های پرتیکت'),h('p',null,'فروشگاه‌هایی که بیشترین حجم درخواست را داشته‌اند'))),
     h('div',{className:'store-table-wrap'},h('table',{className:'store-table'},
-      h('thead',null,h('tr',null,h('th',null,'شماره تیکت'),h('th',null,'فروشگاه'),h('th',null,'منطقه'),h('th',null,'کل'),h('th',null,'درون‌سپاری'),h('th',null,'برون‌سپاری'),h('th',null,'در انتظار'),h('th',null,'وضعیت'))),
+      h('thead',null,h('tr',null,h('th',null,'رتبه'),h('th',null,'فروشگاه'),h('th',null,'منطقه'),h('th',null,'کل'),h('th',null,'درون‌سپاری'),h('th',null,'برون‌سپاری'),h('th',null,'در انتظار'),h('th',null,'وضعیت'))),
       h('tbody',null,...storeTrs)
     ))
   );
-
 
   return h(React.Fragment,null,head,filters,kpis,overview,people,regionsSection,patterns,storesTable);
 }
@@ -1624,7 +1473,7 @@ function App(){
 
   return React.createElement('div',{className:'wrap'},
     React.createElement('div',{className:'top'},
-      React.createElement('div',{className:'brand'},React.createElement('span',{className:'dot'}),React.createElement('div',null,React.createElement('h1',null,'پشتیبانی فنی فروشگاه‌ها'),React.createElement('span',null,(role==='tech'?'محیط نیروی فنی':'مرکز کنترل مدیریت فنی')+' • نسخه 4.2'))),
+      React.createElement('div',{className:'brand'},React.createElement('span',{className:'dot'}),React.createElement('div',null,React.createElement('h1',null,'پشتیبانی فنی فروشگاه‌ها'),React.createElement('span',null,(role==='tech'?'محیط نیروی فنی':'مرکز کنترل مدیریت فنی')+' • نسخه 4.0'))),
       React.createElement('div',{className:'user-bar'},React.createElement('div',{className:'user-info'},React.createElement('b',null,currentUser.name),React.createElement('span',null,role==='manager'?'مدیر فنی':'کد پرسنلی: '+currentUser.username)),React.createElement('button',{className:'logout-btn',onClick:logout},'خروج'))
     ),
     !loaded?React.createElement('div',{className:'empty'},'در حال بارگذاری اطلاعات...'):(role==='tech'?React.createElement(TechView,{tasks,saveTasks,showToast,currentUser,refreshTasks:loadTasks}):React.createElement(ManagerView,{tasks,updateTask:updateManagerTask,showToast,refreshTasks:loadTasks,managerLoading,lastUpdated})),
