@@ -6,8 +6,8 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<title>پلتفرم پشتیبانی فنی فروشگاه‌ها - v4.3</title>
-<!-- Root-cause analysis build: 4.2 -->
+<title>پلتفرم پشتیبانی فنی فروشگاه‌ها - v4.5</title>
+<!-- Dashboard chronological date fix build: 4.5 -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
@@ -1110,8 +1110,36 @@ function ManagerView({ tasks, updateTask, showToast, refreshTasks, managerLoadin
   );
 }
 
-function normalizeFaDigits(v){return String(v||'').replace(/[۰-۹]/g,d=>'۰۱۲۳۴۵۶۷۸۹'.indexOf(d)).replace(/[٠-٩]/g,d=>'٠١٢٣٤٥٦٧٨٩'.indexOf(d));}
-function ticketDate(t){return normalizeFaDigits(t.dateText || (t.createdAt?dateKey(t.createdAt):''));}
+function normalizeFaDigits(v){
+  return String(v||'')
+    .replace(/[۰-۹]/g,d=>'۰۱۲۳۴۵۶۷۸۹'.indexOf(d))
+    .replace(/[٠-٩]/g,d=>'٠١٢٣٤٥٦٧٨٩'.indexOf(d));
+}
+function normalizeTicketDateLabel(value){
+  const clean=normalizeFaDigits(value)
+    .replace(/[\u200c\u200e\u200f\u202a-\u202e]/g,'')
+    .replace(/[.\-]/g,'/')
+    .replace(/\s+/g,'')
+    .replace(/\/+/g,'/')
+    .trim();
+  const parts=clean.match(/\d+/g);
+  if(!parts||parts.length<3)return clean;
+  return [Number(parts[0]),Number(parts[1]),Number(parts[2])].join('/');
+}
+function ticketDate(t){
+  return normalizeTicketDateLabel(t.dateText || (t.createdAt?dateKey(t.createdAt):''));
+}
+function compareTicketDateLabels(a,b){
+  const pa=String(a||'').match(/\d+/g);
+  const pb=String(b||'').match(/\d+/g);
+  if(pa&&pb&&pa.length>=3&&pb.length>=3){
+    for(let i=0;i<3;i++){
+      const diff=Number(pa[i])-Number(pb[i]);
+      if(diff!==0)return diff;
+    }
+  }
+  return String(a||'').localeCompare(String(b||''),'fa',{numeric:true});
+}
 function reviewLabel(v){return v==='reviewed'?'بررسی‌شده':v==='rejected'?'ردشده':v==='cancelled'?'لغوشده':'در انتظار';}
 function pct(n,d){return d?Math.round(n/d*100):0;}
 function countBy(list,keyFn){const out={};list.forEach(x=>{const k=keyFn(x);if(k)out[k]=(out[k]||0)+1;});return out;}
@@ -1148,8 +1176,8 @@ function ReportView({tasks,onRefresh,loading,lastUpdated}){
   const [work,setWork]=useState('all');
   const [expandedStore,setExpandedStore]=useState('');
 
-  const allDates=[...new Set(tasks.map(ticketDate).filter(Boolean))].sort();
-  const today=normalizeFaDigits(new Date().toLocaleDateString('fa-IR'));
+  const allDates=[...new Set(tasks.map(ticketDate).filter(Boolean))].sort(compareTicketDateLabels);
+  const today=normalizeTicketDateLabel(new Date().toLocaleDateString('fa-IR'));
   const allowedDates=range==='7'?new Set(allDates.slice(-7)):range==='30'?new Set(allDates.slice(-30)):null;
   const technicians=[...new Set(tasks.map(t=>t.technician).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'fa'));
   const regions=[...new Set(tasks.map(t=>t.region).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'fa'));
@@ -1191,7 +1219,7 @@ function ReportView({tasks,onRefresh,loading,lastUpdated}){
     if(t.type==='internal')dateGroups[d].internal++;
     if(t.type==='outsourced')dateGroups[d].outsourced++;
   });
-  const trendDates=Object.keys(dateGroups).sort().slice(-14);
+  const trendDates=Object.keys(dateGroups).sort(compareTicketDateLabels).slice(-14);
   const trendData={labels:trendDates,datasets:[
     {label:'کل تیکت',data:trendDates.map(d=>dateGroups[d].total),borderColor:'#1c2321',backgroundColor:'rgba(28,35,33,.08)',tension:.35,fill:true},
     {label:'درون‌سپاری',data:trendDates.map(d=>dateGroups[d].internal),borderColor:'#2f6f5e',backgroundColor:'#2f6f5e',tension:.35},
@@ -1288,7 +1316,7 @@ function ReportView({tasks,onRefresh,loading,lastUpdated}){
   }
 
   const overview=h('div',{className:'dash-grid'},
-    h('div',{className:'dash-card'},h('div',{className:'dash-card-head'},h('div',null,h('h3',null,'روند ثبت تیکت‌ها'),h('p',null,'۱۴ تاریخ ثبت‌شده اخیر'))),h(ChartBox,{type:'line',data:trendData,options:baseOptions})),
+    h('div',{className:'dash-card'},h('div',{className:'dash-card-head'},h('div',null,h('h3',null,'روند ثبت تیکت‌ها'),h('p',null,'۱۴ تاریخ اخیر به‌ترتیب واقعی تقویمی'))),h(ChartBox,{type:'line',data:trendData,options:baseOptions})),
     h('div',{className:'dash-card'},h('div',{className:'dash-card-head'},h('div',null,h('h3',null,'ترکیب اجرای کار'),h('p',null,'درون‌سپاری در برابر برون‌سپاری'))),h(ChartBox,{type:'doughnut',data:typeData,options:donutOptions,small:true}))
   );
 
@@ -1649,7 +1677,7 @@ function App(){
 
   return React.createElement('div',{className:'wrap'},
     React.createElement('div',{className:'top'},
-      React.createElement('div',{className:'brand'},React.createElement('span',{className:'dot'}),React.createElement('div',null,React.createElement('h1',null,'پشتیبانی فنی فروشگاه‌ها'),React.createElement('span',null,(role==='tech'?'محیط نیروی فنی':'مرکز کنترل مدیریت فنی')+' • نسخه 4.3'))),
+      React.createElement('div',{className:'brand'},React.createElement('span',{className:'dot'}),React.createElement('div',null,React.createElement('h1',null,'پشتیبانی فنی فروشگاه‌ها'),React.createElement('span',null,(role==='tech'?'محیط نیروی فنی':'مرکز کنترل مدیریت فنی')+' • نسخه 4.5'))),
       React.createElement('div',{className:'user-bar'},React.createElement('div',{className:'user-info'},React.createElement('b',null,currentUser.name),React.createElement('span',null,role==='manager'?'مدیر فنی':'کد پرسنلی: '+currentUser.username)),React.createElement('button',{className:'logout-btn',onClick:logout},'خروج'))
     ),
     !loaded?React.createElement('div',{className:'empty'},'در حال بارگذاری اطلاعات...'):(role==='tech'?React.createElement(TechView,{tasks,saveTasks,showToast,currentUser,refreshTasks:loadTasks}):React.createElement(ManagerView,{tasks,updateTask:updateManagerTask,showToast,refreshTasks:loadTasks,managerLoading,lastUpdated})),
