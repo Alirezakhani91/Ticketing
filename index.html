@@ -6,8 +6,8 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<title>پلتفرم پشتیبانی فنی فروشگاه‌ها - v5.0</title>
-<!-- Executive reporting dashboard and admin access build: 5.0 -->
+<title>مرکز پایش عملکرد فنی تجهیز - v6.0</title>
+<!-- Executive decision intelligence redesign: 6.0 -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
@@ -381,6 +381,135 @@
   @media(max-width:1250px){.exec-kpis{grid-template-columns:repeat(4,1fr)}.exec-filterbar{grid-template-columns:repeat(3,1fr)}.exec-grid.three{grid-template-columns:1fr 1fr}.exec-grid.three>.exec-card:first-child{grid-column:1/-1}}
   @media(max-width:850px){.exec-grid,.exec-grid.equal,.exec-grid.three{grid-template-columns:1fr}.exec-grid.three>.exec-card:first-child{grid-column:auto}.exec-health-panel{grid-template-columns:1fr}.exec-ticket-grid{grid-template-columns:1fr}.exec-filterbar{grid-template-columns:repeat(2,1fr)}}
   @media(max-width:560px){.executive-wrap{padding:12px 10px 45px}.exec-hero{padding:19px 17px;border-radius:17px}.exec-hero h2{font-size:20px}.exec-kpis{grid-template-columns:repeat(2,1fr)}.exec-filterbar{grid-template-columns:1fr}.exec-kpi{min-height:112px}.exec-gauge{width:135px;height:135px}.exec-health-line{grid-template-columns:84px 1fr 34px}}
+
+
+  /* =========================================================
+     دسترسی مدیر ارشد تجهیز — Decision Intelligence v6.0
+     زبان بصری کاملاً مستقل از پنل عملیاتی
+     ========================================================= */
+  .executive-page{
+    min-height:100vh;
+    background:
+      radial-gradient(circle at 8% 2%,rgba(103,226,215,.11),transparent 28%),
+      radial-gradient(circle at 96% 22%,rgba(215,255,99,.08),transparent 25%),
+      #0a0d10;
+    color:#f4f3ed;
+    font-family:'Vazirmatn',sans-serif;
+  }
+  .x-shell{
+    --x-bg:#0a0d10;
+    --x-panel:#11161b;
+    --x-panel-2:#151b21;
+    --x-line:#273039;
+    --x-text:#f4f3ed;
+    --x-muted:#929ba5;
+    --x-acid:#d7ff63;
+    --x-aqua:#67e2d7;
+    --x-coral:#ff7b6b;
+    --x-blue:#86a8ff;
+    --x-paper:#f0eee6;
+    min-height:100vh;
+    display:grid;
+    grid-template-columns:286px minmax(0,1fr);
+    direction:rtl;
+  }
+  .x-side{
+    position:sticky;
+    top:0;
+    height:100vh;
+    padding:24px 20px;
+    background:rgba(8,11,14,.91);
+    backdrop-filter:blur(18px);
+    border-left:1px solid var(--x-line);
+    display:flex;
+    flex-direction:column;
+    gap:20px;
+    z-index:5;
+  }
+  .x-side-brand{display:flex;align-items:center;gap:11px;padding-bottom:17px;border-bottom:1px solid var(--x-line);}
+  .x-mark{width:38px;height:38px;border-radius:12px;background:var(--x-acid);color:#0a0d10;display:flex;align-items:center;justify-content:center;font-weight:950;font-size:16px;box-shadow:0 0 30px rgba(215,255,99,.16);}
+  .x-side-brand b{display:block;font-size:13px;letter-spacing:-.15px;}.x-side-brand span{display:block;color:var(--x-muted);font-size:9px;margin-top:3px;}
+  .x-side-label{font-size:8.5px;letter-spacing:1.6px;color:#5e6871;font-weight:800;text-transform:uppercase;margin-bottom:8px;}
+  .x-filters{display:flex;flex-direction:column;gap:8px;}
+  .x-filter{position:relative;}
+  .x-filter label{color:#707a84;font-size:8.5px;margin:0 0 5px;font-weight:700;}
+  .x-filter select{
+    margin:0;height:41px;border-radius:10px;border:1px solid #222a32;background:#0f1419;color:#e9e8e2;font-size:10.5px;padding:8px 10px;
+  }
+  .x-filter select:focus{border-color:#52606c;background:#111820;}
+  .x-nav{display:flex;flex-direction:column;gap:4px;}
+  .x-nav button{border:0;background:transparent;color:#7d8791;text-align:right;font-family:inherit;font-size:10px;padding:8px 9px;border-radius:8px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;}
+  .x-nav button:hover{background:#11171c;color:#fff;}.x-nav button span{color:#47515b;font-size:8px;}
+  .x-side-bottom{margin-top:auto;border-top:1px solid var(--x-line);padding-top:15px;}
+  .x-live{display:flex;align-items:center;gap:8px;color:#a8b0b8;font-size:9.5px;line-height:1.8;}
+  .x-live-dot{width:7px;height:7px;border-radius:50%;background:var(--x-aqua);box-shadow:0 0 0 5px rgba(103,226,215,.08);flex-shrink:0;}
+  .x-user{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:14px;padding-top:13px;border-top:1px solid #1e252c;}
+  .x-user b{display:block;font-size:10px;}.x-user span{display:block;font-size:8.5px;color:#68727c;margin-top:2px;}
+  .x-logout{border:1px solid #2c343c;background:transparent;color:#aeb5bc;border-radius:8px;padding:6px 9px;font-family:inherit;font-size:8.5px;font-weight:700;cursor:pointer;}
+  .x-main{min-width:0;padding:24px 26px 58px;}
+  .x-topline{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:18px;}
+  .x-breadcrumb{font-size:9px;color:#69737d;letter-spacing:.2px;}.x-breadcrumb b{color:#d9ddd9;}
+  .x-refresh{border:1px solid #313a43;background:#11171c;color:#d8ddd9;border-radius:9px;padding:8px 11px;font-family:inherit;font-size:9.5px;font-weight:800;cursor:pointer;}
+  .x-refresh:disabled{opacity:.45;cursor:not-allowed;}
+  .x-hero{
+    position:relative;overflow:hidden;background:var(--x-paper);color:#101419;border-radius:4px 30px 4px 30px;padding:28px 30px 26px;margin-bottom:18px;
+    display:grid;grid-template-columns:minmax(0,1.55fr) minmax(250px,.75fr);gap:28px;box-shadow:0 28px 70px rgba(0,0,0,.27);
+  }
+  .x-hero:after{content:'';position:absolute;width:280px;height:280px;border:1px solid rgba(16,20,25,.11);border-radius:50%;left:-95px;top:-155px;box-shadow:0 0 0 38px rgba(16,20,25,.025),0 0 0 76px rgba(16,20,25,.018);}
+  .x-hero-copy{position:relative;z-index:1;}
+  .x-kicker{font-size:9px;font-weight:900;letter-spacing:1.8px;color:#66706f;margin-bottom:9px;}
+  .x-hero h1{margin:0 0 12px;font-size:31px;line-height:1.35;letter-spacing:-1px;font-weight:950;max-width:760px;}
+  .x-summary{font-size:12px;line-height:2.15;color:#3e474b;margin:0;max-width:850px;}
+  .x-period{position:relative;z-index:1;border-right:1px solid rgba(16,20,25,.14);padding-right:22px;display:flex;flex-direction:column;justify-content:space-between;}
+  .x-period-label{font-size:8.5px;color:#737c7d;font-weight:800;letter-spacing:1px;}.x-period-value{font-size:34px;line-height:1.15;font-weight:950;letter-spacing:-1px;margin-top:8px;}.x-period-sub{font-size:9px;color:#697174;line-height:1.8;margin-top:8px;}
+  .x-hero-stamp{display:inline-flex;align-self:flex-start;margin-top:20px;background:#101419;color:#f1f0e9;border-radius:999px;padding:7px 10px;font-size:8.5px;font-weight:800;gap:6px;align-items:center;}
+  .x-hero-stamp i{width:6px;height:6px;border-radius:50%;background:var(--x-acid);display:block;}
+  .x-section{scroll-margin-top:18px;margin-top:24px;}
+  .x-section-head{display:flex;justify-content:space-between;align-items:flex-end;gap:15px;margin-bottom:12px;border-bottom:1px solid var(--x-line);padding-bottom:10px;}
+  .x-section-title{display:flex;align-items:flex-start;gap:12px;}.x-section-no{font-size:9px;color:var(--x-acid);font-weight:900;letter-spacing:1px;margin-top:3px;}.x-section-title h2{font-size:15px;margin:0 0 3px;font-weight:900;letter-spacing:-.2px;}.x-section-title p{font-size:9px;color:var(--x-muted);margin:0;line-height:1.8;}
+  .x-section-meta{font-size:8.5px;color:#66717b;}
+  .x-metrics{display:grid;grid-template-columns:1.15fr repeat(4,1fr);gap:1px;background:var(--x-line);border:1px solid var(--x-line);}
+  .x-metric{min-height:143px;background:#0e1317;padding:16px 16px 15px;position:relative;overflow:hidden;}
+  .x-metric.primary{background:linear-gradient(145deg,#d7ff63,#bde946);color:#101419;}
+  .x-metric-kicker{font-size:8.5px;font-weight:800;color:#6e7881;}.x-metric.primary .x-metric-kicker{color:#3f4b24;}
+  .x-metric-value{font-size:31px;line-height:1;font-weight:950;display:block;margin-top:19px;letter-spacing:-1px;}.x-metric-unit{font-size:10px;font-weight:800;margin-right:3px;opacity:.72;}
+  .x-metric-label{display:block;font-size:10px;font-weight:800;margin-top:9px;}.x-metric-note{display:block;font-size:8.5px;color:#737d86;line-height:1.7;margin-top:4px;}.x-metric.primary .x-metric-note{color:#4d592f;}
+  .x-metric-accent{position:absolute;width:56px;height:4px;background:var(--metric-color,var(--x-aqua));left:14px;top:0;}
+  .x-age-strip{display:flex;gap:3px;margin-top:11px;direction:ltr;}.x-age-strip i{height:5px;border-radius:99px;min-width:4px;display:block;}
+  .x-grid{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(300px,.65fr);gap:14px;}.x-grid.equal{grid-template-columns:1fr 1fr;}.x-grid.thirds{grid-template-columns:repeat(3,1fr);}
+  .x-panel{background:var(--x-panel);border:1px solid var(--x-line);min-width:0;position:relative;overflow:hidden;}
+  .x-panel.soft{background:#0f1419;}.x-panel.paper{background:var(--x-paper);color:#11161a;border-color:transparent;}
+  .x-panel-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;padding:15px 16px 12px;border-bottom:1px solid var(--x-line);}.x-panel.paper .x-panel-head{border-bottom-color:rgba(17,22,26,.12);}
+  .x-panel-head h3{font-size:12px;margin:0 0 3px;font-weight:900;}.x-panel-head p{font-size:8.5px;color:var(--x-muted);margin:0;line-height:1.7;}.x-panel.paper .x-panel-head p{color:#6a7377;}
+  .x-panel-tag{font-size:8px;border:1px solid #343e47;color:#8f99a3;padding:4px 7px;border-radius:999px;white-space:nowrap;}.x-panel.paper .x-panel-tag{border-color:rgba(17,22,26,.15);color:#5c666a;}
+  .x-panel-body{padding:15px 16px;}
+  .x-agenda{display:flex;flex-direction:column;}
+  .x-agenda-item{display:grid;grid-template-columns:42px minmax(0,1fr) 210px;gap:13px;padding:14px 15px;border-bottom:1px solid var(--x-line);align-items:start;cursor:pointer;transition:.15s;}
+  .x-agenda-item:last-child{border-bottom:0;}.x-agenda-item:hover{background:#151b20;}
+  .x-agenda-priority{width:37px;height:37px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:950;background:var(--agenda-soft);color:var(--agenda-color);border:1px solid color-mix(in srgb,var(--agenda-color) 30%,transparent);}
+  .x-agenda-copy b{font-size:10.8px;display:block;margin-bottom:4px;}.x-agenda-copy span{font-size:9px;color:#8e98a2;line-height:1.75;display:block;}
+  .x-agenda-action{border-right:2px solid var(--agenda-color);padding-right:10px;font-size:8.8px;color:#b8c0c6;line-height:1.8;}.x-agenda-action strong{color:#f0f1ec;display:block;font-size:8px;margin-bottom:2px;}
+  .x-narrative{padding:17px 18px 18px;}.x-narrative b{font-size:11px;display:block;margin-bottom:8px;}.x-narrative p{font-size:9.5px;color:#485155;line-height:2.1;margin:0;}.x-narrative .x-rule{height:1px;background:rgba(17,22,26,.13);margin:13px 0;}.x-narrative ul{margin:0;padding:0 17px 0 0;color:#3f484c;font-size:9px;line-height:2;}
+  .x-matrix{position:relative;height:360px;margin:8px 8px 28px 34px;background:
+    linear-gradient(to right,transparent 49.7%,#2a333c 50%,transparent 50.3%),
+    linear-gradient(to bottom,transparent 49.7%,#2a333c 50%,transparent 50.3%),#0d1216;border:1px solid #242d35;overflow:hidden;}
+  .x-matrix:before{content:'وابستگی بیشتر به پیمانکار';position:absolute;bottom:-23px;right:0;font-size:8px;color:#65707a;}.x-matrix:after{content:'توان رفع داخلی بیشتر';position:absolute;bottom:-23px;left:0;font-size:8px;color:#65707a;}
+  .x-axis-y{position:absolute;right:-31px;top:50%;transform:rotate(-90deg) translateX(50%);transform-origin:center;font-size:8px;color:#65707a;white-space:nowrap;}
+  .x-quadrant{position:absolute;font-size:8px;color:#4f5a64;font-weight:700;line-height:1.5;}.x-q1{top:9px;right:10px}.x-q2{top:9px;left:10px;text-align:left}.x-q3{bottom:10px;right:10px}.x-q4{bottom:10px;left:10px;text-align:left}
+  .x-bubble{position:absolute;transform:translate(-50%,-50%);border-radius:50%;display:flex;align-items:center;justify-content:center;border:1px solid rgba(255,255,255,.22);background:var(--bubble);box-shadow:0 8px 24px rgba(0,0,0,.32);cursor:pointer;transition:.18s;z-index:2;}
+  .x-bubble:hover{transform:translate(-50%,-50%) scale(1.12);z-index:4;}.x-bubble span{font-size:7.5px;color:#081013;font-weight:950;max-width:80%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .x-matrix-legend{display:flex;gap:13px;align-items:center;padding:0 16px 14px;color:#77818a;font-size:8px;}.x-matrix-legend i{width:7px;height:7px;border-radius:50%;display:inline-block;margin-left:4px;}
+  .x-region-list{display:flex;flex-direction:column;max-height:400px;overflow:auto;}.x-region-row{display:grid;grid-template-columns:minmax(130px,1.5fr) repeat(4,minmax(58px,.7fr));gap:8px;align-items:center;padding:11px 14px;border-bottom:1px solid #222a31;cursor:pointer;}.x-region-row:hover{background:#151b20;}.x-region-row:last-child{border-bottom:0;}.x-region-name b{display:block;font-size:10px;}.x-region-name span{display:block;font-size:8px;color:#68737d;margin-top:2px;}.x-cell strong{display:block;font-size:10px;}.x-cell span{display:block;font-size:7.5px;color:#67727c;margin-top:2px;}.x-class{display:inline-flex;padding:4px 7px;border-radius:999px;font-size:7.5px;font-weight:900;background:var(--class-soft);color:var(--class-color);}
+  .x-root-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;}.x-root{border-top:3px solid var(--root-color);background:#0e1317;padding:13px 12px 12px;min-height:155px;}.x-root b{font-size:10px;display:block;}.x-root-value{font-size:25px;font-weight:950;display:block;margin:14px 0 2px;}.x-root-share{font-size:8px;color:#747f88;}.x-root-bar{height:5px;background:#222a31;margin-top:12px;overflow:hidden;}.x-root-bar i{display:block;height:100%;background:var(--root-color);}.x-root-action{font-size:8px;color:#89939c;line-height:1.7;margin-top:11px;}
+  .x-table-wrap{overflow:auto;max-height:470px;}.x-table{width:100%;border-collapse:collapse;min-width:820px;font-size:9px;}.x-table th{position:sticky;top:0;z-index:2;background:#151b21;color:#6f7a84;text-align:right;font-size:8px;font-weight:800;padding:10px 11px;border-bottom:1px solid #2a333b;}.x-table td{padding:11px;border-bottom:1px solid #222a31;color:#bdc4c9;vertical-align:top;}.x-table tbody tr{cursor:pointer;transition:.12s;}.x-table tbody tr:hover{background:#151b20;}.x-table b{color:#f0f1ed;font-size:9.5px;}.x-table small{display:block;color:#65717b;font-size:7.8px;margin-top:3px;line-height:1.6;}.x-evidence{font-size:8px;color:#9fa8af;line-height:1.7;}.x-risk-chip{display:inline-flex;padding:4px 7px;border-radius:999px;background:var(--risk-soft);color:var(--risk-color);font-size:7.8px;font-weight:900;white-space:nowrap;}
+  .x-parts{display:grid;grid-template-columns:1fr 1fr;gap:10px;}.x-part-list{display:flex;flex-direction:column;gap:9px;}.x-part-item{display:grid;grid-template-columns:1fr 80px 32px;gap:8px;align-items:center;}.x-part-item b{font-size:9px;}.x-part-track{height:6px;background:#232b32;overflow:hidden;}.x-part-track i{display:block;height:100%;background:var(--x-aqua);}.x-part-item span{text-align:left;font-size:9px;font-weight:900;color:#d9dfdc;}.x-impact{background:#0c1115;border:1px solid #252e36;padding:14px;}.x-impact-number{font-size:34px;font-weight:950;color:var(--x-coral);display:block;}.x-impact p{font-size:8.8px;color:#7e8992;line-height:1.9;margin:7px 0 0;}
+  .x-tech-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}.x-tech{background:#0f1418;border:1px solid #252e36;padding:13px;}.x-tech-top{display:flex;justify-content:space-between;gap:8px;}.x-tech-name b{display:block;font-size:9.8px;}.x-tech-name span{font-size:7.8px;color:#66717a;}.x-tech-status{font-size:7.5px;font-weight:900;color:var(--tech-color);background:var(--tech-soft);padding:4px 7px;border-radius:999px;height:max-content;}.x-tech-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:12px;border-top:1px solid #222a31;padding-top:10px;}.x-tech-stats b{display:block;font-size:12px;}.x-tech-stats span{display:block;font-size:7px;color:#65717a;margin-top:2px;}
+  .x-ticket-drawer{margin-top:10px;background:#080b0e;border:1px solid #2a343d;padding:14px;}.x-ticket-drawer-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:11px;}.x-ticket-drawer-head b{font-size:10.5px;}.x-ticket-drawer-head span{font-size:8px;color:#68737c;}.x-ticket-list{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;max-height:420px;overflow:auto;}.x-ticket{border:1px solid #242d35;background:#10151a;padding:11px;}.x-ticket-top{display:flex;justify-content:space-between;gap:9px;margin-bottom:8px;}.x-ticket-number{font-size:8px;font-weight:900;color:var(--x-acid);direction:ltr;}.x-ticket-meta{font-size:7.7px;color:#68747e;}.x-ticket p{font-size:8.5px;color:#aab2b8;line-height:1.9;margin:0;border-top:1px solid #222a31;padding-top:8px;}.x-ticket p b{color:#e4e7e2;}
+  .x-chart-wrap{height:290px;padding:8px 6px 3px;direction:ltr;}.x-empty{padding:42px 16px;text-align:center;color:#69747e;font-size:9.5px;}
+  .x-footnote{font-size:8px;line-height:1.9;color:#5f6a74;border-top:1px solid var(--x-line);padding-top:12px;margin-top:18px;}
+  @media(max-width:1280px){.x-shell{grid-template-columns:238px minmax(0,1fr)}.x-metrics{grid-template-columns:repeat(3,1fr)}.x-metric.primary{grid-column:span 2}.x-root-grid{grid-template-columns:repeat(3,1fr)}.x-tech-grid{grid-template-columns:repeat(2,1fr)}}
+  @media(max-width:980px){.x-shell{display:block}.x-side{position:relative;height:auto;border-left:0;border-bottom:1px solid var(--x-line);padding:14px 16px}.x-side-brand{padding-bottom:10px}.x-filters{display:grid;grid-template-columns:repeat(3,1fr)}.x-nav{display:none}.x-side-bottom{margin-top:0}.x-user{margin-top:8px}.x-main{padding:18px 16px 45px}.x-hero{grid-template-columns:1fr}.x-period{border-right:0;border-top:1px solid rgba(16,20,25,.13);padding:16px 0 0}.x-grid,.x-grid.equal{grid-template-columns:1fr}.x-grid.thirds{grid-template-columns:1fr 1fr}.x-agenda-item{grid-template-columns:40px 1fr}.x-agenda-action{grid-column:2}.x-root-grid{grid-template-columns:repeat(2,1fr)}}
+  @media(max-width:620px){.x-filters{grid-template-columns:1fr 1fr}.x-main{padding:14px 10px 38px}.x-hero{padding:21px 18px;border-radius:3px 22px}.x-hero h1{font-size:23px}.x-summary{font-size:10.5px}.x-metrics{grid-template-columns:1fr 1fr}.x-metric.primary{grid-column:1/-1}.x-grid.thirds{grid-template-columns:1fr}.x-root-grid{grid-template-columns:1fr 1fr}.x-tech-grid{grid-template-columns:1fr}.x-ticket-list{grid-template-columns:1fr}.x-matrix{height:310px}.x-topline{align-items:flex-start}.x-section-head{align-items:flex-start}.x-section-meta{display:none}}
 
 </style>
 </head>
@@ -1527,20 +1656,29 @@ function ReportView({tasks,onRefresh,loading,lastUpdated}){
 
 
 
-/* ---------- داشبورد گزارشات مدیر ارشد تجهیز ---------- */
-function ExecutiveMetric({label,value,note,icon,tone,health}){
-  const style=tone?{'--exec-tone':tone.color,'--exec-soft':tone.soft}:{};
-  return React.createElement('div',{className:'exec-kpi'+(health?' health':''),style},
-    React.createElement('div',{className:'exec-kpi-top'},
-      React.createElement('span',{className:'exec-kpi-label'},label),
-      React.createElement('span',{className:'exec-kpi-icon'},icon)
-    ),
-    React.createElement('b',{className:'exec-kpi-value'},value),
-    React.createElement('span',{className:'exec-kpi-note'},note||'')
+
+/* ---------- مرکز پایش عملکرد فنی و تصمیم‌یار تجهیز — نسخه 6.0 ---------- */
+function XMetric({kicker,value,unit,label,note,primary,color,segments}){
+  const h=React.createElement;
+  return h('div',{className:'x-metric'+(primary?' primary':''),style:{'--metric-color':color||'#67e2d7'}},
+    h('i',{className:'x-metric-accent'}),
+    h('span',{className:'x-metric-kicker'},kicker),
+    h('b',{className:'x-metric-value'},value,unit?h('small',{className:'x-metric-unit'},unit):null),
+    h('span',{className:'x-metric-label'},label),
+    h('span',{className:'x-metric-note'},note||''),
+    segments&&segments.length?h('div',{className:'x-age-strip'},...segments.map((s,i)=>h('i',{key:i,title:s.label,style:{flex:Math.max(1,s.value),background:s.color}}))):null
   );
 }
 
-function ExecutiveDashboard({tasks,onRefresh,loading,lastUpdated}){
+function XSectionHead({no,title,sub,meta}){
+  const h=React.createElement;
+  return h('div',{className:'x-section-head'},
+    h('div',{className:'x-section-title'},h('span',{className:'x-section-no'},no),h('div',null,h('h2',null,title),h('p',null,sub))),
+    meta?h('span',{className:'x-section-meta'},meta):null
+  );
+}
+
+function ExecutiveDashboard({tasks,onRefresh,loading,lastUpdated,currentUser,onLogout}){
   const h=React.createElement;
   const [range,setRange]=useState('30');
   const [region,setRegion]=useState('all');
@@ -1552,7 +1690,9 @@ function ExecutiveDashboard({tasks,onRefresh,loading,lastUpdated}){
 
   const allDates=[...new Set(tasks.map(ticketDate).filter(Boolean))].sort(compareTicketDateLabels);
   const today=normalizeTicketDateLabel(new Date().toLocaleDateString('fa-IR'));
-  const allowedDates=range==='all'?null:range==='today'?new Set([today]):new Set(allDates.slice(-Number(range||30)));
+  const rangeCount=range==='today'?1:(range==='all'?0:Number(range||30));
+  const allowedDates=range==='all'?null:range==='today'?new Set([today]):new Set(allDates.slice(-rangeCount));
+  const priorDates=range==='all'?null:new Set(range==='today'?allDates.slice(-2,-1):allDates.slice(-(rangeCount*2),-rangeCount));
   const regions=[...new Set(tasks.map(t=>t.region).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'fa'));
   const technicians=[...new Set(tasks.map(t=>t.technician).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'fa'));
   const categories=[...new Set(tasks.map(t=>t.level1).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'fa'));
@@ -1560,196 +1700,305 @@ function ExecutiveDashboard({tasks,onRefresh,loading,lastUpdated}){
   tasks.forEach(t=>{const code=String(t.storeCode||'');if(code&&!storeLookup[code])storeLookup[code]={code,name:t.storeName||('فروشگاه '+code),region:t.region||''};});
   const stores=Object.values(storeLookup).sort((a,b)=>a.code.localeCompare(b.code,'fa',{numeric:true}));
 
-  const relevant=tasks.filter(t=>{
-    const d=ticketDate(t);
-    if(allowedDates&&!allowedDates.has(d))return false;
+  const passDimensions=(t,includeDate=true,dateSet=allowedDates)=>{
+    if(includeDate&&dateSet&&!dateSet.has(ticketDate(t)))return false;
     if(region!=='all'&&t.region!==region)return false;
     if(store!=='all'&&String(t.storeCode)!==store)return false;
     if(tech!=='all'&&t.technician!==tech)return false;
     if(category!=='all'&&t.level1!==category)return false;
     if(type!=='all'&&t.type!==type)return false;
     return true;
-  });
+  };
+  const relevant=tasks.filter(t=>passDimensions(t,true,allowedDates));
+  const prior=priorDates?tasks.filter(t=>passDimensions(t,true,priorDates)):[];
 
   const now=Date.now();
-  const validTime=(v)=>{const x=new Date(v).getTime();return Number.isFinite(x)?x:null;};
-  const resolutionHours=(t)=>{
-    const start=validTime(t.createdAt);if(!start)return null;
-    const end=validTime(t.completedAt)||(t.type==='internal'?start:null);
-    if(!end)return null;
-    return Math.max(0,(end-start)/3600000);
-  };
-  const ageHours=(t)=>{const start=validTime(t.createdAt);return start===null?0:Math.max(0,(now-start)/3600000);};
+  const validTime=v=>{const x=new Date(v).getTime();return Number.isFinite(x)?x:null;};
+  const ageDays=t=>{const s=validTime(t.createdAt);return s===null?0:Math.max(0,(now-s)/86400000);};
+  const resolutionHours=t=>{const s=validTime(t.createdAt),e=validTime(t.completedAt);return s!==null&&e!==null?Math.max(0,(e-s)/3600000):null;};
   const isCancelled=t=>(t.reviewStatus||'')==='cancelled'||t.workStatus==='cancelled';
-  const isOpen=t=>!isCancelled(t)&&t.type==='outsourced'&&t.workStatus!=='completed';
-  const isOverdue=t=>isOpen(t)&&ageHours(t)>=72;
-  const hasCause=t=>!!String(t.finalCause||t.initialCause||'').trim();
+  const isOutsourceOpen=t=>!isCancelled(t)&&t.type==='outsourced'&&t.workStatus!=='completed';
+  const isPending=t=>!isCancelled(t)&&(t.reviewStatus||'pending')==='pending';
+  const needsAction=t=>isOutsourceOpen(t)||isPending(t);
+  const isCompleted=t=>!isCancelled(t)&&(t.type==='internal'||t.workStatus==='completed');
+  const pctSafe=(n,d)=>d?Math.round(n/d*100):0;
+  const avg=arr=>arr.length?arr.reduce((a,b)=>a+b,0)/arr.length:0;
+  const median=arr=>{if(!arr.length)return 0;const x=[...arr].sort((a,b)=>a-b),m=Math.floor(x.length/2);return x.length%2?x[m]:(x[m-1]+x[m])/2;};
+  const fmtHours=v=>v>=48?(Math.round(v/24*10)/10)+' روز':Math.round(v)+' ساعت';
+  const fmtDelta=(cur,prev)=>{if(!prev)return null;const d=Math.round((cur-prev)/prev*100);return (d>0?'+':'')+d+'٪ نسبت به دوره قبل';};
+  const ticketIssueKey=t=>[String(t.storeCode||''),String(t.level1||''),Array.isArray(t.level2)&&t.level2.length?String(t.level2[0]):''].join('|');
+
   const total=relevant.length;
   const internal=relevant.filter(t=>t.type==='internal').length;
   const outsourced=relevant.filter(t=>t.type==='outsourced').length;
-  const open=relevant.filter(isOpen).length;
-  const overdue=relevant.filter(isOverdue).length;
-  const pending=relevant.filter(t=>(t.reviewStatus||'pending')==='pending').length;
-  const rejected=relevant.filter(t=>(t.reviewStatus||'')==='rejected').length;
-  const cancelled=relevant.filter(isCancelled).length;
-  const completed=relevant.filter(t=>!isCancelled(t)&&(t.type==='internal'||t.workStatus==='completed')).length;
-  const causeCovered=relevant.filter(hasCause).length;
-  const resolvedHours=relevant.map(resolutionHours).filter(v=>v!==null&&Number.isFinite(v));
-  const avgResolve=resolvedHours.length?resolvedHours.reduce((a,b)=>a+b,0)/resolvedHours.length:0;
-  const activeStores=new Set(relevant.map(t=>String(t.storeCode||'')).filter(Boolean)).size;
-  const activeRegions=new Set(relevant.map(t=>t.region).filter(Boolean)).size;
-  const activeTech=new Set(relevant.map(t=>t.technician).filter(Boolean)).size;
-  const ratio=(n,d=total)=>d?n/d:0;
-  const clamp=(n,min,max)=>Math.max(min,Math.min(max,n));
-  const healthScore=total?Math.round(clamp(100-(ratio(open)*25)-(ratio(overdue)*25)-(ratio(outsourced)*13)-(ratio(pending)*14)-(ratio(rejected+cancelled)*10)-((1-ratio(causeCovered))*13),0,100)):100;
-  const healthLabel=healthScore>=80?'پایدار':healthScore>=60?'نیازمند پیگیری':'بحرانی';
-  const healthColor=healthScore>=80?'#168b67':healthScore>=60?'#d98b21':'#d64b4b';
+  const actionTickets=relevant.filter(needsAction);
+  const actionCount=actionTickets.length;
+  const outsourceOpen=relevant.filter(isOutsourceOpen).length;
+  const pending=relevant.filter(isPending).length;
+  const internalRate=pctSafe(internal,total);
+  const completedOutsource=relevant.filter(t=>t.type==='outsourced'&&t.workStatus==='completed'&&!isCancelled(t));
+  const outsourceTimes=completedOutsource.map(resolutionHours).filter(v=>v!==null&&Number.isFinite(v));
+  const avgOutsourceHours=avg(outsourceTimes);
+  const oldestAction=Math.round(Math.max(0,...actionTickets.map(ageDays)));
+  const ageBands={d2:0,d7:0,d30:0,d30p:0};
+  actionTickets.forEach(t=>{const d=ageDays(t);if(d<2)ageBands.d2++;else if(d<7)ageBands.d7++;else if(d<30)ageBands.d30++;else ageBands.d30p++;});
+
+  const repeatMap={};
+  relevant.filter(t=>!isCancelled(t)&&t.storeCode&&t.level1).forEach(t=>{const k=ticketIssueKey(t);if(!repeatMap[k])repeatMap[k]=[];repeatMap[k].push(t);});
+  const repeatGroups=Object.values(repeatMap).filter(list=>list.length>=2);
+  const repeatedTicketCount=repeatGroups.reduce((n,list)=>n+list.length,0);
+  const repeatRate=pctSafe(repeatedTicketCount,total);
+
+  const priorTotal=prior.length;
+  const volumeDelta=fmtDelta(total,priorTotal);
+  const activeStoreCount=new Set(relevant.map(t=>String(t.storeCode||'')).filter(Boolean)).size;
+  const activeRegionCount=new Set(relevant.map(t=>t.region).filter(Boolean)).size;
+
+  const groupBy=(list,keyFn)=>{const m={};list.forEach(x=>{const k=keyFn(x)||'نامشخص';if(!m[k])m[k]=[];m[k].push(x);});return m;};
+
+  const regionMap=groupBy(relevant,t=>t.region||'منطقه نامشخص');
+  const regionRows=Object.entries(regionMap).map(([name,list])=>{
+    const actions=list.filter(needsAction);
+    const openAges=actions.map(ageDays);
+    const int=list.filter(t=>t.type==='internal').length;
+    const out=list.filter(t=>t.type==='outsourced').length;
+    const oldest=Math.round(Math.max(0,...openAges));
+    const avgAge=avg(openAges);
+    const internalPct=pctSafe(int,list.length);
+    let classification='متوازن',classColor='#67e2d7',classSoft='rgba(103,226,215,.12)';
+    if(internalPct<55&&avgAge>5){classification='نیازمند مداخله';classColor='#ff7b6b';classSoft='rgba(255,123,107,.13)';}
+    else if(internalPct<55){classification='سریع اما وابسته';classColor='#f0c75e';classSoft='rgba(240,199,94,.13)';}
+    else if(avgAge>5){classification='کمبود ظرفیت';classColor='#86a8ff';classSoft='rgba(134,168,255,.13)';}
+    return {name,list,total:list.length,actions:actions.length,internalPct,outsourcePct:pctSafe(out,list.length),avgAge,oldest,stores:new Set(list.map(t=>String(t.storeCode||'')).filter(Boolean)).size,classification,classColor,classSoft};
+  }).sort((a,b)=>b.actions-a.actions||b.avgAge-a.avgAge||b.total-a.total);
+
+  const storeMap=groupBy(relevant,t=>String(t.storeCode||'نامشخص'));
+  const storeRows=Object.entries(storeMap).map(([code,list])=>{
+    const actions=list.filter(needsAction);
+    const out=list.filter(t=>t.type==='outsourced').length;
+    const localRepeat={};
+    list.filter(t=>t.level1&&!isCancelled(t)).forEach(t=>{const k=[t.level1,Array.isArray(t.level2)&&t.level2.length?t.level2[0]:''].join('|');if(!localRepeat[k])localRepeat[k]=[];localRepeat[k].push(t);});
+    const repeatLists=Object.values(localRepeat).filter(x=>x.length>=2).sort((a,b)=>b.length-a.length);
+    const maxRepeat=repeatLists.length?repeatLists[0].length:0;
+    const repeatLabel=repeatLists.length?[repeatLists[0][0].level1,Array.isArray(repeatLists[0][0].level2)&&repeatLists[0][0].level2.length?repeatLists[0][0].level2[0]:''].filter(Boolean).join(' / '):'';
+    const oldest=Math.round(Math.max(0,...actions.map(ageDays)));
+    const reasons=[];
+    if(oldest>=7)reasons.push('قدیمی‌ترین پرونده '+oldest+' روز');
+    if(maxRepeat>=2)reasons.push('تکرار احتمالی '+repeatLabel+' ×'+maxRepeat);
+    if(list.length>=3&&pctSafe(out,list.length)>=60)reasons.push('وابستگی '+pctSafe(out,list.length)+'٪ به پیمانکار');
+    if(actions.length>=3)reasons.push(actions.length+' پرونده نیازمند اقدام');
+    if(!reasons.length)reasons.push('ریسک معناداری دیده نشد');
+    const priority=(oldest>=14?4:oldest>=7?3:0)+(maxRepeat>=3?3:maxRepeat>=2?2:0)+(pctSafe(out,list.length)>=70?2:0)+(actions.length>=3?2:0);
+    const first=list[0]||{};
+    return {code,name:first.storeName||('فروشگاه '+code),region:first.region||'',list,total:list.length,actions:actions.length,oldest,outsourcePct:pctSafe(out,list.length),maxRepeat,repeatLabel,reasons,priority};
+  }).sort((a,b)=>b.priority-a.priority||b.actions-a.actions||b.total-a.total);
+  const riskStores=storeRows.filter(x=>x.priority>0);
+
+  const rootBucket=t=>{
+    const c=String(t.finalCause||t.initialCause||'').trim();
+    if(!c)return 'فاقد تشخیص نهایی';
+    if(/سرویس|نگهداری|گرفتگی|آلودگی|تنظیم/.test(c))return 'نگهداری و سرویس';
+    if(/استفاده نادرست|آسیب فیزیکی/.test(c))return 'بهره‌برداری و آموزش';
+    if(/نوسان برق/.test(c))return 'زیرساخت و برق';
+    if(/استهلاک|خرابی قطعه/.test(c))return 'تجهیز و قطعه';
+    return 'سایر و نامشخص';
+  };
+  const rootDefs={
+    'تجهیز و قطعه':{color:'#86a8ff',action:'بازنگری کیفیت خرید، عمر تجهیز و سیاست تعویض'},
+    'نگهداری و سرویس':{color:'#d7ff63',action:'تقویت PM، چک‌لیست سرویس و کنترل اجرای دوره‌ای'},
+    'بهره‌برداری و آموزش':{color:'#f0c75e',action:'آموزش پرسنل فروشگاه و کنترل شیوه استفاده'},
+    'زیرساخت و برق':{color:'#67e2d7',action:'بررسی برق، حفاظت، محیط و زیرساخت محل'},
+    'فاقد تشخیص نهایی':{color:'#ff7b6b',action:'الزام ثبت علت نهایی برای تصمیم‌گیری معتبر'},
+    'سایر و نامشخص':{color:'#9ca5ad',action:'بازبینی طبقه‌بندی علل و تکمیل توضیحات'}
+  };
+  const rootMap={};
+  relevant.filter(t=>!isCancelled(t)).forEach(t=>{const k=rootBucket(t);rootMap[k]=(rootMap[k]||0)+1;});
+  const rootRows=Object.keys(rootDefs).map(name=>({name,count:rootMap[name]||0,...rootDefs[name]})).filter(x=>x.count>0).sort((a,b)=>b.count-a.count);
+
+  const reasonAction=r=>{
+    if(/توانائی|توانایی/.test(r))return 'برنامه آموزش و توسعه مهارت';
+    if(/ابزار/.test(r))return 'تأمین و استانداردسازی ابزار مناطق';
+    if(/نقدینگی|تنخواه/.test(r))return 'اصلاح تنخواه و اختیار خرید محلی';
+    if(/قطعه|موجودی|سفارش/.test(r))return 'موجودی حداقل و لجستیک قطعات';
+    if(/زمان کافی|حجم تعمیرات/.test(r))return 'بازتنظیم ظرفیت و توزیع کار';
+    if(/فاصله/.test(r))return 'بازطراحی پوشش جغرافیایی';
+    return 'بررسی موردی و اصلاح فرآیند';
+  };
+  const outsourceReasonMap={};
+  relevant.filter(t=>t.type==='outsourced'&&t.outsourceReason).forEach(t=>{
+    const k=t.outsourceReason;if(!outsourceReasonMap[k])outsourceReasonMap[k]={count:0,regions:new Set()};outsourceReasonMap[k].count++;if(t.region)outsourceReasonMap[k].regions.add(t.region);
+  });
+  const outsourceReasonRows=Object.entries(outsourceReasonMap).map(([reason,v])=>({reason,count:v.count,share:pctSafe(v.count,outsourced),regions:[...v.regions],action:reasonAction(reason)})).sort((a,b)=>b.count-a.count);
+  const shortageCount=relevant.filter(t=>t.type==='outsourced'&&/قطعه|موجودی|نقدینگی|تنخواه|سفارش/.test(String(t.outsourceReason||''))).length;
+
+  const partMap={};
+  relevant.forEach(t=>{
+    [...(t.consumedParts||[]),...(t.completionParts||[])].forEach(p=>{
+      const n=String(p&&p.name||'').trim();if(!n)return;if(!partMap[n])partMap[n]={qty:0,regions:new Set()};partMap[n].qty+=Number(p.qty)||1;if(t.region)partMap[n].regions.add(t.region);
+    });
+  });
+  const partRows=Object.entries(partMap).map(([name,v])=>({name,qty:v.qty,regions:[...v.regions]})).sort((a,b)=>b.qty-a.qty).slice(0,10);
+  const maxPart=Math.max(1,...partRows.map(x=>x.qty));
+
+  const techMap=groupBy(relevant,t=>t.technician||'نامشخص');
+  const workloads=Object.values(techMap).map(x=>x.length);
+  const medianLoad=median(workloads)||1;
+  const techRows=Object.entries(techMap).map(([name,list])=>{
+    const actions=list.filter(needsAction).length;
+    const int=list.filter(t=>t.type==='internal').length;
+    const out=list.filter(t=>t.type==='outsourced').length;
+    const intPct=pctSafe(int,list.length),outPct=pctSafe(out,list.length);
+    let status='متوازن',color='#67e2d7',soft='rgba(103,226,215,.12)';
+    if(list.length>=medianLoad*1.45&&actions>=2){status='بار کاری بالا';color='#ff7b6b';soft='rgba(255,123,107,.13)';}
+    else if(list.length>=3&&outPct>=60){status='نیاز مهارتی/ابزار';color='#f0c75e';soft='rgba(240,199,94,.13)';}
+    else if(actions>=3){status='انباشت پرونده';color='#86a8ff';soft='rgba(134,168,255,.13)';}
+    return {name,total:list.length,actions,intPct,outPct,stores:new Set(list.map(t=>String(t.storeCode||'')).filter(Boolean)).size,status,color,soft};
+  }).sort((a,b)=>b.actions-a.actions||b.total-a.total);
+
+  const highOutRegion=[...regionRows].filter(r=>r.total>=3).sort((a,b)=>b.outsourcePct-a.outsourcePct)[0];
+  const topActionRegion=regionRows.find(r=>r.actions>0);
+  const topRepeatStore=[...storeRows].sort((a,b)=>b.maxRepeat-a.maxRepeat)[0];
+  const maintenanceCount=(rootMap['نگهداری و سرویس']||0);
+  const causeMissing=(rootMap['فاقد تشخیص نهایی']||0);
+  const agenda=[];
+  if(topActionRegion&&topActionRegion.actions){agenda.push({p:'P1',color:'#ff7b6b',soft:'rgba(255,123,107,.13)',title:'انباشت اقدام در '+topActionRegion.name,evidence:topActionRegion.actions+' پرونده نیازمند اقدام؛ قدیمی‌ترین '+topActionRegion.oldest+' روز.',action:'جلسه تعیین تکلیف با مدیر فنی منطقه و برنامه زمان‌بندی بستن معوقات.'});}
+  if(highOutRegion&&highOutRegion.outsourcePct>=50){agenda.push({p:'P1',color:'#f0c75e',soft:'rgba(240,199,94,.13)',title:'وابستگی بالا به پیمانکار در '+highOutRegion.name,evidence:highOutRegion.outsourcePct+'٪ از '+highOutRegion.total+' تیکت برون‌سپاری شده است.',action:'تفکیک علت به مهارت، ابزار، قطعه و ظرفیت؛ سپس اقدام ساختاری متناسب.'});}
+  if(topRepeatStore&&topRepeatStore.maxRepeat>=2){agenda.push({p:'P2',color:'#86a8ff',soft:'rgba(134,168,255,.13)',title:'تکرار احتمالی خرابی در '+topRepeatStore.name,evidence:topRepeatStore.repeatLabel+' حداقل '+topRepeatStore.maxRepeat+' بار در دوره ثبت شده است.',action:'بازبینی کیفیت تعمیر قبلی و تصمیم تعمیر اساسی یا تعویض تجهیز.'});}
+  if(shortageCount){agenda.push({p:'P2',color:'#67e2d7',soft:'rgba(103,226,215,.13)',title:'اثر مستقیم قطعه و نقدینگی بر برون‌سپاری',evidence:shortageCount+' برون‌سپاری با علت مرتبط با قطعه، موجودی، سفارش یا تنخواه ثبت شده است.',action:'تعریف موجودی حداقل منطقه‌ای و اختیار خرید فوری برای اقلام بحرانی.'});}
+  if(maintenanceCount){agenda.push({p:'P3',color:'#d7ff63',soft:'rgba(215,255,99,.12)',title:'فرصت کاهش خرابی با نگهداری پیشگیرانه',evidence:maintenanceCount+' مورد در سبد نگهداری، سرویس، گرفتگی یا تنظیم قرار دارد.',action:'تبدیل موارد پرتکرار به برنامه PM و کنترل اجرای چک‌لیست فروشگاه.'});}
+  if(causeMissing){agenda.push({p:'P3',color:'#9ca5ad',soft:'rgba(156,165,173,.12)',title:'ضعف داده در ثبت علت نهایی',evidence:causeMissing+' تیکت فاقد تشخیص نهایی قابل استفاده برای تصمیم‌گیری است.',action:'الزام تکمیل علت نهایی پیش از بسته‌شدن پرونده.'});}
+  if(!agenda.length)agenda.push({p:'OK',color:'#67e2d7',soft:'rgba(103,226,215,.12)',title:'موضوع بحرانی برجسته‌ای دیده نشد',evidence:'در فیلتر انتخاب‌شده معوق یا الگوی تکرار معناداری مشاهده نشد.',action:'پایش روند و تمرکز بر پیشگیری و کیفیت داده ادامه یابد.'});
+
+  const topRoot=rootRows[0];
+  const summaryParts=[];
+  summaryParts.push('در بازه انتخاب‌شده '+total+' تیکت در '+activeStoreCount+' فروشگاه ثبت شده است.');
+  if(actionCount)summaryParts.push(actionCount+' پرونده هنوز نیازمند اقدام اجرایی یا بررسی مدیریتی است و قدیمی‌ترین مورد '+oldestAction+' روز عمر دارد.');
+  else summaryParts.push('پرونده نیازمند اقدام ثبت نشده است.');
+  summaryParts.push('توان رفع داخلی '+internalRate+'٪ و سهم برون‌سپاری '+pctSafe(outsourced,total)+'٪ است.');
+  if(repeatGroups.length)summaryParts.push(repeatGroups.length+' الگوی تکرار احتمالی خرابی شناسایی شده است.');
+  if(topRoot)summaryParts.push('بزرگ‌ترین منشأ مسئله «'+topRoot.name+'» با '+topRoot.count+' مورد است.');
+  if(volumeDelta)summaryParts.push('حجم ثبت '+volumeDelta+' بوده است.');
+  const executiveSummary=summaryParts.join(' ');
+
+  const periodLabel=range==='all'?'کل سوابق':range==='today'?'امروز':range+' روز ثبت‌شده اخیر';
+  const stamp=lastUpdated?new Date(lastUpdated).toLocaleTimeString('fa-IR',{hour:'2-digit',minute:'2-digit'}):'—';
+
+  const jump=id=>{const el=document.getElementById(id);if(el)el.scrollIntoView({behavior:'smooth',block:'start'});};
+  const filterPanel=h('aside',{className:'x-side'},
+    h('div',{className:'x-side-brand'},h('div',{className:'x-mark'},'DI'),h('div',null,h('b',null,'تصمیم‌یار فنی و تجهیز'),h('span',null,'EXECUTIVE DECISION INTELLIGENCE · V6.0'))),
+    h('div',null,h('div',{className:'x-side-label'},'فیلتر گزارش'),h('div',{className:'x-filters'},
+      h('div',{className:'x-filter'},h('label',null,'دوره'),h('select',{value:range,onChange:e=>setRange(e.target.value)},h('option',{value:'today'},'امروز'),h('option',{value:'7'},'۷ روز اخیر'),h('option',{value:'30'},'۳۰ روز اخیر'),h('option',{value:'90'},'۹۰ روز اخیر'),h('option',{value:'all'},'کل سوابق'))),
+      h('div',{className:'x-filter'},h('label',null,'منطقه'),h('select',{value:region,onChange:e=>{setRegion(e.target.value);setStore('all');setSelectedStore('');}},h('option',{value:'all'},'همه مناطق'),...regions.map(x=>h('option',{key:x,value:x},x)))),
+      h('div',{className:'x-filter'},h('label',null,'فروشگاه'),h('select',{value:store,onChange:e=>{setStore(e.target.value);setSelectedStore('');}},h('option',{value:'all'},'همه فروشگاه‌ها'),...stores.filter(s=>region==='all'||s.region===region).map(s=>h('option',{key:s.code,value:s.code},s.code+' — '+s.name.replace(/^فروشگاه\s*/,''))))),
+      h('div',{className:'x-filter'},h('label',null,'کارشناس'),h('select',{value:tech,onChange:e=>setTech(e.target.value)},h('option',{value:'all'},'همه کارشناسان'),...technicians.map(x=>h('option',{key:x,value:x},x)))),
+      h('div',{className:'x-filter'},h('label',null,'گروه خرابی'),h('select',{value:category,onChange:e=>setCategory(e.target.value)},h('option',{value:'all'},'همه گروه‌ها'),...categories.map(x=>h('option',{key:x,value:x},x)))),
+      h('div',{className:'x-filter'},h('label',null,'نحوه انجام'),h('select',{value:type,onChange:e=>setType(e.target.value)},h('option',{value:'all'},'همه روش‌ها'),h('option',{value:'internal'},'درون‌سپاری'),h('option',{value:'outsourced'},'برون‌سپاری')))
+    )),
+    h('div',null,h('div',{className:'x-side-label'},'ساختار گزارش'),h('div',{className:'x-nav'},
+      h('button',{onClick:()=>jump('x-overview')},'خلاصه دوره',h('span',null,'01')),
+      h('button',{onClick:()=>jump('x-decisions')},'دستور کار مدیریت',h('span',null,'02')),
+      h('button',{onClick:()=>jump('x-regions')},'الگوی مناطق',h('span',null,'03')),
+      h('button',{onClick:()=>jump('x-causes')},'منشأ مسائل',h('span',null,'04')),
+      h('button',{onClick:()=>jump('x-stores')},'فروشگاه‌های پرریسک',h('span',null,'05')),
+      h('button',{onClick:()=>jump('x-resources')},'منابع و ظرفیت',h('span',null,'06'))
+    )),
+    h('div',{className:'x-side-bottom'},
+      h('div',{className:'x-live'},h('i',{className:'x-live-dot'}),h('span',null,'داده زنده Google Sheets',h('br'),'آخرین به‌روزرسانی: '+stamp)),
+      h('div',{className:'x-user'},h('div',null,h('b',null,currentUser&&currentUser.name||'مدیر ارشد تجهیز'),h('span',null,'دسترسی صرفاً گزارشات')),h('button',{className:'x-logout',onClick:onLogout},'خروج'))
+    )
+  );
+
+  const hero=h('div',{className:'x-hero'},
+    h('div',{className:'x-hero-copy'},h('div',{className:'x-kicker'},'NATIONAL TECHNICAL PERFORMANCE BRIEF'),h('h1',null,'مرکز پایش عملکرد فنی و تصمیم‌یار تجهیز'),h('p',{className:'x-summary'},executiveSummary)),
+    h('div',{className:'x-period'},h('div',null,h('span',{className:'x-period-label'},'دامنه گزارش'),h('div',{className:'x-period-value'},periodLabel),h('div',{className:'x-period-sub'},activeRegionCount+' منطقه · '+activeStoreCount+' فروشگاه · '+technicians.length+' کارشناس در داده موجود')),h('div',{className:'x-hero-stamp'},h('i'),volumeDelta||'مبنای مقایسه دوره قبل کافی نیست'))
+  );
+
+  const metrics=h('div',{className:'x-metrics'},
+    h(XMetric,{primary:true,kicker:'پرونده‌های نیازمند اقدام',value:actionCount,label:'تعهدات باز اجرایی یا مدیریتی',note:'قدیمی‌ترین مورد: '+oldestAction+' روز',segments:[{label:'کمتر از ۲ روز',value:ageBands.d2,color:'#101419'},{label:'۲ تا ۷ روز',value:ageBands.d7,color:'#4f6321'},{label:'۷ تا ۳۰ روز',value:ageBands.d30,color:'#8a6a18'},{label:'بیشتر از ۳۰ روز',value:ageBands.d30p,color:'#9b342c'}]}),
+    h(XMetric,{kicker:'توان داخلی',value:internalRate,unit:'٪',label:'نرخ رفع بدون پیمانکار',note:internal+' مورد از '+total+' تیکت',color:'#67e2d7'}),
+    h(XMetric,{kicker:'کیفیت تعمیر',value:repeatRate,unit:'٪',label:'تکرار احتمالی الگوی خرابی',note:repeatGroups.length+' الگوی فروشگاه/خرابی؛ بدون شناسه تجهیز',color:'#86a8ff'}),
+    h(XMetric,{kicker:'سرعت پیمانکار',value:outsourceTimes.length?fmtHours(avgOutsourceHours):'—',label:'میانگین پایان برون‌سپاری',note:outsourceTimes.length+' پرونده دارای زمان معتبر',color:'#f0c75e'}),
+    h(XMetric,{kicker:'تمرکز ریسک',value:riskStores.length,label:'فروشگاه نیازمند توجه',note:'براساس معوق، تکرار و وابستگی به پیمانکار',color:'#ff7b6b'})
+  );
+
+  const agendaPanel=h('div',{className:'x-panel'},
+    h('div',{className:'x-panel-head'},h('div',null,h('h3',null,'موضوعات نیازمند تصمیم مدیریت ارشد'),h('p',null,'هر مورد با شاهد داده و اقدام پیشنهادی نمایش داده شده است')),h('span',{className:'x-panel-tag'},agenda.length+' موضوع')),
+    h('div',{className:'x-agenda'},...agenda.slice(0,6).map((a,i)=>h('div',{className:'x-agenda-item',key:i,style:{'--agenda-color':a.color,'--agenda-soft':a.soft}},h('div',{className:'x-agenda-priority'},a.p),h('div',{className:'x-agenda-copy'},h('b',null,a.title),h('span',null,a.evidence)),h('div',{className:'x-agenda-action'},h('strong',null,'تصمیم پیشنهادی'),a.action))))
+  );
+  const narrativePanel=h('div',{className:'x-panel paper'},h('div',{className:'x-panel-head'},h('div',null,h('h3',null,'برداشت مدیریتی دوره'),h('p',null,'تفسیر داده، نه تکرار نمودارها'))),h('div',{className:'x-narrative'},h('b',null,'چه چیزی باید در جلسه مدیریت مطرح شود؟'),h('p',null,executiveSummary),h('div',{className:'x-rule'}),h('ul',null,h('li',null,'رفع داخلی پایین، الزاماً ضعف فردی نیست؛ علت برون‌سپاری باید به مهارت، ابزار، قطعه، ظرفیت یا جغرافیا تفکیک شود.'),h('li',null,'تکرار خرابی در این نسخه «احتمالی» است؛ چون هنوز شناسه یکتای تجهیز در فرم ثبت نمی‌شود.'),h('li',null,'زمان رفع داخلی قابل سنجش دقیق نیست؛ زمان ثبت پایان کار فعلاً فقط برای برون‌سپاری قابل اتکاست.'))));
+
+  const maxRegionAge=Math.max(7,...regionRows.map(r=>r.avgAge));
+  const matrix=h('div',{className:'x-panel'},h('div',{className:'x-panel-head'},h('div',null,h('h3',null,'ماتریس عملکرد مناطق'),h('p',null,'محور افقی: نرخ رفع داخلی · محور عمودی: میانگین سن پرونده‌های نیازمند اقدام')),h('span',{className:'x-panel-tag'},regionRows.length+' منطقه')),
+    h('div',{className:'x-matrix'},h('span',{className:'x-axis-y'},'سن پرونده‌های نیازمند اقدام بیشتر'),h('span',{className:'x-quadrant x-q1'},'کند و وابسته',h('br'),'مداخله فوری'),h('span',{className:'x-quadrant x-q2'},'کند اما مستقل',h('br'),'مسئله ظرفیت'),h('span',{className:'x-quadrant x-q3'},'سریع اما وابسته',h('br'),'مسئله مهارت/ابزار'),h('span',{className:'x-quadrant x-q4'},'سریع و مستقل',h('br'),'الگوی مطلوب'),...regionRows.map((r,i)=>{
+      const left=8+(Math.max(0,Math.min(100,r.internalPct))*.84);
+      const top=86-(Math.max(0,Math.min(maxRegionAge,r.avgAge))/maxRegionAge*74);
+      const size=Math.max(28,Math.min(64,25+Math.sqrt(r.total)*7));
+      const bubble=r.classification==='نیازمند مداخله'?'#ff7b6b':r.classification==='کمبود ظرفیت'?'#86a8ff':r.classification==='سریع اما وابسته'?'#f0c75e':'#67e2d7';
+      return h('button',{key:r.name,className:'x-bubble',title:r.name+' | رفع داخلی '+r.internalPct+'٪ | میانگین سن '+(Math.round(r.avgAge*10)/10)+' روز | '+r.actions+' اقدام',onClick:()=>{setRegion(r.name);setStore('all');setSelectedStore('');},style:{left:left+'%',top:top+'%',width:size+'px',height:size+'px','--bubble':bubble}},h('span',null,r.name));
+    })),h('div',{className:'x-matrix-legend'},h('span',null,h('i',{style:{background:'#67e2d7'}}),'متوازن'),h('span',null,h('i',{style:{background:'#f0c75e'}}),'وابستگی'),h('span',null,h('i',{style:{background:'#86a8ff'}}),'ظرفیت'),h('span',null,h('i',{style:{background:'#ff7b6b'}}),'مداخله'))
+  );
+  const regionList=h('div',{className:'x-panel'},h('div',{className:'x-panel-head'},h('div',null,h('h3',null,'خوانش مدیریتی مناطق'),h('p',null,'شاخص‌های خام و قابل توضیح؛ بدون امتیاز ترکیبی'))),h('div',{className:'x-region-list'},...regionRows.slice(0,14).map(r=>h('div',{className:'x-region-row',key:r.name,onClick:()=>{setRegion(r.name);setStore('all');setSelectedStore('');}},h('div',{className:'x-region-name'},h('b',null,r.name),h('span',null,r.stores+' فروشگاه · '+r.total+' تیکت')),h('div',{className:'x-cell'},h('strong',null,r.internalPct+'٪'),h('span',null,'رفع داخلی')),h('div',{className:'x-cell'},h('strong',null,r.actions),h('span',null,'نیازمند اقدام')),h('div',{className:'x-cell'},h('strong',null,(Math.round(r.avgAge*10)/10)+' روز'),h('span',null,'میانگین سن')),h('span',{className:'x-class',style:{'--class-color':r.classColor,'--class-soft':r.classSoft}},r.classification)))));
+
+  const roots=h('div',{className:'x-root-grid'},...rootRows.map(r=>h('div',{className:'x-root',key:r.name,style:{'--root-color':r.color}},h('b',null,r.name),h('span',{className:'x-root-value'},r.count),h('span',{className:'x-root-share'},pctSafe(r.count,total)+'٪ از تیکت‌های دوره'),h('div',{className:'x-root-bar'},h('i',{style:{width:pctSafe(r.count,Math.max(1,rootRows[0]&&rootRows[0].count))+'%'}})),h('div',{className:'x-root-action'},r.action))));
+
+  const outsourceTable=h('div',{className:'x-panel'},h('div',{className:'x-panel-head'},h('div',null,h('h3',null,'چرایی وابستگی به برون‌سپاری'),h('p',null,'هر علت به یک تصمیم ساختاری متصل شده است')),h('span',{className:'x-panel-tag'},outsourced+' برون‌سپاری')),h('div',{className:'x-table-wrap'},h('table',{className:'x-table'},h('thead',null,h('tr',null,h('th',null,'علت ثبت‌شده'),h('th',null,'تعداد'),h('th',null,'سهم'),h('th',null,'مناطق درگیر'),h('th',null,'تصمیم ساختاری'))),h('tbody',null,...outsourceReasonRows.map(r=>h('tr',{key:r.reason},h('td',null,h('b',null,r.reason)),h('td',null,r.count),h('td',null,r.share+'٪'),h('td',null,h('span',{className:'x-evidence'},r.regions.slice(0,4).join('، ')+(r.regions.length>4?' و ...':''))),h('td',null,h('span',{className:'x-risk-chip',style:{'--risk-color':'#67e2d7','--risk-soft':'rgba(103,226,215,.12)'}},r.action))))))));
+
+  const riskTable=h('div',{className:'x-panel'},h('div',{className:'x-panel-head'},h('div',null,h('h3',null,'فروشگاه‌های پرریسک'),h('p',null,'اولویت‌بندی براساس شواهد؛ نه صرفاً تعداد تیکت')),h('span',{className:'x-panel-tag'},riskStores.length+' فروشگاه')),h('div',{className:'x-table-wrap'},h('table',{className:'x-table'},h('thead',null,h('tr',null,h('th',null,'فروشگاه'),h('th',null,'منطقه'),h('th',null,'نیازمند اقدام'),h('th',null,'قدیمی‌ترین'),h('th',null,'برون‌سپاری'),h('th',null,'تکرار احتمالی'),h('th',null,'دلیل اولویت'))),h('tbody',null,...riskStores.slice(0,30).map(r=>h('tr',{key:r.code,onClick:()=>setSelectedStore(selectedStore===r.code?'':r.code)},h('td',null,h('b',null,r.code+' — '+r.name.replace(/^فروشگاه\s*/,'')),h('small',null,r.total+' تیکت در دوره')),h('td',null,r.region||'—'),h('td',null,r.actions),h('td',null,r.oldest+' روز'),h('td',null,r.outsourcePct+'٪'),h('td',null,r.maxRepeat>=2?(r.repeatLabel+' ×'+r.maxRepeat):'—'),h('td',null,h('span',{className:'x-evidence'},r.reasons.join(' · ')))))))));
+  const selectedStoreData=selectedStore?storeRows.find(x=>x.code===selectedStore):null;
+  const drawerTickets=selectedStoreData?[...selectedStoreData.list].sort((a,b)=>Number(b.rowNumber||0)-Number(a.rowNumber||0)):[];
+  const drawer=selectedStoreData?h('div',{className:'x-ticket-drawer'},
+    h('div',{className:'x-ticket-drawer-head'},
+      h('b',null,'شواهد تیکتی '+selectedStoreData.name),
+      h('span',null,selectedStoreData.list.length+' تیکت · '+selectedStoreData.region)
+    ),
+    h('div',{className:'x-ticket-list'},...drawerTickets.map(t=>{
+      const issue=[t.level1,Array.isArray(t.level2)?t.level2.join('، '):'',t.otherText].filter(Boolean).join(' — ')||'ثبت نشده';
+      const status=isCancelled(t)?'لغوشده':needsAction(t)?'نیازمند اقدام':'تکمیل‌شده';
+      return h('div',{className:'x-ticket',key:t.id||t.ticketNumber||t.rowNumber},
+        h('div',{className:'x-ticket-top'},
+          h('div',null,
+            h('b',null,t.technician||'کارشناس نامشخص'),
+            h('div',{className:'x-ticket-meta'},(t.dateText||ticketDate(t)||'—')+' · '+(t.type==='outsourced'?'برون‌سپاری':'درون‌سپاری'))
+          ),
+          h('span',{className:'x-ticket-number'},t.ticketNumber||('DM-'+String(Math.max(1,(t.rowNumber||1)-1)).padStart(7,'0')))
+        ),
+        h('p',null,
+          h('b',null,'خرابی: '),issue,h('br'),
+          h('b',null,'علت: '),String(t.finalCause||t.initialCause||'ثبت نشده'),h('br'),
+          h('b',null,'وضعیت: '),status
+        )
+      );
+    }))
+  ):null;
+
+  const partsPanel=h('div',{className:'x-panel'},h('div',{className:'x-panel-head'},h('div',null,h('h3',null,'قطعات و اثر کمبود'),h('p',null,'مصرف ثبت‌شده و برون‌سپاری‌های متاثر از قطعه یا تنخواه'))),h('div',{className:'x-panel-body'},h('div',{className:'x-parts'},h('div',{className:'x-part-list'},...(partRows.length?partRows.map(p=>h('div',{className:'x-part-item',key:p.name},h('b',null,p.name),h('div',{className:'x-part-track'},h('i',{style:{width:(p.qty/maxPart*100)+'%'}})),h('span',null,p.qty))):[h('div',{className:'x-empty',key:'empty'},'قطعه مصرفی ثبت نشده است')])),h('div',{className:'x-impact'},h('span',{className:'x-impact-number'},shortageCount),h('b',null,'برون‌سپاری متاثر از قطعه/تنخواه'),h('p',null,'این عدد شامل دلایل مرتبط با نبود قطعه، سفارش، موجودی، نقدینگی یا تنخواه است و مستقیماً به سیاست موجودی و خرید منطقه‌ای مربوط می‌شود.')))));
+  const techPanel=h('div',{className:'x-panel'},h('div',{className:'x-panel-head'},h('div',null,h('h3',null,'ظرفیت واقعی تیم فنی'),h('p',null,'تشخیص بار، انباشت و وابستگی؛ بدون رتبه‌بندی نمایشی')),h('span',{className:'x-panel-tag'},techRows.length+' کارشناس')),h('div',{className:'x-panel-body'},h('div',{className:'x-tech-grid'},...techRows.slice(0,18).map(t=>h('div',{className:'x-tech',key:t.name},h('div',{className:'x-tech-top'},h('div',{className:'x-tech-name'},h('b',null,t.name),h('span',null,t.stores+' فروشگاه تحت پوشش')),h('span',{className:'x-tech-status',style:{'--tech-color':t.color,'--tech-soft':t.soft}},t.status)),h('div',{className:'x-tech-stats'},h('div',null,h('b',null,t.total),h('span',null,'کل تیکت')),h('div',null,h('b',null,t.intPct+'٪'),h('span',null,'رفع داخلی')),h('div',null,h('b',null,t.actions),h('span',null,'نیازمند اقدام'))))))));
 
   const dateGroups={};
-  relevant.forEach(t=>{
-    const d=ticketDate(t)||'نامشخص';
-    if(!dateGroups[d])dateGroups[d]={total:0,internal:0,outsourced:0,completed:0};
-    dateGroups[d].total++;
-    if(t.type==='internal')dateGroups[d].internal++;
-    if(t.type==='outsourced')dateGroups[d].outsourced++;
-    if(!isCancelled(t)&&(t.type==='internal'||t.workStatus==='completed'))dateGroups[d].completed++;
-  });
+  relevant.forEach(t=>{const d=ticketDate(t)||'نامشخص';if(!dateGroups[d])dateGroups[d]={total:0,action:0,outsourced:0};dateGroups[d].total++;if(needsAction(t))dateGroups[d].action++;if(t.type==='outsourced')dateGroups[d].outsourced++;});
   const trendRows=Object.keys(dateGroups).map(label=>({label,sortValue:ticketDateSortValue(label),...dateGroups[label]})).sort((a,b)=>a.sortValue-b.sortValue).slice(-30);
-  const trendData={labels:trendRows.map(x=>x.label),datasets:[
-    {label:'ثبت‌شده',data:trendRows.map(x=>x.total),borderColor:'#17233b',backgroundColor:'rgba(23,35,59,.08)',tension:.34,fill:true},
-    {label:'تکمیل‌شده',data:trendRows.map(x=>x.completed),borderColor:'#168b67',backgroundColor:'#168b67',tension:.34},
-    {label:'برون‌سپاری',data:trendRows.map(x=>x.outsourced),borderColor:'#3167f6',backgroundColor:'#3167f6',tension:.34}
-  ]};
-  const lineOptions={responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{usePointStyle:true,boxWidth:7,font:{size:9}}}},scales:{x:{reverse:false,grid:{display:false},ticks:{font:{size:8},autoSkip:true,maxTicksLimit:12,maxRotation:0}},y:{beginAtZero:true,ticks:{precision:0,font:{size:8}},grid:{color:'rgba(17,26,45,.06)'}}}};
-  const workData={labels:['تکمیل‌شده','باز','لغوشده'],datasets:[{data:[completed,open,cancelled],backgroundColor:['#168b67','#d98b21','#9aa1ae'],borderWidth:0,hoverOffset:5}]};
-  const donutOptions={responsive:true,maintainAspectRatio:false,cutout:'70%',plugins:{legend:{position:'bottom',labels:{usePointStyle:true,boxWidth:7,font:{size:9}}}}};
+  const trendData={labels:trendRows.map(x=>x.label),datasets:[{label:'تیکت ثبت‌شده',data:trendRows.map(x=>x.total),borderColor:'#d7ff63',backgroundColor:'rgba(215,255,99,.08)',tension:.35,fill:true},{label:'نیازمند اقدام',data:trendRows.map(x=>x.action),borderColor:'#ff7b6b',backgroundColor:'#ff7b6b',tension:.35},{label:'برون‌سپاری',data:trendRows.map(x=>x.outsourced),borderColor:'#67e2d7',backgroundColor:'#67e2d7',tension:.35}]};
+  const trendOptions={responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#8f99a3',usePointStyle:true,boxWidth:7,font:{family:'Vazirmatn',size:9}}}},scales:{x:{reverse:false,grid:{display:false},ticks:{color:'#65707a',font:{family:'Vazirmatn',size:8},autoSkip:true,maxTicksLimit:12,maxRotation:0}},y:{beginAtZero:true,ticks:{precision:0,color:'#65707a',font:{family:'Vazirmatn',size:8}},grid:{color:'rgba(120,135,148,.12)'}}}};
+  const trendPanel=h('div',{className:'x-panel'},h('div',{className:'x-panel-head'},h('div',null,h('h3',null,'روند حجم و فشار عملیاتی'),h('p',null,'ثبت، پرونده‌های نیازمند اقدام و برون‌سپاری در ترتیب واقعی تاریخ')),h('span',{className:'x-panel-tag'},trendRows.length+' تاریخ')),h('div',{className:'x-chart-wrap'},trendRows.length?h(ChartBox,{type:'line',data:trendData,options:trendOptions}):h('div',{className:'x-empty'},'داده‌ای برای نمایش وجود ندارد')));
 
-  const scoreForList=(list)=>{
-    if(!list.length)return 100;
-    const o=list.filter(isOpen).length, od=list.filter(isOverdue).length, os=list.filter(t=>t.type==='outsourced').length, p=list.filter(t=>(t.reviewStatus||'pending')==='pending').length, bad=list.filter(t=>(t.reviewStatus||'')==='rejected'||isCancelled(t)).length, cause=list.filter(hasCause).length;
-    return Math.round(clamp(100-(o/list.length*25)-(od/list.length*25)-(os/list.length*13)-(p/list.length*14)-(bad/list.length*10)-((1-cause/list.length)*13),0,100));
-  };
-  const averageHours=(list)=>{const arr=list.map(resolutionHours).filter(v=>v!==null&&Number.isFinite(v));return arr.length?arr.reduce((a,b)=>a+b,0)/arr.length:0;};
-
-  const regionMap={};
-  relevant.forEach(t=>{const k=t.region||'منطقه نامشخص';if(!regionMap[k])regionMap[k]=[];regionMap[k].push(t);});
-  const regionRows=Object.entries(regionMap).map(([name,list])=>({name,list,total:list.length,score:scoreForList(list),open:list.filter(isOpen).length,overdue:list.filter(isOverdue).length,outsourced:list.filter(t=>t.type==='outsourced').length,pending:list.filter(t=>(t.reviewStatus||'pending')==='pending').length,avg:averageHours(list),stores:new Set(list.map(t=>String(t.storeCode||'')).filter(Boolean)).size})).sort((a,b)=>a.score-b.score||b.total-a.total);
-
-  const storeMap={};
-  relevant.forEach(t=>{const k=String(t.storeCode||'نامشخص');if(!storeMap[k])storeMap[k]={code:k,name:t.storeName||('فروشگاه '+k),region:t.region||'',list:[]};storeMap[k].list.push(t);});
-  const storeRows=Object.values(storeMap).map(x=>({...x,total:x.list.length,score:scoreForList(x.list),open:x.list.filter(isOpen).length,overdue:x.list.filter(isOverdue).length,outsourced:x.list.filter(t=>t.type==='outsourced').length,pending:x.list.filter(t=>(t.reviewStatus||'pending')==='pending').length,avg:averageHours(x.list)})).sort((a,b)=>a.score-b.score||b.total-a.total);
-
-  const techMap={};
-  relevant.forEach(t=>{const k=t.technician||'نامشخص';if(!techMap[k])techMap[k]=[];techMap[k].push(t);});
-  const techRows=Object.entries(techMap).map(([name,list])=>{
-    const reviewedCount=list.filter(t=>(t.reviewStatus||'')==='reviewed').length;
-    const rejectedCount=list.filter(t=>(t.reviewStatus||'')==='rejected').length;
-    const qualityBase=reviewedCount+rejectedCount;
-    const quality=qualityBase?reviewedCount/qualityBase:1;
-    const completion=list.filter(t=>!isCancelled(t)&&(t.type==='internal'||t.workStatus==='completed')).length/list.length;
-    const internalRate=list.filter(t=>t.type==='internal').length/list.length;
-    const causeRate=list.filter(hasCause).length/list.length;
-    const score=Math.round(clamp(quality*35+completion*30+internalRate*20+causeRate*15,0,100));
-    return {name,total:list.length,score,completed:list.filter(t=>!isCancelled(t)&&(t.type==='internal'||t.workStatus==='completed')).length,internal:list.filter(t=>t.type==='internal').length,outsourced:list.filter(t=>t.type==='outsourced').length,pending:list.filter(t=>(t.reviewStatus||'pending')==='pending').length,avg:averageHours(list),stores:new Set(list.map(t=>String(t.storeCode||'')).filter(Boolean)).size};
-  }).sort((a,b)=>b.score-a.score||b.completed-a.completed);
-
-  const causeRows=sortedEntries(countBy(relevant.filter(t=>hasCause(t)),t=>String(t.finalCause||t.initialCause||'').trim()),8);
-  const categoryRows=sortedEntries(countBy(relevant.filter(t=>t.level1),t=>t.level1),8);
-  const outsourceReasonRows=sortedEntries(countBy(relevant.filter(t=>t.type==='outsourced'&&t.outsourceReason),t=>t.outsourceReason),7);
-  const barOptions={responsive:true,maintainAspectRatio:false,indexAxis:'y',plugins:{legend:{display:false}},scales:{x:{beginAtZero:true,ticks:{precision:0,font:{size:8}},grid:{color:'rgba(17,26,45,.06)'}},y:{grid:{display:false},ticks:{font:{size:8},autoSkip:false}}}};
-  const causeData={labels:causeRows.map(x=>x[0]),datasets:[{data:causeRows.map(x=>x[1]),backgroundColor:'#17233b',borderRadius:7,borderSkipped:false}]};
-  const categoryData={labels:categoryRows.map(x=>x[0]),datasets:[{data:categoryRows.map(x=>x[1]),backgroundColor:'#3167f6',borderRadius:7,borderSkipped:false}]};
-  const outsourceData={labels:outsourceReasonRows.map(x=>x[0]),datasets:[{data:outsourceReasonRows.map(x=>x[1]),backgroundColor:'#7257d9',borderRadius:7,borderSkipped:false}]};
-
-  const alerts=[];
-  if(overdue)alerts.push({icon:'⏱',title:overdue+' تیکت برون‌سپاری بیش از ۷۲ ساعت باز است',text:'این موارد در شاخص سلامت فنی بیشترین اثر منفی را دارند.',level:'بحرانی',color:'#c44141',soft:'#fde9e9'});
-  if(pending>=5)alerts.push({icon:'◎',title:pending+' تیکت هنوز توسط مدیر فنی بررسی نشده است',text:'انباشت بررسی می‌تواند کیفیت کنترل و امکان ویرایش کارشناسان را تحت تأثیر قرار دهد.',level:'پیگیری',color:'#c47716',soft:'#fff1de'});
-  if(total&&outsourced/total>=.45)alerts.push({icon:'↗',title:'نرخ برون‌سپاری به '+pct(outsourced,total)+'٪ رسیده است',text:'علل کمبود مهارت، ابزار، قطعه و زمان باید به‌صورت منطقه‌ای بررسی شود.',level:'توجه',color:'#7257d9',soft:'#eeeafd'});
-  if(total&&causeCovered/total<.8)alerts.push({icon:'◇',title:(total-causeCovered)+' تیکت فاقد علت خرابی قابل تحلیل است',text:'پوشش ثبت علت خرابی '+pct(causeCovered,total)+'٪ است و کیفیت تحلیل ریشه‌ای را محدود می‌کند.',level:'کیفیت داده',color:'#3167f6',soft:'#eaf0ff'});
-  const worstRegion=regionRows[0];
-  if(worstRegion&&worstRegion.score<70)alerts.push({icon:'!',title:'منطقه «'+worstRegion.name+'» کمترین امتیاز سلامت را دارد',text:worstRegion.open+' باز، '+worstRegion.overdue+' معوق و '+pct(worstRegion.outsourced,worstRegion.total)+'٪ برون‌سپاری.',level:'منطقه',color:'#c44141',soft:'#fde9e9'});
-  const repeatedStore=storeRows.find(x=>{const c=countBy(x.list,t=>t.level1||'');return Object.values(c).some(v=>v>=3);});
-  if(repeatedStore)alerts.push({icon:'↻',title:'الگوی خرابی تکراری در '+repeatedStore.name+' مشاهده شده است',text:'حداقل یک گروه خرابی سه بار یا بیشتر در بازه انتخاب‌شده ثبت شده است.',level:'تکرار',color:'#168b67',soft:'#e8f5ef'});
-  if(!alerts.length)alerts.push({icon:'✓',title:'هشدار بحرانی فعالی در بازه انتخاب‌شده وجود ندارد',text:'شاخص‌های کلیدی در محدوده قابل‌قبول قرار دارند.',level:'پایدار',color:'#168b67',soft:'#e8f5ef'});
-
-  const healthFactors=[
-    {label:'تکمیل کار',value:pct(completed,total),color:'#168b67'},
-    {label:'کنترل معوقات',value:100-pct(overdue,total),color:'#3167f6'},
-    {label:'ثبت علت خرابی',value:pct(causeCovered,total),color:'#24a6a8'},
-    {label:'کنترل بررسی',value:100-pct(pending,total),color:'#7257d9'},
-    {label:'درون‌سپاری',value:pct(internal,total),color:'#d98b21'}
-  ];
-
-  const scoreClass=s=>s>=80?'':s>=60?'warn':'bad';
-  const fmtHours=v=>v?((v<24?Math.round(v)+' ساعت':(v/24).toFixed(1)+' روز')):'—';
-  const filterBar=h('div',{className:'exec-filterbar'},
-    h('select',{value:range,onChange:e=>setRange(e.target.value)},h('option',{value:'today'},'امروز'),h('option',{value:'7'},'۷ تاریخ اخیر'),h('option',{value:'30'},'۳۰ تاریخ اخیر'),h('option',{value:'90'},'۹۰ تاریخ اخیر'),h('option',{value:'all'},'کل دوره')),
-    h('select',{value:region,onChange:e=>{setRegion(e.target.value);setStore('all');setSelectedStore('');}},h('option',{value:'all'},'همه مناطق'),...regions.map(x=>h('option',{key:x,value:x},x))),
-    h('select',{value:store,onChange:e=>{setStore(e.target.value);setSelectedStore(e.target.value==='all'?'':e.target.value);}},h('option',{value:'all'},'همه فروشگاه‌ها'),...stores.filter(s=>region==='all'||s.region===region).map(s=>h('option',{key:s.code,value:s.code},s.code+' — '+s.name.replace(/^فروشگاه\s*/,'')))),
-    h('select',{value:tech,onChange:e=>setTech(e.target.value)},h('option',{value:'all'},'همه کارشناسان'),...technicians.map(x=>h('option',{key:x,value:x},x))),
-    h('select',{value:category,onChange:e=>setCategory(e.target.value)},h('option',{value:'all'},'همه گروه‌های خرابی'),...categories.map(x=>h('option',{key:x,value:x},x))),
-    h('select',{value:type,onChange:e=>setType(e.target.value)},h('option',{value:'all'},'همه روش‌های انجام'),h('option',{value:'internal'},'درون‌سپاری'),h('option',{value:'outsourced'},'برون‌سپاری'))
+  const content=h('main',{className:'x-main'},
+    h('div',{className:'x-topline'},h('div',{className:'x-breadcrumb'},'سامانه تیکتینگ / ',h('b',null,'گزارش مدیریت ارشد')),h('button',{className:'x-refresh',onClick:onRefresh,disabled:loading},loading?'در حال دریافت...':'↻ تازه‌سازی داده')),
+    hero,
+    h('section',{className:'x-section',id:'x-overview'},h(XSectionHead,{no:'01',title:'خلاصه مدیریتی دوره',sub:'پنج عدد قابل توضیح که وضعیت تعهدات، توان داخلی، کیفیت و ریسک را نشان می‌دهند',meta:total+' تیکت'}),metrics),
+    h('section',{className:'x-section',id:'x-decisions'},h(XSectionHead,{no:'02',title:'دستور کار مدیریت ارشد',sub:'مسائل تبدیل‌شده به تصمیم؛ همراه با شاهد و اقدام پیشنهادی'}),h('div',{className:'x-grid'},agendaPanel,narrativePanel)),
+    h('section',{className:'x-section',id:'x-regions'},h(XSectionHead,{no:'03',title:'الگوی عملکرد مناطق',sub:'تشخیص تفاوت میان کمبود ظرفیت و وابستگی به پیمانکار؛ بدون امتیاز مبهم'}),h('div',{className:'x-grid'},matrix,regionList),h('div',{style:{marginTop:'14px'}},trendPanel)),
+    h('section',{className:'x-section',id:'x-causes'},h(XSectionHead,{no:'04',title:'منشأ مدیریتی مسائل',sub:'تفکیک مسئله تجهیز، نگهداری، بهره‌برداری، زیرساخت و کیفیت داده'}),roots,h('div',{style:{marginTop:'14px'}},outsourceTable)),
+    h('section',{className:'x-section',id:'x-stores'},h(XSectionHead,{no:'05',title:'فروشگاه‌های پرریسک',sub:'اولویت با معوق، تکرار و وابستگی است؛ نه صرفاً تعداد تیکت'}),riskTable,drawer),
+    h('section',{className:'x-section',id:'x-resources'},h(XSectionHead,{no:'06',title:'منابع، قطعات و ظرفیت',sub:'خروجی مستقیم برای تصمیم درباره نیروی انسانی، ابزار، خرید و موجودی'}),h('div',{className:'x-grid equal'},partsPanel,techPanel)),
+    h('div',{className:'x-footnote'},'مبنای محاسبه: داده‌های موجود در شیت Tickets. «تکرار احتمالی» با ترکیب فروشگاه + گروه خرابی + اولین زیرگروه محاسبه شده و تا زمان افزودن شناسه تجهیز، معادل خرابی قطعی همان تجهیز نیست. زمان رفع داخلی نیز به دلیل ثبت هم‌زمان شروع و پایان قابل محاسبه دقیق نیست؛ بنابراین گزارش زمان فقط برون‌سپاری‌های دارای زمان پایان معتبر را استفاده می‌کند.')
   );
-
-  const hero=h('div',{className:'exec-hero'},h('div',{className:'exec-hero-inner'},
-    h('div',null,h('div',{className:'exec-eyebrow'},'NATIONAL TECHNICAL COMMAND CENTER'),h('h2',null,'داشبورد راهبری فنی و پشتیبانی کشور'),h('p',null,'نمای تصمیم‌محور مدیر ارشد تجهیز برای پایش سلامت فنی، معوقات، الگوی خرابی، مناطق پرریسک و کیفیت عملکرد تیم‌های فنی.')),
-    h('div',{className:'exec-hero-actions'},h('div',{className:'exec-live'},h('span',{className:'exec-live-dot'}),lastUpdated?'آخرین دریافت '+new Date(lastUpdated).toLocaleTimeString('fa-IR',{hour:'2-digit',minute:'2-digit'}):'در انتظار دریافت داده'),h('button',{className:'exec-refresh',onClick:onRefresh,disabled:loading},loading?'در حال تازه‌سازی...':'↻ تازه‌سازی'))
-  ));
-
-  const kpis=h('div',{className:'exec-kpis'},
-    h(ExecutiveMetric,{health:true,label:'سلامت فنی کشور',value:healthScore,note:healthLabel+' · امتیاز ترکیبی وضعیت باز، معوق، بررسی و کیفیت داده',icon:'◉'}),
-    h(ExecutiveMetric,{label:'کل تیکت‌ها',value:total,note:activeStores+' فروشگاه · '+activeRegions+' منطقه',icon:'▤',tone:{color:'#3167f6',soft:'#eaf0ff'}}),
-    h(ExecutiveMetric,{label:'تیکت باز',value:open,note:pct(open,total)+'٪ از کل درخواست‌ها',icon:'◷',tone:{color:'#d98b21',soft:'#fff1de'}}),
-    h(ExecutiveMetric,{label:'معوق بیش از ۷۲ ساعت',value:overdue,note:overdue?'نیازمند مداخله مستقیم':'مورد معوقی وجود ندارد',icon:'!',tone:{color:'#d64b4b',soft:'#fde9e9'}}),
-    h(ExecutiveMetric,{label:'میانگین زمان رفع',value:fmtHours(avgResolve),note:resolvedHours.length+' تیکت دارای زمان قابل محاسبه',icon:'⌁',tone:{color:'#24a6a8',soft:'#e7f7f7'}}),
-    h(ExecutiveMetric,{label:'نرخ برون‌سپاری',value:pct(outsourced,total)+'٪',note:outsourced+' مورد از '+total+' تیکت',icon:'↗',tone:{color:'#7257d9',soft:'#eeeafd'}}),
-    h(ExecutiveMetric,{label:'در انتظار بررسی',value:pending,note:pct(pending,total)+'٪ نیازمند اقدام مدیر فنی',icon:'◎',tone:{color:'#d98b21',soft:'#fff1de'}}),
-    h(ExecutiveMetric,{label:'کارشناس فعال',value:activeTech,note:'در بازه و فیلتر انتخاب‌شده',icon:'◇',tone:{color:'#168b67',soft:'#e8f5ef'}})
-  );
-
-  const healthPanel=h('div',{className:'exec-card'},h('div',{className:'exec-card-head'},h('div',null,h('h3',{className:'exec-card-title'},'شاخص سلامت فنی کشور'),h('p',{className:'exec-card-sub'},'ترکیب کیفیت انجام، معوقات، پوشش علت خرابی و کنترل مدیریتی')),h('span',{className:'exec-tag'},healthLabel)),h('div',{className:'exec-health-panel'},
-    h('div',{className:'exec-gauge',style:{'--gauge-value':healthScore,'--gauge-color':healthColor}},h('div',{className:'exec-gauge-value'},h('b',null,healthScore),h('span',null,'از ۱۰۰'))),
-    h('div',{className:'exec-health-lines'},...healthFactors.map(x=>h('div',{className:'exec-health-line',key:x.label},h('span',null,x.label),h('div',{className:'exec-health-track'},h('div',{className:'exec-health-fill',style:{width:clamp(x.value,0,100)+'%','--fill':x.color}})),h('span',{className:'exec-health-num'},x.value+'٪'))))
-  ),h('div',{className:'exec-footnote'},'این امتیاز با داده‌های فعلی سامانه محاسبه می‌شود و هزینه، SLA و شناسه تجهیز تا زمان اضافه‌شدن به فرم در آن لحاظ نشده‌اند.'));
-
-  const alertPanel=h('div',{className:'exec-card'},h('div',{className:'exec-card-head'},h('div',null,h('h3',{className:'exec-card-title'},'مرکز هشدارهای مدیریتی'),h('p',{className:'exec-card-sub'},'مواردی که نیازمند توجه یا تصمیم مدیریتی هستند')),h('span',{className:'exec-tag'},alerts.length+' هشدار')),h('div',{className:'exec-alert-list'},...alerts.map((a,i)=>h('div',{className:'exec-alert',key:i,style:{'--alert-color':a.color,'--alert-soft':a.soft}},h('div',{className:'exec-alert-icon'},a.icon),h('div',null,h('b',null,a.title),h('span',null,a.text)),h('span',{className:'exec-alert-level'},a.level)))));
-
-  const trendCard=h('div',{className:'exec-card'},h('div',{className:'exec-card-head'},h('div',null,h('h3',{className:'exec-card-title'},'روند ملی ثبت و تکمیل تیکت‌ها'),h('p',{className:'exec-card-sub'},'مرتب‌سازی واقعی تاریخ‌ها و مقایسه ثبت، تکمیل و برون‌سپاری')),h('span',{className:'exec-tag'},trendRows.length+' تاریخ')),trendRows.length?h(ChartBox,{type:'line',data:trendData,options:lineOptions}):h('div',{className:'exec-empty'},'داده‌ای برای نمایش وجود ندارد'));
-  const workCard=h('div',{className:'exec-card'},h('div',{className:'exec-card-head'},h('div',null,h('h3',{className:'exec-card-title'},'ترکیب وضعیت انجام'),h('p',{className:'exec-card-sub'},'تکمیل‌شده، باز و لغوشده'))),total?h(ChartBox,{type:'doughnut',data:workData,options:donutOptions,small:true}):h('div',{className:'exec-empty'},'داده‌ای وجود ندارد'));
-
-  const regionTrs=regionRows.map((r,i)=>h('tr',{key:r.name,onClick:()=>{setRegion(r.name);setStore('all');setSelectedStore('');}},h('td',null,i+1),h('td',null,h('div',{className:'exec-rank-name'},h('b',null,r.name),h('span',null,r.stores+' فروشگاه فعال'))),h('td',null,h('span',{className:'exec-score '+scoreClass(r.score)},r.score)),h('td',null,r.total),h('td',null,r.open),h('td',null,r.overdue),h('td',null,pct(r.outsourced,r.total)+'٪'),h('td',null,fmtHours(r.avg)),h('td',null,r.pending)));
-  const regionCard=h('div',{className:'exec-card'},h('div',{className:'exec-card-head'},h('div',null,h('h3',{className:'exec-card-title'},'رتبه‌بندی سلامت مناطق'),h('p',{className:'exec-card-sub'},'ضعیف‌ترین مناطق در ابتدای جدول قرار دارند')),h('span',{className:'exec-tag'},regionRows.length+' منطقه')),h('div',{className:'exec-table-wrap'},h('table',{className:'exec-table'},h('thead',null,h('tr',null,h('th',null,'رتبه'),h('th',null,'منطقه'),h('th',null,'سلامت'),h('th',null,'کل'),h('th',null,'باز'),h('th',null,'معوق'),h('th',null,'برون‌سپاری'),h('th',null,'زمان رفع'),h('th',null,'بررسی'))),h('tbody',null,...regionTrs))));
-
-  const storeTrs=storeRows.slice(0,25).map((r,i)=>h('tr',{key:r.code,onClick:()=>setSelectedStore(selectedStore===r.code?'':r.code)},h('td',null,i+1),h('td',null,h('div',{className:'exec-rank-name'},h('b',null,r.code+' — '+r.name.replace(/^فروشگاه\s*/,'')),h('span',null,r.region||'منطقه نامشخص'))),h('td',null,h('span',{className:'exec-score '+scoreClass(r.score)},r.score)),h('td',null,r.total),h('td',null,r.open),h('td',null,r.overdue),h('td',null,pct(r.outsourced,r.total)+'٪'),h('td',null,fmtHours(r.avg)),h('td',null,r.pending?h('span',{className:'exec-mini-status amber'},r.pending+' در انتظار'):h('span',{className:'exec-mini-status green'},'کنترل‌شده'))));
-  const selectedStoreData=selectedStore?storeRows.find(x=>x.code===selectedStore):null;
-  const detailTickets=selectedStoreData?[...selectedStoreData.list].sort((a,b)=>Number(b.rowNumber||0)-Number(a.rowNumber||0)):[];
-  const ticketPanel=selectedStoreData?h('div',{className:'exec-ticket-panel'},h('div',{className:'exec-ticket-panel-head'},h('b',null,'جزئیات '+selectedStoreData.name),h('span',null,detailTickets.length+' تیکت · '+selectedStoreData.region)),h('div',{className:'exec-ticket-grid'},...detailTickets.map(t=>{
-    const status=isCancelled(t)?'لغوشده':isOpen(t)?'باز':(t.reviewStatus||'pending')==='pending'?'در انتظار بررسی':'تکمیل‌شده';
-    const statusCls=isCancelled(t)?'red':isOpen(t)?'amber':'green';
-    const issue=[t.level1,Array.isArray(t.level2)&&t.level2.length?t.level2.join('، '):'',t.otherText].filter(Boolean).join(' — ');
-    const cause=String(t.finalCause||t.initialCause||'').trim();
-    return h('div',{className:'exec-ticket',key:t.id||t.ticketNumber||t.rowNumber},h('div',{className:'exec-ticket-top'},h('div',null,h('div',{className:'exec-ticket-store'},t.technician||'کارشناس نامشخص'),h('div',{className:'exec-ticket-meta'},(t.dateText||ticketDate(t)||'—')+' '+(t.timeText||'')+' · '+(t.type==='outsourced'?'برون‌سپاری':'درون‌سپاری'))),h('span',{className:'exec-ticket-number'},t.ticketNumber||('DM-'+String(Math.max(1,(t.rowNumber||1)-1)).padStart(7,'0')))),h('span',{className:'exec-mini-status '+statusCls},status),h('div',{className:'exec-ticket-detail'},h('b',null,'خرابی: '),issue||'ثبت نشده',h('br'),h('b',null,'علت: '),cause||'ثبت نشده',t.completionNote?h(React.Fragment,null,h('br'),h('b',null,'پایان کار: '),t.completionNote):null));
-  }))):null;
-  const storeCard=h('div',{className:'exec-card'},h('div',{className:'exec-card-head'},h('div',null,h('h3',{className:'exec-card-title'},'فروشگاه‌های نیازمند توجه'),h('p',{className:'exec-card-sub'},'رتبه‌بندی ریسک و دسترسی مستقیم به جزئیات تیکت')),h('span',{className:'exec-tag'},Math.min(25,storeRows.length)+' مورد')),h('div',{className:'exec-table-wrap'},h('table',{className:'exec-table'},h('thead',null,h('tr',null,h('th',null,'رتبه'),h('th',null,'فروشگاه'),h('th',null,'سلامت'),h('th',null,'کل'),h('th',null,'باز'),h('th',null,'معوق'),h('th',null,'برون‌سپاری'),h('th',null,'زمان رفع'),h('th',null,'وضعیت'))),h('tbody',null,...storeTrs))),ticketPanel);
-
-  const techTrs=techRows.slice(0,20).map((r,i)=>h('tr',{key:r.name},h('td',null,i+1),h('td',null,h('div',{className:'exec-rank-name'},h('b',null,r.name),h('span',null,r.stores+' فروشگاه تحت پوشش'))),h('td',null,h('span',{className:'exec-score '+scoreClass(r.score)},r.score)),h('td',null,r.total),h('td',null,r.completed),h('td',null,pct(r.internal,r.total)+'٪'),h('td',null,pct(r.outsourced,r.total)+'٪'),h('td',null,fmtHours(r.avg)),h('td',null,r.pending)));
-  const techCard=h('div',{className:'exec-card'},h('div',{className:'exec-card-head'},h('div',null,h('h3',{className:'exec-card-title'},'عملکرد کارشناسان فنی'),h('p',{className:'exec-card-sub'},'امتیاز ترکیبی کیفیت بررسی، تکمیل، درون‌سپاری و ثبت علت خرابی'))),h('div',{className:'exec-table-wrap'},h('table',{className:'exec-table'},h('thead',null,h('tr',null,h('th',null,'رتبه'),h('th',null,'کارشناس'),h('th',null,'امتیاز'),h('th',null,'کل'),h('th',null,'تکمیل'),h('th',null,'درون‌سپاری'),h('th',null,'برون‌سپاری'),h('th',null,'زمان رفع'),h('th',null,'در انتظار'))),h('tbody',null,...techTrs))));
-
-  const chartCard=(title,sub,data,empty)=>h('div',{className:'exec-card'},h('div',{className:'exec-card-head'},h('div',null,h('h3',{className:'exec-card-title'},title),h('p',{className:'exec-card-sub'},sub))),data.labels.length?h(ChartBox,{type:'bar',data,options:barOptions,small:true}):h('div',{className:'exec-empty'},empty));
 
   if(!total){
-    return h('div',{className:'exec-shell'},hero,filterBar,kpis,h('div',{className:'exec-card'},h('div',{className:'exec-empty'},loading?'در حال دریافت داده‌ها...':'برای فیلتر انتخاب‌شده داده‌ای وجود ندارد')));
+    return h('div',{className:'x-shell'},filterPanel,h('main',{className:'x-main'},h('div',{className:'x-topline'},h('div',{className:'x-breadcrumb'},'سامانه تیکتینگ / ',h('b',null,'گزارش مدیریت ارشد')),h('button',{className:'x-refresh',onClick:onRefresh,disabled:loading},loading?'در حال دریافت...':'↻ تازه‌سازی داده')),hero,h('div',{className:'x-panel'},h('div',{className:'x-empty'},loading?'در حال دریافت داده‌ها...':'برای فیلتر انتخاب‌شده داده‌ای وجود ندارد'))));
   }
-
-  return h('div',{className:'exec-shell'},
-    hero,filterBar,kpis,
-    h('div',{className:'exec-grid three'},healthPanel,trendCard,alertPanel),
-    h('div',{className:'exec-grid'},regionCard,workCard),
-    storeCard,
-    h('div',{className:'exec-grid three'},chartCard('علل ریشه‌ای خرابی','علت نهایی و در نبود آن تشخیص اولیه',causeData,'علت خرابی ثبت نشده است'),chartCard('گروه‌های پرتکرار خرابی','دسته‌بندی اصلی خرابی و خدمات',categoryData,'داده‌ای وجود ندارد'),chartCard('علل برون‌سپاری','موانع پرتکرار اجرای داخلی',outsourceData,'برون‌سپاری ثبت نشده است')),
-    techCard
-  );
+  return h('div',{className:'x-shell'},filterPanel,content);
 }
+
 
 /* ---------- اپ اصلی ---------- */
 function LoginView({ onLogin }){
@@ -1928,15 +2177,27 @@ function App(){
       if(!currentUser.token){logout();return;}
       setManagerLoading(true);
       try{
-        const result=currentUser.role==='admin'?await fetchExecutiveTickets(currentUser.token):await fetchManagerTickets(currentUser.token);
+        const fetchForRole=()=>currentUser.role==='admin'
+          ? fetchExecutiveTickets(currentUser.token)
+          : fetchManagerTickets(currentUser.token);
+
+        let result=await fetchForRole();
+
+        // گاهی بلافاصله بعد از ورود، درخواست داشبورد زودتر از تثبیت نشست می‌رسد.
+        // یک بار بدون خروج کاربر دوباره بررسی می‌کنیم.
+        if(result&&result.sessionExpired){
+          await new Promise(resolve=>setTimeout(resolve,900));
+          result=await fetchForRole();
+        }
+
         if(result&&result.success){
           lastSyncError.current='';
           setTasks(result.tickets||[]);
           setLastUpdated(result.updatedAt||new Date().toISOString());
           setLoaded(true);
         }else if(result&&result.sessionExpired){
-          showToast(result.message||'دوباره وارد شوید');
-          logout();
+          showToast(result.message||'نشست معتبر نیست؛ دوباره وارد شوید');
+          setTimeout(logout,900);
         }else{
           // خطاهای silent مربوط به درخواست‌های پس‌زمینه به کاربر نمایش داده نمی‌شوند.
           if(!(result&&result.silent)){
@@ -1994,12 +2255,19 @@ function App(){
 
   if(!currentUser)return React.createElement(LoginView,{onLogin:handleLogin});
 
-  return React.createElement('div',{className:'wrap'+(role==='admin'?' executive-wrap':'')},
+  if(role==='admin'){
+    return React.createElement('div',{className:'executive-page'},
+      !loaded?React.createElement('div',{className:'x-empty',style:{paddingTop:'25vh'}},'در حال بارگذاری گزارش مدیریت ارشد...'):React.createElement(ExecutiveDashboard,{tasks,onRefresh:loadTasks,loading:managerLoading,lastUpdated,currentUser,onLogout:logout}),
+      React.createElement(Toast,{msg:toastMsg})
+    );
+  }
+
+  return React.createElement('div',{className:'wrap'},
     React.createElement('div',{className:'top'},
-      React.createElement('div',{className:'brand'},React.createElement('span',{className:'dot'}),React.createElement('div',null,React.createElement('h1',null,role==='admin'?'راهبری ارشد فنی و تجهیز':'پشتیبانی فنی فروشگاه‌ها'),React.createElement('span',null,(role==='tech'?'محیط نیروی فنی':role==='manager'?'مرکز کنترل مدیریت فنی':'دسترسی گزارشات مدیر ارشد تجهیز')+' • نسخه 5.0'))),
-      React.createElement('div',{className:'user-bar'},React.createElement('div',{className:'user-info'},React.createElement('b',null,currentUser.name),React.createElement('span',null,role==='admin'?'مدیر ارشد تجهیز':role==='manager'?'مدیر فنی':'کد پرسنلی: '+currentUser.username)),React.createElement('button',{className:'logout-btn',onClick:logout},'خروج'))
+      React.createElement('div',{className:'brand'},React.createElement('span',{className:'dot'}),React.createElement('div',null,React.createElement('h1',null,'پشتیبانی فنی فروشگاه‌ها'),React.createElement('span',null,(role==='tech'?'محیط نیروی فنی':'مرکز کنترل مدیریت فنی')+' • نسخه 6.0'))),
+      React.createElement('div',{className:'user-bar'},React.createElement('div',{className:'user-info'},React.createElement('b',null,currentUser.name),React.createElement('span',null,role==='manager'?'مدیر فنی':'کد پرسنلی: '+currentUser.username)),React.createElement('button',{className:'logout-btn',onClick:logout},'خروج'))
     ),
-    !loaded?React.createElement('div',{className:'empty'},'در حال بارگذاری اطلاعات...'):(role==='tech'?React.createElement(TechView,{tasks,saveTasks,showToast,currentUser,refreshTasks:loadTasks}):role==='manager'?React.createElement(ManagerView,{tasks,updateTask:updateManagerTask,showToast,refreshTasks:loadTasks,managerLoading,lastUpdated}):React.createElement(ExecutiveDashboard,{tasks,onRefresh:loadTasks,loading:managerLoading,lastUpdated})),
+    !loaded?React.createElement('div',{className:'empty'},'در حال بارگذاری اطلاعات...'):(role==='tech'?React.createElement(TechView,{tasks,saveTasks,showToast,currentUser,refreshTasks:loadTasks}):React.createElement(ManagerView,{tasks,updateTask:updateManagerTask,showToast,refreshTasks:loadTasks,managerLoading,lastUpdated})),
     React.createElement(Toast,{msg:toastMsg})
   );
 }
