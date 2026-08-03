@@ -530,6 +530,259 @@
   @media(max-width:1100px){.c8-metrics{grid-template-columns:repeat(3,1fr)}.c8-decision-grid,.c8-risk-grid{grid-template-columns:repeat(2,1fr)}.c8-grid,.c8-bottom-grid{grid-template-columns:1fr}}
   @media(max-width:720px){.c8-header{height:auto;padding:12px 14px;align-items:flex-start}.c8-brand span,.c8-header-actions>span{display:none}.c8-main{padding:14px 12px 36px}.c8-filter{flex-direction:column;align-items:stretch}.c8-filter>div{margin:0;min-width:0}.c8-filter label{min-width:0}.c8-hero{grid-template-columns:1fr;padding:21px;border-radius:20px}.c8-hero h1{font-size:21px}.c8-hero-side{border-right:0;border-top:1px solid rgba(255,255,255,.13);padding:14px 0 0;display:grid;grid-template-columns:1fr auto;align-items:end}.c8-hero-side small{grid-column:1/-1}.c8-metrics{grid-template-columns:1fr 1fr;gap:8px}.c8-decision-grid,.c8-risk-grid{grid-template-columns:1fr}.c8-section-head{flex-direction:column;align-items:flex-start;gap:6px}.c8-section-head>p{text-align:right}.c8-top-row{grid-template-columns:32px minmax(0,1fr);gap:8px}.c8-top-row>strong{grid-column:2;text-align:right}.c8-footer{flex-direction:column;gap:6px}.c8-modal-kpis{grid-template-columns:1fr 1fr}.c8-ticket{flex-direction:column;align-items:flex-start}.c8-ticket>div:last-child{flex-wrap:wrap}.c8-header-actions button{padding:8px 9px}.c8-mark{width:38px;height:38px}}
 
+
+/* ========================================================
+   Regional Manager Dashboard 9.0
+   ======================================================== */
+.rm-shell{
+  --rm-ink:#173039;
+  --rm-muted:#6f7f83;
+  --rm-line:#dfe8e6;
+  --rm-bg:#f2f6f4;
+  --rm-card:#fff;
+  --rm-green:#1f5f59;
+  --rm-green2:#2b7a70;
+  --rm-orange:#e76f51;
+  --rm-amber:#dfa33b;
+  --rm-blue:#4e7fa8;
+  min-height:100vh;
+  direction:rtl;
+  color:var(--rm-ink);
+  background:
+    radial-gradient(circle at 7% 3%,rgba(43,122,112,.10),transparent 28%),
+    linear-gradient(180deg,#f8faf9 0%,#f1f5f3 100%);
+}
+.rm-header{
+  min-height:72px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:20px;
+  padding:0 30px;
+  border-bottom:1px solid rgba(23,48,57,.08);
+  background:rgba(255,255,255,.90);
+  backdrop-filter:blur(14px);
+  position:sticky;
+  top:0;
+  z-index:80;
+}
+.rm-brand{display:flex;align-items:center;gap:12px;min-width:0}
+.rm-mark{
+  width:42px;height:42px;border-radius:14px;
+  display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(135deg,#194b47,#2d786f);
+  color:#fff;font-size:12px;font-weight:950;
+  box-shadow:0 10px 25px rgba(31,95,89,.22)
+}
+.rm-brand b{display:block;font-size:13px;font-weight:950}
+.rm-brand span{display:block;font-size:8.8px;color:var(--rm-muted);margin-top:3px}
+.rm-user{display:flex;align-items:center;gap:8px}
+.rm-user>div{text-align:left;margin-left:6px}
+.rm-user>div b{display:block;font-size:10px}
+.rm-user>div span{display:block;font-size:8px;color:var(--rm-green2);font-weight:850;margin-top:3px}
+.rm-refresh,.rm-logout{
+  font-family:inherit;border-radius:10px;padding:8px 12px;font-size:9px;font-weight:850;cursor:pointer
+}
+.rm-refresh{border:1px solid var(--rm-line);background:#fff;color:var(--rm-ink)}
+.rm-refresh:disabled{opacity:.55;cursor:not-allowed}
+.rm-logout{border:0;background:#edf2f0;color:#5b6b6e}
+.rm-main{max-width:1440px;margin:0 auto;padding:22px 28px 48px}
+.rm-intro{
+  display:grid;grid-template-columns:minmax(0,1fr) 160px;gap:22px;
+  padding:25px 28px;border-radius:24px;
+  background:linear-gradient(135deg,#173f3c,#245f59);
+  color:#fff;box-shadow:0 18px 44px rgba(31,95,89,.18);
+  position:relative;overflow:hidden
+}
+.rm-intro:after{
+  content:'';position:absolute;width:280px;height:280px;border-radius:50%;
+  left:-105px;top:-155px;border:1px solid rgba(255,255,255,.09);
+  box-shadow:0 0 0 38px rgba(255,255,255,.025),0 0 0 76px rgba(255,255,255,.018)
+}
+.rm-intro>div{position:relative;z-index:1}
+.rm-eyebrow{font-size:8.5px;font-weight:900;color:#add2cc}
+.rm-intro h1{font-size:25px;line-height:1.45;margin:8px 0 6px;font-weight:950;letter-spacing:-.5px}
+.rm-intro p{font-size:9.8px;line-height:1.95;color:#d7e7e4;margin:0;max-width:850px}
+.rm-sync{
+  border-right:1px solid rgba(255,255,255,.14);
+  padding-right:20px;display:flex;flex-direction:column;justify-content:center;align-items:flex-start
+}
+.rm-sync span{font-size:8px;color:#b8d4d0}
+.rm-sync b{font-size:26px;margin-top:8px;font-weight:950}
+.rm-controls{
+  display:flex;align-items:center;justify-content:space-between;gap:15px;
+  margin-top:14px;padding:10px 12px;background:#fff;border:1px solid var(--rm-line);
+  border-radius:16px;box-shadow:0 7px 24px rgba(23,48,57,.035)
+}
+.rm-tabs{display:flex;align-items:center;gap:5px}
+.rm-tabs button{
+  border:0;background:transparent;color:#718084;font-family:inherit;
+  font-size:9px;font-weight:850;padding:9px 11px;border-radius:10px;cursor:pointer
+}
+.rm-tabs button.active{background:#e7f1ee;color:var(--rm-green)}
+.rm-tabs em{
+  font-style:normal;display:inline-flex;align-items:center;justify-content:center;
+  min-width:18px;height:18px;margin-right:5px;border-radius:999px;
+  background:#fff;color:var(--rm-orange);font-size:8px
+}
+.rm-filters{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+.rm-filters select{
+  min-height:34px;border:1px solid var(--rm-line);border-radius:9px;background:#f8faf9;
+  color:var(--rm-ink);font-family:inherit;font-size:8.5px;font-weight:750;padding:0 9px;outline:0
+}
+.rm-filters select:focus{border-color:#91b8b3;box-shadow:0 0 0 3px rgba(43,122,112,.08)}
+.rm-kpis{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-top:12px}
+.rm-kpi{
+  min-height:118px;padding:15px 16px;background:#fff;border:1px solid var(--rm-line);
+  border-radius:18px;position:relative;overflow:hidden;
+  box-shadow:0 7px 24px rgba(23,48,57,.035)
+}
+.rm-kpi:after{content:'';position:absolute;right:0;left:0;bottom:0;height:4px;background:#cfd9d6}
+.rm-kpi.primary:after{background:var(--rm-green)}
+.rm-kpi.danger:after{background:var(--rm-orange)}
+.rm-kpi.success:after{background:#3f9a76}
+.rm-kpi.warning:after{background:var(--rm-amber)}
+.rm-kpi-label{font-size:8.5px;color:#5d6c70;font-weight:850}
+.rm-kpi strong{display:block;font-size:29px;line-height:1;margin-top:18px;font-weight:950;letter-spacing:-1px}
+.rm-kpi span{display:block;font-size:8px;color:var(--rm-muted);margin-top:8px;line-height:1.6}
+.rm-section{margin-top:27px}
+.rm-tab-section{margin-top:20px}
+.rm-section-title{display:flex;align-items:flex-end;justify-content:space-between;gap:20px;margin-bottom:11px}
+.rm-section-title>div>span{font-size:8px;color:var(--rm-green2);font-weight:950}
+.rm-section-title h2{font-size:16px;margin:4px 0 0;font-weight:950;letter-spacing:-.2px}
+.rm-section-title>p{font-size:8.5px;color:var(--rm-muted);margin:0;max-width:380px;text-align:left;line-height:1.8}
+.rm-alert-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:11px}
+.rm-alert{
+  min-height:150px;text-align:right;font-family:inherit;color:var(--rm-ink);
+  display:grid;grid-template-columns:35px minmax(0,1fr);gap:10px;
+  border:1px solid var(--rm-line);border-radius:18px;background:#fff;padding:16px;
+  cursor:pointer;position:relative;overflow:hidden;transition:.18s;
+  box-shadow:0 8px 28px rgba(23,48,57,.04)
+}
+.rm-alert:before{content:'';position:absolute;right:0;top:0;bottom:0;width:4px;background:#88a29e}
+.rm-alert.danger:before{background:var(--rm-orange)}
+.rm-alert.warning:before{background:var(--rm-amber)}
+.rm-alert.info:before{background:var(--rm-blue)}
+.rm-alert.success:before{background:#3f9a76}
+.rm-alert:hover{transform:translateY(-2px);box-shadow:0 14px 34px rgba(23,48,57,.08)}
+.rm-alert-num{font-size:8.5px;color:#96a3a1;font-weight:900}
+.rm-alert b{display:block;font-size:11px;line-height:1.65;font-weight:950}
+.rm-alert p{font-size:8.8px;line-height:1.75;color:#68777a;margin:7px 0}
+.rm-alert span{font-size:8.2px;color:var(--rm-green);font-weight:900}
+.rm-chart-grid{display:grid;grid-template-columns:1.18fr .82fr;gap:11px}
+.rm-card{
+  background:#fff;border:1px solid var(--rm-line);border-radius:19px;
+  overflow:hidden;box-shadow:0 8px 28px rgba(23,48,57,.035);min-width:0
+}
+.rm-card-head{padding:14px 16px 10px;border-bottom:1px solid #edf2f0}
+.rm-card-head h3{font-size:10.5px;margin:0 0 3px;font-weight:950}
+.rm-card-head p{font-size:8px;color:var(--rm-muted);margin:0}
+.rm-chart{height:285px;padding:13px 15px 16px}
+.rm-table-card{padding:0}
+.rm-table-wrap{overflow:auto}
+.rm-table{width:100%;border-collapse:collapse;min-width:670px}
+.rm-table th{
+  padding:11px 14px;background:#f8faf9;border-bottom:1px solid var(--rm-line);
+  font-size:8px;color:#718083;font-weight:850;text-align:right
+}
+.rm-table td{
+  padding:12px 14px;border-bottom:1px solid #edf2f0;
+  font-size:9px;color:#536266;line-height:1.6
+}
+.rm-table tr:last-child td{border-bottom:0}
+.rm-table td b{color:var(--rm-ink);font-weight:900}
+.rm-table tr.clickable{cursor:pointer}
+.rm-table tr.clickable:hover td{background:#f4f8f6}
+.rm-store-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:11px}
+.rm-store-card{
+  background:#fff;border:1px solid var(--rm-line);border-radius:18px;padding:15px 16px;
+  box-shadow:0 7px 24px rgba(23,48,57,.035);position:relative;overflow:hidden
+}
+.rm-store-rank{
+  position:absolute;left:14px;top:13px;font-size:18px;font-weight:950;
+  color:#d5dedb;letter-spacing:-1px
+}
+.rm-store-name{padding-left:32px}
+.rm-store-name b{display:block;font-size:11px;font-weight:950}
+.rm-store-name span{
+  display:block;font-size:8.5px;color:var(--rm-muted);margin-top:3px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis
+}
+.rm-store-metrics{
+  display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-top:14px;
+  border-top:1px solid #edf2f0;padding-top:10px
+}
+.rm-store-metrics span{font-size:7.5px;color:#788588}
+.rm-store-metrics strong{display:block;font-size:10px;color:var(--rm-ink)}
+.rm-store-note{font-size:8px;color:#6d7c7f;margin-top:10px}
+.rm-status{display:inline-flex;padding:5px 8px;border-radius:999px;font-size:7.8px;font-weight:900}
+.rm-status.danger{background:#fde7e1;color:#b24e3c}
+.rm-status.warning{background:#fff0d5;color:#9b6818}
+.rm-status.info{background:#e8f0f8;color:#3f6e99}
+.rm-empty{min-height:120px;display:flex;align-items:center;justify-content:center;padding:25px;color:var(--rm-muted);font-size:9px;text-align:center}
+.rm-footer{
+  display:flex;justify-content:space-between;gap:20px;margin-top:28px;padding-top:15px;
+  border-top:1px solid var(--rm-line);font-size:7.8px;color:#7b898b;line-height:1.8
+}
+.rm-loading{
+  min-height:100vh;display:flex;align-items:center;justify-content:center;
+  color:var(--rm-green);font-size:11px;font-weight:900
+}
+.rm-modal-backdrop{
+  position:fixed;inset:0;background:rgba(14,32,36,.48);backdrop-filter:blur(6px);
+  z-index:1200;display:flex;align-items:center;justify-content:center;padding:22px
+}
+.rm-modal{
+  width:min(760px,96vw);max-height:88vh;overflow:auto;background:#fff;border-radius:22px;
+  box-shadow:0 30px 90px rgba(12,28,32,.28)
+}
+.rm-modal-head{
+  display:flex;align-items:flex-start;justify-content:space-between;gap:15px;
+  padding:17px 19px;border-bottom:1px solid var(--rm-line);
+  position:sticky;top:0;background:#fff;z-index:2
+}
+.rm-modal-head span{font-size:8px;color:var(--rm-green2);font-weight:900}
+.rm-modal-head h2{font-size:15px;margin:4px 0 0;font-weight:950}
+.rm-modal-head button{
+  width:32px;height:32px;border:0;border-radius:10px;background:#eff3f1;color:#556569;
+  font-size:18px;cursor:pointer
+}
+.rm-detail-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--rm-line);border-bottom:1px solid var(--rm-line)}
+.rm-detail-grid div{background:#f8faf9;padding:12px 14px}
+.rm-detail-grid span,.rm-detail-block>span{display:block;font-size:7.8px;color:var(--rm-muted)}
+.rm-detail-grid b{display:block;font-size:9px;margin-top:5px;color:var(--rm-ink);line-height:1.6}
+.rm-detail-block{padding:13px 18px;border-bottom:1px solid #edf2f0}
+.rm-detail-block:last-child{border-bottom:0}
+.rm-detail-block p{font-size:9px;line-height:1.9;color:#45575b;margin:5px 0 0}
+@media(max-width:1080px){
+  .rm-kpis{grid-template-columns:repeat(3,1fr)}
+  .rm-alert-grid,.rm-store-grid{grid-template-columns:repeat(2,1fr)}
+  .rm-chart-grid{grid-template-columns:1fr}
+}
+@media(max-width:760px){
+  .rm-header{padding:11px 13px;min-height:auto;align-items:flex-start}
+  .rm-brand span,.rm-user>div{display:none}
+  .rm-user{flex-wrap:wrap;justify-content:flex-end}
+  .rm-main{padding:13px 11px 35px}
+  .rm-intro{grid-template-columns:1fr;padding:19px;border-radius:20px}
+  .rm-intro h1{font-size:20px}
+  .rm-sync{border-right:0;border-top:1px solid rgba(255,255,255,.14);padding:12px 0 0;display:grid;grid-template-columns:1fr auto;align-items:center}
+  .rm-sync b{font-size:20px;margin:0}
+  .rm-controls{align-items:stretch;flex-direction:column}
+  .rm-tabs{overflow:auto}
+  .rm-tabs button{white-space:nowrap}
+  .rm-filters{display:grid;grid-template-columns:1fr 1fr}
+  .rm-kpis{grid-template-columns:1fr 1fr;gap:8px}
+  .rm-kpi{min-height:108px;padding:13px}
+  .rm-kpi strong{font-size:25px}
+  .rm-alert-grid,.rm-store-grid{grid-template-columns:1fr}
+  .rm-section-title{align-items:flex-start;flex-direction:column;gap:5px}
+  .rm-section-title>p{text-align:right}
+  .rm-chart{height:255px}
+  .rm-footer{flex-direction:column;gap:6px}
+  .rm-detail-grid{grid-template-columns:1fr 1fr}
+}
+
 </style>
 </head>
 <body>
@@ -614,6 +867,9 @@ function fetchManagerTickets(token){
 }
 function fetchExecutiveTickets(token){
   return jsonpRequest({action:'executive', token:String(token||'')}, 30000);
+}
+function fetchRegionalTickets(token){
+  return jsonpRequest({action:'regional', token:String(token||'')}, 30000);
 }
 function fetchCeoTickets(token){
   return jsonpRequest({action:'ceo', token:String(token||'')}, 30000);
@@ -2024,7 +2280,7 @@ function ExecutiveDashboard({tasks,onRefresh,loading,lastUpdated,currentUser,onL
 
 /* ---------- اپ اصلی ---------- */
 
-/* ---------- Boardroom CEO Dashboard — نسخه 8.1 ---------- */
+/* ---------- Boardroom CEO Dashboard — نسخه 9.1 ---------- */
 function CEODashboard({tasks,onRefresh,loading,lastUpdated,currentUser,onLogout}){
   const h=React.createElement;
   const [range,setRange]=useState('90');
@@ -2284,11 +2540,419 @@ function CEODashboard({tasks,onRefresh,loading,lastUpdated,currentUser,onLogout}
         h('div',{className:'c8-panel'},h('div',{className:'c8-panel-head'},h('div',null,h('span',null,'DATA READINESS'),h('h3',null,'برای نسخه مالی مدیرعامل چه داده‌ای کم است؟')),h('p',null,'این موارد فعلاً در تیکتینگ ثبت نمی‌شوند')),h('div',{className:'c8-data-gaps'},h('div',null,h('b',null,'هزینه تعمیر و قطعه'),h('span',null,'برای محاسبه هزینه کل فنی و تصمیم اقتصادی تعمیر/تعویض')),h('div',null,h('b',null,'مدت و شدت توقف فروشگاه'),h('span',null,'برای سنجش اثر عملیاتی و فروش در معرض ریسک')),h('div',null,h('b',null,'شناسه، برند و عمر تجهیز'),h('span',null,'برای تحلیل کیفیت خرید و هزینه مالکیت')))
       ),
 
-      h('footer',{className:'c8-footer'},h('span',null,'نسخه 8.1 · دسترسی فقط خواندنی مدیرعامل'),h('span',null,'ریسک‌های نمایش‌داده‌شده برآورد مدیریتی از داده فعلی تیکتینگ‌اند، نه اندازه‌گیری هزینه یا توقف واقعی.'))
+      h('footer',{className:'c8-footer'},h('span',null,'نسخه 9.1 · دسترسی فقط خواندنی مدیرعامل'),h('span',null,'ریسک‌های نمایش‌داده‌شده برآورد مدیریتی از داده فعلی تیکتینگ‌اند، نه اندازه‌گیری هزینه یا توقف واقعی.'))
     ),
 
     modal
   ));
+}
+
+
+
+function RegionalDashboard({tasks,onRefresh,loading,lastUpdated,currentUser,onLogout}){
+  const h=React.createElement;
+  const [tab,setTab]=useState('overview');
+  const [range,setRange]=useState('30');
+  const [regionFilter,setRegionFilter]=useState('all');
+  const [store,setStore]=useState('all');
+  const [tech,setTech]=useState('all');
+  const [type,setType]=useState('all');
+  const [selectedTicket,setSelectedTicket]=useState(null);
+
+  const now=Date.now();
+  const dayMs=86400000;
+  const validTime=v=>{
+    const x=new Date(v).getTime();
+    return Number.isFinite(x)?x:null;
+  };
+  const ageDays=t=>{
+    const x=validTime(t.createdAt);
+    return x===null?0:Math.max(0,Math.floor((now-x)/dayMs));
+  };
+  const cancelled=t=>(t.reviewStatus||'')==='cancelled'||t.workStatus==='cancelled';
+  const pending=t=>!cancelled(t)&&(t.reviewStatus||'pending')==='pending';
+  const outsourceOpen=t=>!cancelled(t)&&t.type==='outsourced'&&t.workStatus!=='completed';
+  const needsAction=t=>pending(t)||outsourceOpen(t);
+  const rangeDays=range==='all'?null:Number(range||30);
+
+  const assignedRegions=(Array.isArray(currentUser.regions)&&currentUser.regions.length
+    ? currentUser.regions
+    : [...new Set(tasks.map(t=>t.region).filter(Boolean))])
+    .map(x=>String(x||'').trim())
+    .filter(Boolean);
+
+  const stores=[...new Map(tasks.filter(t=>t.storeCode&&(regionFilter==='all'||t.region===regionFilter)).map(t=>[
+    String(t.storeCode),
+    {code:String(t.storeCode),name:t.storeName||('فروشگاه '+t.storeCode)}
+  ])).values()].sort((a,b)=>a.code.localeCompare(b.code,'fa',{numeric:true}));
+
+  const techs=[...new Set(tasks.map(t=>t.technician).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'fa'));
+  const types=[...new Set(tasks.map(t=>t.level1).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'fa'));
+
+  const filtered=tasks.filter(t=>{
+    if(regionFilter!=='all'&&t.region!==regionFilter)return false;
+    if(rangeDays){
+      const created=validTime(t.createdAt);
+      if(created!==null&&created<now-rangeDays*dayMs)return false;
+    }
+    if(store!=='all'&&String(t.storeCode)!==store)return false;
+    if(tech!=='all'&&t.technician!==tech)return false;
+    if(type!=='all'&&t.level1!==type)return false;
+    return true;
+  });
+
+  const active=filtered.filter(t=>!cancelled(t));
+  const actionTickets=active.filter(needsAction);
+  const overdue=actionTickets.filter(t=>ageDays(t)>=7);
+  const internal=active.filter(t=>t.type==='internal');
+  const outsourced=active.filter(t=>t.type==='outsourced');
+  const completedOutsource=outsourced.filter(t=>t.workStatus==='completed');
+  const internalRate=pct(internal.length,active.length);
+
+  const dateGroups={};
+  active.forEach(t=>{
+    const d=ticketDate(t);
+    if(!d)return;
+    if(!dateGroups[d])dateGroups[d]={total:0,action:0,done:0};
+    dateGroups[d].total++;
+    if(needsAction(t))dateGroups[d].action++;
+    else dateGroups[d].done++;
+  });
+  const trend=Object.entries(dateGroups)
+    .map(([label,v])=>({label,sort:ticketDateSortValue(label),...v}))
+    .sort((a,b)=>a.sort-b.sort)
+    .slice(-12);
+
+  const trendData={
+    labels:trend.map(x=>x.label),
+    datasets:[
+      {label:'ثبت‌شده',data:trend.map(x=>x.total),borderColor:'#1f5f59',backgroundColor:'rgba(31,95,89,.12)',fill:true,tension:.35,borderWidth:2.5,pointRadius:3},
+      {label:'نیازمند پیگیری',data:trend.map(x=>x.action),borderColor:'#e76f51',backgroundColor:'#e76f51',fill:false,tension:.35,borderWidth:2,pointRadius:3}
+    ]
+  };
+  const trendOptions={
+    responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{position:'bottom',labels:{usePointStyle:true,boxWidth:7,font:{size:10}}}},
+    scales:{
+      x:{grid:{display:false},ticks:{font:{size:9},autoSkip:false,maxRotation:0,minRotation:0}},
+      y:{beginAtZero:true,ticks:{precision:0},grid:{color:'rgba(20,45,50,.07)'}}
+    }
+  };
+
+  const categoryRows=sortedEntries(countBy(active,t=>t.level1||'نامشخص'),8);
+  const categoryData={
+    labels:categoryRows.map(x=>x[0]),
+    datasets:[{label:'تعداد',data:categoryRows.map(x=>x[1]),backgroundColor:'#2b7a70',borderRadius:8,borderSkipped:false}]
+  };
+  const categoryOptions={
+    responsive:true,maintainAspectRatio:false,indexAxis:'y',
+    plugins:{legend:{display:false}},
+    scales:{
+      x:{beginAtZero:true,ticks:{precision:0},grid:{color:'rgba(20,45,50,.07)'}},
+      y:{grid:{display:false},ticks:{font:{size:9}}}
+    }
+  };
+
+  const storeMap={};
+  active.forEach(t=>{
+    const key=String(t.storeCode||'نامشخص');
+    if(!storeMap[key])storeMap[key]=[];
+    storeMap[key].push(t);
+  });
+  const storeRows=Object.entries(storeMap).map(([code,list])=>{
+    const open=list.filter(needsAction);
+    const old=open.filter(t=>ageDays(t)>=7);
+    const out=list.filter(t=>t.type==='outsourced');
+    const oldest=Math.max(0,...open.map(ageDays));
+    const first=list[0]||{};
+    return{
+      code,
+      name:first.storeName||('فروشگاه '+code),
+      total:list.length,
+      open:open.length,
+      overdue:old.length,
+      outsourceRate:pct(out.length,list.length),
+      oldest,
+      score:old.length*5+open.length*2+(oldest>=14?5:0)
+    };
+  }).sort((a,b)=>b.score-a.score||b.open-a.open||b.total-a.total);
+
+  const techMap={};
+  active.forEach(t=>{
+    const key=t.technician||'نامشخص';
+    if(!techMap[key])techMap[key]=[];
+    techMap[key].push(t);
+  });
+  const techRows=Object.entries(techMap).map(([name,list])=>({
+    name,
+    total:list.length,
+    open:list.filter(needsAction).length,
+    overdue:list.filter(t=>needsAction(t)&&ageDays(t)>=7).length,
+    internalRate:pct(list.filter(t=>t.type==='internal').length,list.length)
+  })).sort((a,b)=>b.open-a.open||b.total-a.total);
+
+  const topStore=storeRows[0];
+  const topCategory=categoryRows[0];
+  const oldestTicket=[...actionTickets].sort((a,b)=>ageDays(b)-ageDays(a))[0];
+
+  const alerts=[];
+  if(overdue.length){
+    alerts.push({
+      tone:'danger',
+      title:overdue.length+' پرونده بیش از ۷ روز باز مانده',
+      text:oldestTicket?'قدیمی‌ترین مورد '+ageDays(oldestTicket)+' روز سابقه دارد.':'نیازمند برنامه تعیین تکلیف است.',
+      action:'مشاهده پرونده‌های باز',
+      tab:'open'
+    });
+  }
+  if(topStore&&topStore.open){
+    alerts.push({
+      tone:'warning',
+      title:'تمرکز پرونده‌ها در '+topStore.code,
+      text:topStore.open+' پرونده نیازمند پیگیری و '+topStore.overdue+' مورد معوق دارد.',
+      action:'مشاهده وضعیت فروشگاه',
+      tab:'stores'
+    });
+  }
+  if(outsourced.length&&pct(outsourced.length,active.length)>=50){
+    alerts.push({
+      tone:'info',
+      title:'وابستگی قابل‌توجه به برون‌سپاری',
+      text:pct(outsourced.length,active.length)+'٪ فعالیت‌های دوره به پیمانکار ارجاع شده است.',
+      action:'بررسی علت‌های برون‌سپاری',
+      tab:'overview'
+    });
+  }
+  if(!alerts.length){
+    alerts.push({
+      tone:'success',
+      title:'موضوع بحرانی شناسایی نشد',
+      text:'در فیلتر انتخاب‌شده، پرونده معوق یا تمرکز غیرعادی مشاهده نمی‌شود.',
+      action:'ادامه پایش',
+      tab:'overview'
+    });
+  }
+
+  const kpi=(label,value,note,tone)=>h('div',{className:'rm-kpi '+tone},
+    h('div',{className:'rm-kpi-label'},label),
+    h('strong',null,value),
+    h('span',null,note)
+  );
+
+  const ticketRows=[...actionTickets].sort((a,b)=>{
+    const ageDiff=ageDays(b)-ageDays(a);
+    return ageDiff!==0?ageDiff:(b.rowNumber||0)-(a.rowNumber||0);
+  });
+
+  const ticketStatus=t=>{
+    if(ageDays(t)>=7)return{label:'معوق',tone:'danger'};
+    if(outsourceOpen(t))return{label:'برون‌سپاری باز',tone:'warning'};
+    return{label:'در انتظار بررسی',tone:'info'};
+  };
+
+  const ticketModal=selectedTicket?h('div',{
+    className:'rm-modal-backdrop',
+    onClick:e=>{if(e.target===e.currentTarget)setSelectedTicket(null);}
+  },
+    h('div',{className:'rm-modal'},
+      h('div',{className:'rm-modal-head'},
+        h('div',null,
+          h('span',null,'جزئیات پرونده'),
+          h('h2',null,selectedTicket.ticketNumber||('ردیف '+selectedTicket.rowNumber))
+        ),
+        h('button',{onClick:()=>setSelectedTicket(null)},'×')
+      ),
+      h('div',{className:'rm-detail-grid'},
+        h('div',null,h('span',null,'فروشگاه'),h('b',null,(selectedTicket.storeCode||'—')+' — '+(selectedTicket.storeName||'بدون نام'))),
+        h('div',null,h('span',null,'کارشناس'),h('b',null,selectedTicket.technician||'—')),
+        h('div',null,h('span',null,'تاریخ ثبت'),h('b',null,selectedTicket.dateText||ticketDate(selectedTicket)||'—')),
+        h('div',null,h('span',null,'سن پرونده'),h('b',null,ageDays(selectedTicket)+' روز')),
+        h('div',null,h('span',null,'نوع انجام'),h('b',null,selectedTicket.type==='outsourced'?'برون‌سپاری':'درون‌سپاری')),
+        h('div',null,h('span',null,'وضعیت'),h('b',null,ticketStatus(selectedTicket).label))
+      ),
+      h('div',{className:'rm-detail-block'},h('span',null,'شرح خرابی'),h('p',null,[selectedTicket.level1,...(selectedTicket.level2||[])].filter(Boolean).join(' / ')||'ثبت نشده')),
+      h('div',{className:'rm-detail-block'},h('span',null,'تشخیص اولیه'),h('p',null,[selectedTicket.initialCause,selectedTicket.initialCauseDetails].filter(Boolean).join(' — ')||'ثبت نشده')),
+      h('div',{className:'rm-detail-block'},h('span',null,'علت نهایی'),h('p',null,[selectedTicket.finalCause,selectedTicket.finalCauseDetails].filter(Boolean).join(' — ')||'هنوز ثبت نشده')),
+      selectedTicket.outsourceReason&&h('div',{className:'rm-detail-block'},h('span',null,'علت برون‌سپاری'),h('p',null,selectedTicket.outsourceReason)),
+      selectedTicket.managerNote&&h('div',{className:'rm-detail-block'},h('span',null,'یادداشت مدیر فنی'),h('p',null,selectedTicket.managerNote))
+    )
+  ):null;
+
+  return h('div',{className:'rm-shell'},
+    h('header',{className:'rm-header'},
+      h('div',{className:'rm-brand'},
+        h('div',{className:'rm-mark'},'DM'),
+        h('div',null,
+          h('b',null,currentUser.role==='executive_manager'?'پایش پشتیبانی فنی مناطق':'پایش پشتیبانی فنی منطقه'),
+          h('span',null,currentUser.role==='executive_manager'?'داشبورد فقط خواندنی مدیر اجرایی':'داشبورد فقط خواندنی مدیر منطقه')
+        )
+      ),
+      h('div',{className:'rm-user'},
+        h('div',null,h('b',null,currentUser.name||(currentUser.role==='executive_manager'?'مدیر اجرایی':'مدیر منطقه')),h('span',null,assignedRegions.length+' منطقه تحت پوشش')),
+        h('button',{className:'rm-refresh',onClick:onRefresh,disabled:loading},loading?'در حال دریافت...':'تازه‌سازی'),
+        h('button',{className:'rm-logout',onClick:onLogout},'خروج')
+      )
+    ),
+
+    h('main',{className:'rm-main'},
+      h('section',{className:'rm-intro'},
+        h('div',null,
+          h('span',{className:'rm-eyebrow'},regionFilter==='all'?'نمای تجمیعی مناطق تحت پوشش':'نمای اختصاصی '+regionFilter),
+          h('h1',null,currentUser.role==='executive_manager'?'وضعیت پشتیبانی فنی مناطق تحت پوشش':'وضعیت پشتیبانی فنی منطقه شما'),
+          h('p',null,currentUser.role==='executive_manager'?'فقط اطلاعات مناطق تخصیص‌یافته به شما نمایش داده می‌شود. می‌توانید نمای تجمیعی یا هر منطقه را جداگانه ببینید.':'فقط اطلاعات فروشگاه‌ها و پرونده‌های منطقه شما نمایش داده می‌شود. این داشبورد امکان تغییر یا تأیید تیکت ندارد.')
+        ),
+        h('div',{className:'rm-sync'},
+          h('span',null,'آخرین به‌روزرسانی'),
+          h('b',null,lastUpdated?new Date(lastUpdated).toLocaleTimeString('fa-IR',{hour:'2-digit',minute:'2-digit'}):'—')
+        )
+      ),
+
+      h('section',{className:'rm-controls'},
+        h('div',{className:'rm-tabs'},
+          h('button',{className:tab==='overview'?'active':'',onClick:()=>setTab('overview')},'نمای کلی'),
+          h('button',{className:tab==='stores'?'active':'',onClick:()=>setTab('stores')},'فروشگاه‌ها'),
+          h('button',{className:tab==='open'?'active':'',onClick:()=>setTab('open')},'پرونده‌های باز',h('em',null,actionTickets.length))
+        ),
+        h('div',{className:'rm-filters'},
+          assignedRegions.length>1&&h('select',{value:regionFilter,onChange:e=>{setRegionFilter(e.target.value);setStore('all');setTech('all');setType('all');}},
+            h('option',{value:'all'},'همه مناطق تحت پوشش'),
+            ...assignedRegions.map(x=>h('option',{key:x,value:x},x))
+          ),
+          h('select',{value:range,onChange:e=>setRange(e.target.value)},
+            h('option',{value:'7'},'۷ روز اخیر'),
+            h('option',{value:'30'},'۳۰ روز اخیر'),
+            h('option',{value:'90'},'۹۰ روز اخیر'),
+            h('option',{value:'all'},'کل سوابق')
+          ),
+          h('select',{value:store,onChange:e=>setStore(e.target.value)},
+            h('option',{value:'all'},'همه فروشگاه‌ها'),
+            ...stores.map(s=>h('option',{key:s.code,value:s.code},s.code+' — '+String(s.name).replace(/^فروشگاه\s*/,'').slice(0,28)))
+          ),
+          h('select',{value:tech,onChange:e=>setTech(e.target.value)},
+            h('option',{value:'all'},'همه کارشناسان'),
+            ...techs.map(x=>h('option',{key:x,value:x},x))
+          ),
+          h('select',{value:type,onChange:e=>setType(e.target.value)},
+            h('option',{value:'all'},'همه گروه‌های خرابی'),
+            ...types.map(x=>h('option',{key:x,value:x},x))
+          )
+        )
+      ),
+
+      h('section',{className:'rm-kpis'},
+        kpi('کل پرونده‌های دوره',active.length,'پس از اعمال فیلترها','neutral'),
+        kpi('نیازمند پیگیری',actionTickets.length,'باز یا در انتظار بررسی','primary'),
+        kpi('بیش از ۷ روز',overdue.length,'پرونده معوق','danger'),
+        kpi('رفع داخل سازمان',internalRate+'٪',internal.length+' مورد از '+active.length,'success'),
+        kpi('برون‌سپاری باز',outsourced.length-completedOutsource.length,'نیازمند پیگیری پیمانکار','warning')
+      ),
+
+      tab==='overview'&&h(React.Fragment,null,
+        h('section',{className:'rm-section'},
+          h('div',{className:'rm-section-title'},h('div',null,h('span',null,'اولویت امروز'),h('h2',null,'موارد نیازمند توجه مدیر منطقه')),h('p',null,'خلاصه خودکار از مهم‌ترین موضوعات منطقه')),
+          h('div',{className:'rm-alert-grid'},
+            ...alerts.slice(0,3).map((a,i)=>h('button',{key:a.title,className:'rm-alert '+a.tone,onClick:()=>setTab(a.tab)},
+              h('div',{className:'rm-alert-num'},String(i+1).padStart(2,'0')),
+              h('div',null,h('b',null,a.title),h('p',null,a.text),h('span',null,a.action+' ←'))
+            ))
+          )
+        ),
+
+        h('section',{className:'rm-section'},
+          h('div',{className:'rm-section-title'},h('div',null,h('span',null,'تصویر عملکرد'),h('h2',null,'روند و ترکیب خرابی‌ها')),h('p',null,'برای شناخت جهت حرکت و تمرکز مسائل')),
+          h('div',{className:'rm-chart-grid'},
+            h('div',{className:'rm-card'},
+              h('div',{className:'rm-card-head'},h('div',null,h('h3',null,'روند ثبت و پیگیری'),h('p',null,'آخرین روزهای دارای داده'))),
+              h('div',{className:'rm-chart'},trend.length?h(ChartBox,{type:'line',data:trendData,options:trendOptions}):h('div',{className:'rm-empty'},'داده‌ای برای نمودار وجود ندارد'))
+            ),
+            h('div',{className:'rm-card'},
+              h('div',{className:'rm-card-head'},h('div',null,h('h3',null,'پرتکرارترین گروه‌های خرابی'),h('p',null,topCategory?topCategory[0]+' بیشترین سهم را دارد':'اطلاعات کافی وجود ندارد'))),
+              h('div',{className:'rm-chart'},categoryRows.length?h(ChartBox,{type:'bar',data:categoryData,options:categoryOptions}):h('div',{className:'rm-empty'},'گروه خرابی ثبت نشده است'))
+            )
+          )
+        ),
+
+        h('section',{className:'rm-section'},
+          h('div',{className:'rm-section-title'},h('div',null,h('span',null,'پوشش فنی'),h('h2',null,'وضعیت کارشناسان منطقه')),h('p',null,'حجم کار، معوقات و سهم رفع داخلی')),
+          h('div',{className:'rm-card rm-table-card'},
+            h('div',{className:'rm-table-wrap'},
+              h('table',{className:'rm-table'},
+                h('thead',null,h('tr',null,
+                  h('th',null,'کارشناس'),
+                  h('th',null,'کل پرونده'),
+                  h('th',null,'نیازمند پیگیری'),
+                  h('th',null,'معوق'),
+                  h('th',null,'رفع داخلی')
+                )),
+                h('tbody',null,...techRows.slice(0,10).map(r=>h('tr',{key:r.name},
+                  h('td',null,h('b',null,r.name)),
+                  h('td',null,r.total),
+                  h('td',null,r.open),
+                  h('td',null,r.overdue),
+                  h('td',null,r.internalRate+'٪')
+                )))
+              )
+            ),
+            !techRows.length&&h('div',{className:'rm-empty'},'اطلاعات کارشناسان موجود نیست')
+          )
+        )
+      ),
+
+      tab==='stores'&&h('section',{className:'rm-section rm-tab-section'},
+        h('div',{className:'rm-section-title'},h('div',null,h('span',null,'رتبه‌بندی فروشگاه‌ها'),h('h2',null,'فروشگاه‌های نیازمند توجه')),h('p',null,'مرتب‌شده براساس معوقه و پرونده باز')),
+        h('div',{className:'rm-store-grid'},
+          ...storeRows.map((s,i)=>h('div',{className:'rm-store-card',key:s.code},
+            h('div',{className:'rm-store-rank'},String(i+1).padStart(2,'0')),
+            h('div',{className:'rm-store-name'},h('b',null,s.code),h('span',null,String(s.name).replace(/^فروشگاه\s*/,''))),
+            h('div',{className:'rm-store-metrics'},
+              h('span',null,h('strong',null,s.total),' کل'),
+              h('span',null,h('strong',null,s.open),' باز'),
+              h('span',null,h('strong',null,s.overdue),' معوق'),
+              h('span',null,h('strong',null,s.outsourceRate+'٪'),' پیمانکار')
+            ),
+            h('div',{className:'rm-store-note'},s.oldest?'قدیمی‌ترین پرونده: '+s.oldest+' روز':'پرونده معوق ندارد')
+          ))
+        ),
+        !storeRows.length&&h('div',{className:'rm-card rm-empty'},'فروشگاهی برای این فیلتر پیدا نشد')
+      ),
+
+      tab==='open'&&h('section',{className:'rm-section rm-tab-section'},
+        h('div',{className:'rm-section-title'},h('div',null,h('span',null,'پرونده‌های باز'),h('h2',null,'نیازمند پیگیری منطقه')),h('p',null,'برای مشاهده جزئیات روی هر ردیف کلیک کنید')),
+        h('div',{className:'rm-card rm-table-card'},
+          h('div',{className:'rm-table-wrap'},
+            h('table',{className:'rm-table rm-ticket-table'},
+              h('thead',null,h('tr',null,
+                h('th',null,'شماره'),
+                h('th',null,'فروشگاه'),
+                h('th',null,'خرابی'),
+                h('th',null,'کارشناس'),
+                h('th',null,'سن'),
+                h('th',null,'وضعیت')
+              )),
+              h('tbody',null,...ticketRows.map(t=>{
+                const st=ticketStatus(t);
+                return h('tr',{key:t.id||t.rowNumber,onClick:()=>setSelectedTicket(t),className:'clickable'},
+                  h('td',null,h('b',null,t.ticketNumber||('ردیف '+t.rowNumber))),
+                  h('td',null,(t.storeCode||'—')+' — '+String(t.storeName||'').replace(/^فروشگاه\s*/,'').slice(0,25)),
+                  h('td',null,[t.level1,...(t.level2||[]).slice(0,1)].filter(Boolean).join(' / ')||'—'),
+                  h('td',null,t.technician||'—'),
+                  h('td',null,ageDays(t)+' روز'),
+                  h('td',null,h('span',{className:'rm-status '+st.tone},st.label))
+                );
+              }))
+            )
+          ),
+          !ticketRows.length&&h('div',{className:'rm-empty'},'پرونده بازی برای این فیلتر وجود ندارد')
+        )
+      ),
+
+      h('footer',{className:'rm-footer'},
+        h('span',null,'نسخه 9.1 · دسترسی مدیر منطقه · فقط خواندنی'),
+        h('span',null,'فیلتر دسترسی در سرور انجام می‌شود و فقط اطلاعات مناطق تخصیص‌یافته به این حساب ارسال می‌شود.')
+      )
+    ),
+    ticketModal
+  );
 }
 
 
@@ -2358,7 +3022,17 @@ function LoginView({ onLogin }){
         onLogin({
           username: String(result.username || cleanUsername).trim(),
           name: String(result.name || '').trim(),
-          role: result.role === 'admin' ? 'admin' : (result.role === 'manager' ? 'manager' : 'technician'),
+          role: result.role === 'admin'
+            ? 'admin'
+            : (result.role === 'manager'
+              ? 'manager'
+              : ((result.role === 'regional_manager' || result.role === 'executive_manager')
+                ? result.role
+                : 'technician')),
+          region: String(result.region || '').trim(),
+          regions: Array.isArray(result.regions)
+            ? result.regions.map(x=>String(x||'').trim()).filter(Boolean)
+            : String(result.region||'').split('|').map(x=>x.trim()).filter(Boolean),
           token: String(result.token || '')
         });
         return;
@@ -2448,7 +3122,15 @@ function App(){
   const [toastMsg,setToastMsg]=useState('');
   const toastTimer=useRef(null);
   const lastSyncError=useRef('');
-  const role=currentUser?(currentUser.role==='admin'?'admin':(currentUser.role==='manager'?'manager':'tech')):null;
+  const role=currentUser
+    ? (currentUser.role==='admin'
+      ? 'admin'
+      : (currentUser.role==='manager'
+        ? 'manager'
+        : ((currentUser.role==='regional_manager'||currentUser.role==='executive_manager')
+          ? 'regional'
+          : 'tech')))
+    : null;
   const showToast=m=>{setToastMsg(m);clearTimeout(toastTimer.current);toastTimer.current=setTimeout(()=>setToastMsg(''),2600);};
 
   const handleLogin=user=>{sessionStorage.setItem('ticketing-user',JSON.stringify(user));setCurrentUser(user);setLoaded(false);};
@@ -2464,11 +3146,15 @@ function App(){
       showToast(msg);
     };
 
-    if(currentUser.role==='manager'||currentUser.role==='admin'){
+    if(currentUser.role==='manager'||currentUser.role==='admin'||currentUser.role==='regional_manager'||currentUser.role==='executive_manager'){
       if(!currentUser.token){logout();return;}
       setManagerLoading(true);
       try{
-        const fetchForRole=()=>currentUser.role==='admin' ? fetchExecutiveTickets(currentUser.token) : fetchManagerTickets(currentUser.token);
+        const fetchForRole=()=>currentUser.role==='admin'
+          ? fetchExecutiveTickets(currentUser.token)
+          : ((currentUser.role==='regional_manager'||currentUser.role==='executive_manager')
+            ? fetchRegionalTickets(currentUser.token)
+            : fetchManagerTickets(currentUser.token));
 
         let result=await fetchForRole();
 
@@ -2531,7 +3217,7 @@ function App(){
     }
   },[currentUser]);
 
-  useEffect(()=>{if(!currentUser)return;loadTasks();const iv=setInterval(loadTasks,(currentUser.role==='manager'||currentUser.role==='admin')?30000:15000);return()=>clearInterval(iv);},[currentUser,loadTasks]);
+  useEffect(()=>{if(!currentUser)return;loadTasks();const iv=setInterval(loadTasks,(currentUser.role==='manager'||currentUser.role==='admin'||currentUser.role==='regional_manager'||currentUser.role==='executive_manager')?30000:15000);return()=>clearInterval(iv);},[currentUser,loadTasks]);
 
   const saveTasks=async updater=>{const next=updater(tasks);try{await window.storage.set('tasks',JSON.stringify(next),true);}catch(e){}setTasks(next);return next;};
 
@@ -2551,9 +3237,18 @@ function App(){
     );
   }
 
+  if(role==='regional'){
+    return !loaded
+      ? React.createElement('div',{className:'rm-shell'},React.createElement('div',{className:'rm-loading'},'در حال بارگذاری اطلاعات منطقه...'))
+      : React.createElement(React.Fragment,null,
+          React.createElement(RegionalDashboard,{tasks,onRefresh:loadTasks,loading:managerLoading,lastUpdated,currentUser,onLogout:logout}),
+          React.createElement(Toast,{msg:toastMsg})
+        );
+  }
+
   return React.createElement('div',{className:'wrap'},
     React.createElement('div',{className:'top'},
-      React.createElement('div',{className:'brand'},React.createElement('span',{className:'dot'}),React.createElement('div',null,React.createElement('h1',null,'پشتیبانی فنی فروشگاه‌ها'),React.createElement('span',null,(role==='tech'?'محیط نیروی فنی':'مرکز کنترل مدیریت فنی')+' • نسخه 8.1'))),
+      React.createElement('div',{className:'brand'},React.createElement('span',{className:'dot'}),React.createElement('div',null,React.createElement('h1',null,'پشتیبانی فنی فروشگاه‌ها'),React.createElement('span',null,(role==='tech'?'محیط نیروی فنی':'مرکز کنترل مدیریت فنی')+' • نسخه 9.1'))),
       React.createElement('div',{className:'user-bar'},React.createElement('div',{className:'user-info'},React.createElement('b',null,currentUser.name),React.createElement('span',null,role==='manager'?'مدیر فنی':'کد پرسنلی: '+currentUser.username)),React.createElement('button',{className:'logout-btn',onClick:logout},'خروج'))
     ),
     !loaded?React.createElement('div',{className:'empty'},'در حال بارگذاری اطلاعات...'):(role==='tech'?React.createElement(TechView,{tasks,saveTasks,showToast,currentUser,refreshTasks:loadTasks}):React.createElement(ManagerView,{tasks,updateTask:updateManagerTask,showToast,refreshTasks:loadTasks,managerLoading,lastUpdated})),
