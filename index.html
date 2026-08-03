@@ -2280,7 +2280,7 @@ function ExecutiveDashboard({tasks,onRefresh,loading,lastUpdated,currentUser,onL
 
 /* ---------- اپ اصلی ---------- */
 
-/* ---------- Boardroom CEO Dashboard — نسخه 9.1 ---------- */
+/* ---------- Boardroom CEO Dashboard — نسخه 9.2 ---------- */
 function CEODashboard({tasks,onRefresh,loading,lastUpdated,currentUser,onLogout}){
   const h=React.createElement;
   const [range,setRange]=useState('90');
@@ -2540,7 +2540,7 @@ function CEODashboard({tasks,onRefresh,loading,lastUpdated,currentUser,onLogout}
         h('div',{className:'c8-panel'},h('div',{className:'c8-panel-head'},h('div',null,h('span',null,'DATA READINESS'),h('h3',null,'برای نسخه مالی مدیرعامل چه داده‌ای کم است؟')),h('p',null,'این موارد فعلاً در تیکتینگ ثبت نمی‌شوند')),h('div',{className:'c8-data-gaps'},h('div',null,h('b',null,'هزینه تعمیر و قطعه'),h('span',null,'برای محاسبه هزینه کل فنی و تصمیم اقتصادی تعمیر/تعویض')),h('div',null,h('b',null,'مدت و شدت توقف فروشگاه'),h('span',null,'برای سنجش اثر عملیاتی و فروش در معرض ریسک')),h('div',null,h('b',null,'شناسه، برند و عمر تجهیز'),h('span',null,'برای تحلیل کیفیت خرید و هزینه مالکیت')))
       ),
 
-      h('footer',{className:'c8-footer'},h('span',null,'نسخه 9.1 · دسترسی فقط خواندنی مدیرعامل'),h('span',null,'ریسک‌های نمایش‌داده‌شده برآورد مدیریتی از داده فعلی تیکتینگ‌اند، نه اندازه‌گیری هزینه یا توقف واقعی.'))
+      h('footer',{className:'c8-footer'},h('span',null,'نسخه 9.2 · دسترسی فقط خواندنی مدیرعامل'),h('span',null,'ریسک‌های نمایش‌داده‌شده برآورد مدیریتی از داده فعلی تیکتینگ‌اند، نه اندازه‌گیری هزینه یا توقف واقعی.'))
     ),
 
     modal
@@ -2947,7 +2947,7 @@ function RegionalDashboard({tasks,onRefresh,loading,lastUpdated,currentUser,onLo
       ),
 
       h('footer',{className:'rm-footer'},
-        h('span',null,'نسخه 9.1 · دسترسی مدیر منطقه · فقط خواندنی'),
+        h('span',null,'نسخه 9.2 · دسترسی مدیر منطقه · فقط خواندنی'),
         h('span',null,'فیلتر دسترسی در سرور انجام می‌شود و فقط اطلاعات مناطق تخصیص‌یافته به این حساب ارسال می‌شود.')
       )
     ),
@@ -2999,7 +2999,7 @@ function LoginView({ onLogin }){
     setPassword(cleanPassword);
 
     if(!cleanUsername || !cleanPassword){
-      setError('کد پرسنلی و رمز عبور را وارد کنید');
+      setError('نام کاربری و رمز عبور را وارد کنید');
       if(!cleanUsername){
         setTimeout(()=>usernameRef.current && usernameRef.current.focus(),30);
       }else{
@@ -3058,41 +3058,46 @@ function LoginView({ onLogin }){
         React.createElement('div',{className:'login-head'},
           React.createElement('div',{className:'login-icon'},'🧰'),
           React.createElement('h2',null,'ورود به پشتیبانی فنی'),
-          React.createElement('p',null,'با کد پرسنلی و رمز اختصاصی خود وارد شوید')
+          React.createElement('p',null,'با نام کاربری، ایمیل یا کد پرسنلی خود وارد شوید')
         ),
         error && React.createElement('div',{className:'login-error',role:'alert'},error),
-        React.createElement('label',{htmlFor:'ticketing-personnel-code'},'کد پرسنلی'),
+        React.createElement('label',{htmlFor:'ticketing-username'},'نام کاربری یا ایمیل'),
         React.createElement('input',{
-          id:'ticketing-personnel-code',
+          id:'ticketing-username',
           ref:usernameRef,
-          name:'ticketing_personnel_code_v36',
+          name:'username',
           type:'text',
           value:username,
           onChange:e=>{setUsername(e.target.value);clearError();},
-          inputMode:'text',
-          autoComplete:'off',
+          inputMode:'email',
+          autoComplete:'username',
           autoCapitalize:'none',
+          autoCorrect:'off',
           spellCheck:false,
+          enterKeyHint:'next',
+          dir:'ltr',
           'data-lpignore':'true',
           'data-1p-ignore':'true',
-          placeholder:'کد پرسنلی'
+          placeholder:'ایمیل، نام کاربری یا کد پرسنلی'
         }),
         React.createElement('label',{htmlFor:'ticketing-password'},'رمز عبور'),
         React.createElement('input',{
           id:'ticketing-password',
           ref:passwordRef,
-          name:'ticketing_password_v36',
+          name:'password',
           type:'password',
           value:password,
           onChange:e=>{setPassword(e.target.value);clearError();},
-          inputMode:'numeric',
-          pattern:'[0-9۰-۹٠-٩]*',
-          autoComplete:'new-password',
+          inputMode:'text',
+          autoComplete:'current-password',
           autoCapitalize:'none',
+          autoCorrect:'off',
           spellCheck:false,
+          enterKeyHint:'go',
+          dir:'ltr',
           'data-lpignore':'true',
           'data-1p-ignore':'true',
-          placeholder:'رمز ۶ رقمی'
+          placeholder:'رمز عبور'
         }),
         React.createElement('div',{className:'login-actions'},
           React.createElement('button',{
@@ -3248,7 +3253,7 @@ function App(){
 
   return React.createElement('div',{className:'wrap'},
     React.createElement('div',{className:'top'},
-      React.createElement('div',{className:'brand'},React.createElement('span',{className:'dot'}),React.createElement('div',null,React.createElement('h1',null,'پشتیبانی فنی فروشگاه‌ها'),React.createElement('span',null,(role==='tech'?'محیط نیروی فنی':'مرکز کنترل مدیریت فنی')+' • نسخه 9.1'))),
+      React.createElement('div',{className:'brand'},React.createElement('span',{className:'dot'}),React.createElement('div',null,React.createElement('h1',null,'پشتیبانی فنی فروشگاه‌ها'),React.createElement('span',null,(role==='tech'?'محیط نیروی فنی':'مرکز کنترل مدیریت فنی')+' • نسخه 9.2'))),
       React.createElement('div',{className:'user-bar'},React.createElement('div',{className:'user-info'},React.createElement('b',null,currentUser.name),React.createElement('span',null,role==='manager'?'مدیر فنی':'کد پرسنلی: '+currentUser.username)),React.createElement('button',{className:'logout-btn',onClick:logout},'خروج'))
     ),
     !loaded?React.createElement('div',{className:'empty'},'در حال بارگذاری اطلاعات...'):(role==='tech'?React.createElement(TechView,{tasks,saveTasks,showToast,currentUser,refreshTasks:loadTasks}):React.createElement(ManagerView,{tasks,updateTask:updateManagerTask,showToast,refreshTasks:loadTasks,managerLoading,lastUpdated})),
