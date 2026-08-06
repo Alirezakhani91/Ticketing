@@ -785,7 +785,7 @@
 
 
 /* ========================================================
-   Pre-opening workflow 10.0
+   Pre-opening workflow 10.1
    ======================================================== */
 .location-mode-row{
   display:grid;
@@ -1399,17 +1399,40 @@ function TicketFields({ draft, setDraft }){
       categories.map(c=>React.createElement('option',{key:c.l1,value:c.l1},c.l1))
     ),
 
-    draft.level1==='سایر موارد' && React.createElement(React.Fragment,null,
-      React.createElement('label',null,preOpening?'شرح اقدام فنی':'شرح خرابی یا خدمت'),
+    preOpening && draft.level1 && React.createElement(React.Fragment,null,
+      React.createElement(
+        'label',
+        null,
+        draft.level1==='سایر موارد'
+          ? 'شرح اقدام فنی (الزامی)'
+          : 'سایر توضیحات و نکات (اختیاری)'
+      ),
       React.createElement('textarea',{
         value:draft.otherText,
         onChange:e=>setDraft(d=>({...d,otherText:e.target.value})),
-        placeholder:preOpening?'اقدام انجام‌شده یا موضوع نیازمند پیگیری را بنویسید...':'شرح مورد را وارد کنید...'
+        placeholder:draft.level1==='سایر موارد'
+          ? 'اقدام انجام‌شده یا موضوع نیازمند پیگیری را کامل بنویسید...'
+          : 'نکات بازدید، وضعیت اجرا، مورد باقی‌مانده یا توضیح تکمیلی را بنویسید...'
+      })
+    ),
+
+    !preOpening && draft.level1==='سایر موارد' && React.createElement(React.Fragment,null,
+      React.createElement('label',null,'شرح خرابی یا خدمت'),
+      React.createElement('textarea',{
+        value:draft.otherText,
+        onChange:e=>setDraft(d=>({...d,otherText:e.target.value})),
+        placeholder:'شرح مورد را وارد کنید...'
       })
     ),
 
     cat && cat.l2.length>0 && React.createElement(React.Fragment,null,
-      React.createElement('label',null,'مرحله ۳ — نوع فرعی خرابی یا خدمات (سطح ۲) — می‌توانید چند مورد را انتخاب کنید'),
+      React.createElement(
+        'label',
+        null,
+        preOpening
+          ? 'جزئیات اقدام (اختیاری) — می‌توانید چند مورد را انتخاب کنید'
+          : 'مرحله ۳ — نوع فرعی خرابی یا خدمات (سطح ۲) — می‌توانید چند مورد را انتخاب کنید'
+      ),
       React.createElement('div',{className:'chip-grid'},
         cat.l2.map(item=>React.createElement('div',{key:item,className:'chip'+(draft.level2.includes(item)?' on':''),onClick:()=>toggleLevel2(item)},item))
       )
@@ -1607,7 +1630,19 @@ function TechView({ tasks, saveTasks, showToast, currentUser, refreshTasks }){
         return;
       }
       if(result&&result.success){
-        setPreOpeningStores(result.stores||[]);
+        const incoming=result.stores||[];
+        setPreOpeningStores(current=>{
+          const byCode=new Map();
+          [...current,...incoming].forEach(store=>{
+            if(!store||!store.code)return;
+            const previous=byCode.get(store.code)||{};
+            byCode.set(store.code,{...previous,...store});
+          });
+          return [...byCode.values()].sort((a,b)=>
+            String(b.createdAt||'').localeCompare(String(a.createdAt||'')) ||
+            String(a.name||'').localeCompare(String(b.name||''),'fa')
+          );
+        });
         setAvailableRegions(result.regions||[]);
       }else{
         showToast((result&&result.message)||'فهرست پروژه‌های پیش‌افتتاح دریافت نشد');
@@ -1669,6 +1704,7 @@ function TechView({ tasks, saveTasks, showToast, currentUser, refreshTasks }){
     setStoreInfo(store);
     setStoreCode(store.code);
     setStoreError('');
+    setPreSearch('');
     setShowNewProject(false);
     setShowFinalCode(false);
     setFinalCode('');
@@ -1705,6 +1741,7 @@ function TechView({ tasks, saveTasks, showToast, currentUser, refreshTasks }){
       selectPreOpening(result.store);
       setNewProject({projectName:'',region:'',city:'',address:''});
       showToast('پروژه '+result.store.code+' ایجاد و انتخاب شد');
+      setTimeout(()=>loadPreOpening(),600);
     }catch(e){
       showToast('ایجاد پروژه انجام نشد؛ اتصال اینترنت را بررسی کنید');
     }finally{
@@ -2887,7 +2924,7 @@ function ExecutiveDashboard({tasks,onRefresh,loading,lastUpdated,currentUser,onL
 
 /* ---------- اپ اصلی ---------- */
 
-/* ---------- Boardroom CEO Dashboard — نسخه 10.0 ---------- */
+/* ---------- Boardroom CEO Dashboard — نسخه 10.1 ---------- */
 function CEODashboard({tasks,onRefresh,loading,lastUpdated,currentUser,onLogout}){
   const h=React.createElement;
   const [range,setRange]=useState('90');
@@ -3179,7 +3216,7 @@ function CEODashboard({tasks,onRefresh,loading,lastUpdated,currentUser,onLogout}
         )
       ),
 
-      h('footer',{className:'c8-footer'},h('span',null,'نسخه 10.0 · دسترسی فقط خواندنی مدیرعامل'),h('span',null,'ریسک فروشگاه‌های فعال و فعالیت‌های پیش‌افتتاح به‌صورت جداگانه تحلیل می‌شوند.'))
+      h('footer',{className:'c8-footer'},h('span',null,'نسخه 10.1 · دسترسی فقط خواندنی مدیرعامل'),h('span',null,'ریسک فروشگاه‌های فعال و فعالیت‌های پیش‌افتتاح به‌صورت جداگانه تحلیل می‌شوند.'))
     ),
 
     modal
@@ -3598,7 +3635,7 @@ function RegionalDashboard({tasks,onRefresh,loading,lastUpdated,currentUser,onLo
       ),
 
       h('footer',{className:'rm-footer'},
-        h('span',null,'نسخه 10.0 · دسترسی مدیر منطقه · فقط خواندنی'),
+        h('span',null,'نسخه 10.1 · دسترسی مدیر منطقه · فقط خواندنی'),
         h('span',null,'فیلتر دسترسی در سرور انجام می‌شود و فقط اطلاعات مناطق تخصیص‌یافته به این حساب ارسال می‌شود.')
       )
     ),
@@ -3619,7 +3656,7 @@ function LoginView({ onLogin }){
   useEffect(()=>{
     // هیچ تلاش ناموفقی در مرورگر ذخیره یا قفل نمی‌شود.
     // ورود قبلیِ ناقص نیز پاک می‌شود تا کاربران فعلی بتوانند دوباره تلاش کنند.
-    try{ sessionStorage.removeItem('ticketing-user-v100'); }catch(e){}
+    try{ sessionStorage.removeItem('ticketing-user-v101'); }catch(e){}
   },[]);
 
   const clearError = () => {
@@ -3632,7 +3669,7 @@ function LoginView({ onLogin }){
     setError('');
     setUsername('');
     setPassword('');
-    try{ sessionStorage.removeItem('ticketing-user-v100'); }catch(e){}
+    try{ sessionStorage.removeItem('ticketing-user-v101'); }catch(e){}
     setTimeout(()=>usernameRef.current && usernameRef.current.focus(),30);
   };
 
@@ -3669,7 +3706,7 @@ function LoginView({ onLogin }){
 
       if(result && result.success){
         // هیچ خطای قبلی یا نشست ناقصی به ورود درست منتقل نمی‌شود.
-        try{ sessionStorage.removeItem('ticketing-user-v100'); }catch(e){}
+        try{ sessionStorage.removeItem('ticketing-user-v101'); }catch(e){}
         onLogin({
           username: String(result.username || cleanUsername).trim(),
           name: String(result.name || '').trim(),
@@ -3770,7 +3807,7 @@ function LoginView({ onLogin }){
 
 /* ---------- اپ اصلی ---------- */
 function App(){
-  const [currentUser,setCurrentUser]=useState(()=>{try{const raw=sessionStorage.getItem('ticketing-user-v100');return raw?JSON.parse(raw):null;}catch(e){return null;}});
+  const [currentUser,setCurrentUser]=useState(()=>{try{const raw=sessionStorage.getItem('ticketing-user-v101');return raw?JSON.parse(raw):null;}catch(e){return null;}});
   const [tasks,setTasks]=useState([]);
   const [loaded,setLoaded]=useState(false);
   const [managerLoading,setManagerLoading]=useState(false);
@@ -3789,8 +3826,8 @@ function App(){
     : null;
   const showToast=m=>{setToastMsg(m);clearTimeout(toastTimer.current);toastTimer.current=setTimeout(()=>setToastMsg(''),2600);};
 
-  const handleLogin=user=>{sessionStorage.setItem('ticketing-user-v100',JSON.stringify(user));setCurrentUser(user);setLoaded(false);};
-  const logout=()=>{sessionStorage.removeItem('ticketing-user-v100');setCurrentUser(null);setTasks([]);setLoaded(false);};
+  const handleLogin=user=>{sessionStorage.setItem('ticketing-user-v101',JSON.stringify(user));setCurrentUser(user);setLoaded(false);};
+  const logout=()=>{sessionStorage.removeItem('ticketing-user-v101');setCurrentUser(null);setTasks([]);setLoaded(false);};
 
   const loadTasks=useCallback(async()=>{
     if(!currentUser)return;
@@ -3904,7 +3941,7 @@ function App(){
 
   return React.createElement('div',{className:'wrap'},
     React.createElement('div',{className:'top'},
-      React.createElement('div',{className:'brand'},React.createElement('span',{className:'dot'}),React.createElement('div',null,React.createElement('h1',null,'پشتیبانی فنی فروشگاه‌ها'),React.createElement('span',null,(role==='tech'?'محیط نیروی فنی':'مرکز کنترل مدیریت فنی')+' • نسخه 10.0'))),
+      React.createElement('div',{className:'brand'},React.createElement('span',{className:'dot'}),React.createElement('div',null,React.createElement('h1',null,'پشتیبانی فنی فروشگاه‌ها'),React.createElement('span',null,(role==='tech'?'محیط نیروی فنی':'مرکز کنترل مدیریت فنی')+' • نسخه 10.1'))),
       React.createElement('div',{className:'user-bar'},React.createElement('div',{className:'user-info'},React.createElement('b',null,currentUser.name),React.createElement('span',null,role==='manager'?'مدیر فنی':'کد پرسنلی: '+currentUser.username)),React.createElement('button',{className:'logout-btn',onClick:logout},'خروج'))
     ),
     !loaded?React.createElement('div',{className:'empty'},'در حال بارگذاری اطلاعات...'):(role==='tech'?React.createElement(TechView,{tasks,saveTasks,showToast,currentUser,refreshTasks:loadTasks}):React.createElement(ManagerView,{tasks,updateTask:updateManagerTask,showToast,refreshTasks:loadTasks,managerLoading,lastUpdated})),
