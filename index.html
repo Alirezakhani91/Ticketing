@@ -785,7 +785,7 @@
 
 
 /* ========================================================
-   Pre-opening workflow 10.4
+   Pre-opening workflow 10.5
    ======================================================== */
 .location-mode-row{
   display:grid;
@@ -1189,6 +1189,64 @@
   }
   .preopening-action-meta{
     justify-content:flex-start;
+  }
+}
+
+
+/* ========================================================
+   Manager dashboard leaderboard + all regions 10.5
+   ======================================================== */
+.leader-pager{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  flex-wrap:wrap;
+  padding:12px 0 2px;
+  margin-top:6px;
+  border-top:1px solid var(--line);
+}
+.leader-pager button{
+  border:1px solid var(--line);
+  background:#fff;
+  color:var(--ink-soft);
+  border-radius:8px;
+  min-width:54px;
+  height:31px;
+  padding:0 9px;
+  font-family:inherit;
+  font-size:9px;
+  font-weight:800;
+  cursor:pointer;
+  transition:.16s ease;
+}
+.leader-pager button:hover{
+  border-color:#aeb8b2;
+  color:var(--ink);
+}
+.leader-pager button.active{
+  background:var(--ink);
+  border-color:var(--ink);
+  color:#fff;
+}
+.region-all-card{
+  align-self:start;
+}
+.region-all-chart{
+  min-height:300px;
+  padding:8px 4px 4px;
+}
+.region-all-chart .chart-wrap{
+  height:100% !important;
+  min-height:100%;
+}
+@media(max-width:620px){
+  .leader-pager{
+    overflow-x:auto;
+    flex-wrap:nowrap;
+    padding-bottom:5px;
+  }
+  .leader-pager button{
+    flex:0 0 auto;
   }
 }
 
@@ -2905,6 +2963,7 @@ function ReportView({tasks,onRefresh,loading,lastUpdated}){
   const [status,setStatus]=useState('all');
   const [work,setWork]=useState('all');
   const [expandedStore,setExpandedStore]=useState('');
+  const [leaderPage,setLeaderPage]=useState(0);
 
   const allDates=[...new Set(tasks.map(ticketDate).filter(Boolean))].sort(compareTicketDateLabels);
   const today=normalizeTicketDateLabel(new Date().toLocaleDateString('fa-IR'));
@@ -2914,6 +2973,10 @@ function ReportView({tasks,onRefresh,loading,lastUpdated}){
   const storeLookup={};
   tasks.forEach(t=>{const code=String(t.storeCode||'');if(code&&!storeLookup[code])storeLookup[code]={code,name:t.storeName||('فروشگاه '+code),region:t.region||''};});
   const stores=Object.values(storeLookup).sort((a,b)=>a.code.localeCompare(b.code,'fa',{numeric:true}));
+
+  useEffect(()=>{
+    setLeaderPage(0);
+  },[range,tech,region,store,type,status,work]);
 
   const relevant=tasks.filter(t=>{
     const d=ticketDate(t);
@@ -3011,7 +3074,16 @@ function ReportView({tasks,onRefresh,loading,lastUpdated}){
   const catData={labels:catRows.map(x=>x[0]),datasets:[{label:'تعداد',data:catRows.map(x=>x[1]),backgroundColor:'#2f6f5e',borderRadius:7,borderSkipped:false}]};
   const reasonData={labels:reasonRows.map(x=>x[0]),datasets:[{label:'تعداد',data:reasonRows.map(x=>x[1]),backgroundColor:'#2b5a8c',borderRadius:7,borderSkipped:false}]};
   const causeData={labels:causeRows.map(x=>x[0]),datasets:[{label:'تعداد',data:causeRows.map(x=>x[1]),backgroundColor:'#a8382c',borderRadius:7,borderSkipped:false}]};
-  const regionData={labels:regionRows.slice(0,10).map(x=>x.name),datasets:[{label:'تعداد تیکت',data:regionRows.slice(0,10).map(x=>x.total),backgroundColor:'#b8721f',borderRadius:7,borderSkipped:false}]};
+  const regionData={
+    labels:regionRows.map(x=>x.name),
+    datasets:[{
+      label:'تعداد تیکت',
+      data:regionRows.map(x=>x.total),
+      backgroundColor:'#b8721f',
+      borderRadius:7,
+      borderSkipped:false
+    }]
+  };
   const barOptions={responsive:true,maintainAspectRatio:false,indexAxis:'y',plugins:{legend:{display:false}},scales:{x:{beginAtZero:true,ticks:{precision:0},grid:{color:'rgba(0,0,0,.05)'}},y:{grid:{display:false},ticks:{font:{size:9}}}}};
 
   const head=h('div',{className:'dashboard-head'},
@@ -3054,18 +3126,55 @@ function ReportView({tasks,onRefresh,loading,lastUpdated}){
     h('div',{className:'dash-card'},h('div',{className:'dash-card-head'},h('div',null,h('h3',null,'ترکیب اجرای کار'),h('p',null,'درون‌سپاری در برابر برون‌سپاری'))),h(ChartBox,{type:'doughnut',data:typeData,options:donutOptions,small:true}))
   );
 
-  const leaderItems=leaders.slice(0,10).map((x,i)=>h('div',{className:'leader-item',key:x.name},
-    h('div',{className:'rank '+(i<3?'top':'')},i+1),
-    h('div',{className:'leader-name'},h('b',null,x.name),h('span',null,x.stores.size+' فروشگاه · '+x.regions.size+' منطقه · '+pct(x.internal,x.total)+'٪ درون‌سپاری'+(x.pending?' · '+x.pending+' در انتظار':''))),
-    h('div',{className:'mini-track'},h('div',{className:'mini-fill',style:{width:(x.total/maxLeader*100)+'%'}})),
-    h('div',{className:'leader-total'},x.total,h('span',null,'تیکت'))
-  ));
+  const leaderPageSize=10;
+  const leaderPageCount=Math.max(1,Math.ceil(leaders.length/leaderPageSize));
+  const safeLeaderPage=Math.min(leaderPage,leaderPageCount-1);
+  const leaderStart=safeLeaderPage*leaderPageSize;
+  const leaderEnd=Math.min(leaderStart+leaderPageSize,leaders.length);
+  const currentLeaders=leaders.slice(leaderStart,leaderEnd);
+
+  const leaderItems=currentLeaders.map((x,i)=>{
+    const absoluteRank=leaderStart+i+1;
+    return h('div',{className:'leader-item',key:x.name},
+      h('div',{className:'rank '+(absoluteRank<=3?'top':'')},absoluteRank),
+      h('div',{className:'leader-name'},
+        h('b',null,x.name),
+        h('span',null,x.stores.size+' فروشگاه · '+x.regions.size+' منطقه · '+pct(x.internal,x.total)+'٪ درون‌سپاری'+(x.pending?' · '+x.pending+' در انتظار':''))
+      ),
+      h('div',{className:'mini-track'},h('div',{className:'mini-fill',style:{width:(x.total/maxLeader*100)+'%'}})),
+      h('div',{className:'leader-total'},x.total,h('span',null,'تیکت'))
+    );
+  });
+
+  const leaderPager=leaders.length>leaderPageSize
+    ?h('div',{className:'leader-pager'},
+      ...Array.from({length:leaderPageCount},(_,page)=>{
+        const from=page*leaderPageSize+1;
+        const to=Math.min((page+1)*leaderPageSize,leaders.length);
+        return h('button',{
+          key:'leader-page-'+page,
+          className:safeLeaderPage===page?'active':'',
+          onClick:()=>setLeaderPage(page)
+        },from+'–'+to);
+      })
+    )
+    :null;
+
   const attentionItems=attention.map(x=>h('div',{className:'attention',key:x.name},
     h('div',null,h('b',null,x.name),h('span',null,x.pending?x.pending+' تیکت در انتظار بررسی':'نرخ برون‌سپاری بالا')),
     h('span',{className:'status-pill '+(x.pending?'status-warn':'status-bad')},x.pending?x.pending+' معوق':pct(x.outsourced,x.total)+'٪ برون‌سپاری')
   ));
   const people=h('div',{className:'dash-grid'},
-    h('div',{className:'dash-card'},h('div',{className:'dash-card-head'},h('div',null,h('h3',null,'لیدربورد فعالیت نیروها'),h('p',null,'رتبه‌بندی بر اساس تعداد تیکت ثبت‌شده'))),h('div',{className:'leader-list'},...leaderItems)),
+    h('div',{className:'dash-card'},
+      h('div',{className:'dash-card-head'},
+        h('div',null,
+          h('h3',null,'لیدربورد فعالیت نیروها'),
+          h('p',null,'رتبه‌بندی تمام نیروها بر اساس تعداد تیکت ثبت‌شده · نمایش '+(leaders.length?leaderStart+1:0)+' تا '+leaderEnd+' از '+leaders.length)
+        )
+      ),
+      h('div',{className:'leader-list'},...leaderItems),
+      leaderPager
+    ),
     h('div',{className:'dash-card'},h('div',{className:'dash-card-head'},h('div',null,h('h3',null,'وضعیت بررسی مدیر'),h('p',null,'توزیع تیکت‌ها بر اساس نتیجه بررسی'))),h(ChartBox,{type:'doughnut',data:reviewData,options:donutOptions,small:true}),attentionItems.length?h('div',{className:'attention-list'},...attentionItems):null)
   );
 
@@ -3077,7 +3186,17 @@ function ReportView({tasks,onRefresh,loading,lastUpdated}){
   ));
   const regionsSection=h('div',{className:'dash-grid'},
     h('div',{className:'dash-card'},h('div',{className:'dash-card-head'},h('div',null,h('h3',null,'لیدربورد مناطق'),h('p',null,'مقایسه حجم فعالیت، فروشگاه‌ها و نرخ برون‌سپاری'))),h('div',{className:'leader-list'},...regionItems)),
-    h('div',{className:'dash-card'},h('div',{className:'dash-card-head'},h('div',null,h('h3',null,'پرتیکت‌ترین مناطق'),h('p',null,'۱۰ منطقه با بیشترین تیکت'))),h(ChartBox,{type:'bar',data:regionData,options:barOptions}))
+    h('div',{className:'dash-card region-all-card'},
+      h('div',{className:'dash-card-head'},
+        h('div',null,
+          h('h3',null,'تعداد تیکت هر منطقه'),
+          h('p',null,'نمایش تمام '+regionRows.length+' منطقه بر اساس تعداد تیکت ثبت‌شده')
+        )
+      ),
+      h('div',{className:'region-all-chart',style:{height:Math.max(300,regionRows.length*34)+'px'}},
+        h(ChartBox,{type:'bar',data:regionData,options:barOptions})
+      )
+    )
   );
 
   const patterns=h(React.Fragment,null,
@@ -3512,7 +3631,7 @@ function ExecutiveDashboard({tasks,onRefresh,loading,lastUpdated,currentUser,onL
 
 /* ---------- اپ اصلی ---------- */
 
-/* ---------- Boardroom CEO Dashboard — نسخه 10.4 ---------- */
+/* ---------- Boardroom CEO Dashboard — نسخه 10.5 ---------- */
 function CEODashboard({tasks,onRefresh,loading,lastUpdated,currentUser,onLogout}){
   const h=React.createElement;
   const [range,setRange]=useState('90');
@@ -3804,7 +3923,7 @@ function CEODashboard({tasks,onRefresh,loading,lastUpdated,currentUser,onLogout}
         )
       ),
 
-      h('footer',{className:'c8-footer'},h('span',null,'نسخه 10.4 · دسترسی فقط خواندنی مدیرعامل'),h('span',null,'ریسک فروشگاه‌های فعال و فعالیت‌های پیش‌افتتاح به‌صورت جداگانه تحلیل می‌شوند.'))
+      h('footer',{className:'c8-footer'},h('span',null,'نسخه 10.5 · دسترسی فقط خواندنی مدیرعامل'),h('span',null,'ریسک فروشگاه‌های فعال و فعالیت‌های پیش‌افتتاح به‌صورت جداگانه تحلیل می‌شوند.'))
     ),
 
     modal
@@ -4223,7 +4342,7 @@ function RegionalDashboard({tasks,onRefresh,loading,lastUpdated,currentUser,onLo
       ),
 
       h('footer',{className:'rm-footer'},
-        h('span',null,'نسخه 10.4 · دسترسی مدیر منطقه · فقط خواندنی'),
+        h('span',null,'نسخه 10.5 · دسترسی مدیر منطقه · فقط خواندنی'),
         h('span',null,'فیلتر دسترسی در سرور انجام می‌شود و فقط اطلاعات مناطق تخصیص‌یافته به این حساب ارسال می‌شود.')
       )
     ),
@@ -4244,7 +4363,7 @@ function LoginView({ onLogin }){
   useEffect(()=>{
     // هیچ تلاش ناموفقی در مرورگر ذخیره یا قفل نمی‌شود.
     // ورود قبلیِ ناقص نیز پاک می‌شود تا کاربران فعلی بتوانند دوباره تلاش کنند.
-    try{ sessionStorage.removeItem('ticketing-user-v104'); }catch(e){}
+    try{ sessionStorage.removeItem('ticketing-user-v105'); }catch(e){}
   },[]);
 
   const clearError = () => {
@@ -4257,7 +4376,7 @@ function LoginView({ onLogin }){
     setError('');
     setUsername('');
     setPassword('');
-    try{ sessionStorage.removeItem('ticketing-user-v104'); }catch(e){}
+    try{ sessionStorage.removeItem('ticketing-user-v105'); }catch(e){}
     setTimeout(()=>usernameRef.current && usernameRef.current.focus(),30);
   };
 
@@ -4294,7 +4413,7 @@ function LoginView({ onLogin }){
 
       if(result && result.success){
         // هیچ خطای قبلی یا نشست ناقصی به ورود درست منتقل نمی‌شود.
-        try{ sessionStorage.removeItem('ticketing-user-v104'); }catch(e){}
+        try{ sessionStorage.removeItem('ticketing-user-v105'); }catch(e){}
         onLogin({
           username: String(result.username || cleanUsername).trim(),
           name: String(result.name || '').trim(),
@@ -4395,7 +4514,7 @@ function LoginView({ onLogin }){
 
 /* ---------- اپ اصلی ---------- */
 function App(){
-  const [currentUser,setCurrentUser]=useState(()=>{try{const raw=sessionStorage.getItem('ticketing-user-v104');return raw?JSON.parse(raw):null;}catch(e){return null;}});
+  const [currentUser,setCurrentUser]=useState(()=>{try{const raw=sessionStorage.getItem('ticketing-user-v105');return raw?JSON.parse(raw):null;}catch(e){return null;}});
   const [tasks,setTasks]=useState([]);
   const [loaded,setLoaded]=useState(false);
   const [managerLoading,setManagerLoading]=useState(false);
@@ -4414,8 +4533,8 @@ function App(){
     : null;
   const showToast=m=>{setToastMsg(m);clearTimeout(toastTimer.current);toastTimer.current=setTimeout(()=>setToastMsg(''),2600);};
 
-  const handleLogin=user=>{sessionStorage.setItem('ticketing-user-v104',JSON.stringify(user));setCurrentUser(user);setLoaded(false);};
-  const logout=()=>{sessionStorage.removeItem('ticketing-user-v104');setCurrentUser(null);setTasks([]);setLoaded(false);};
+  const handleLogin=user=>{sessionStorage.setItem('ticketing-user-v105',JSON.stringify(user));setCurrentUser(user);setLoaded(false);};
+  const logout=()=>{sessionStorage.removeItem('ticketing-user-v105');setCurrentUser(null);setTasks([]);setLoaded(false);};
 
   const loadTasks=useCallback(async()=>{
     if(!currentUser)return;
@@ -4529,7 +4648,7 @@ function App(){
 
   return React.createElement('div',{className:'wrap'},
     React.createElement('div',{className:'top'},
-      React.createElement('div',{className:'brand'},React.createElement('span',{className:'dot'}),React.createElement('div',null,React.createElement('h1',null,'پشتیبانی فنی فروشگاه‌ها'),React.createElement('span',null,(role==='tech'?'محیط نیروی فنی':'مرکز کنترل مدیریت فنی')+' • نسخه 10.4'))),
+      React.createElement('div',{className:'brand'},React.createElement('span',{className:'dot'}),React.createElement('div',null,React.createElement('h1',null,'پشتیبانی فنی فروشگاه‌ها'),React.createElement('span',null,(role==='tech'?'محیط نیروی فنی':'مرکز کنترل مدیریت فنی')+' • نسخه 10.5'))),
       React.createElement('div',{className:'user-bar'},React.createElement('div',{className:'user-info'},React.createElement('b',null,currentUser.name),React.createElement('span',null,role==='manager'?'مدیر فنی':'کد پرسنلی: '+currentUser.username)),React.createElement('button',{className:'logout-btn',onClick:logout},'خروج'))
     ),
     !loaded?React.createElement('div',{className:'empty'},'در حال بارگذاری اطلاعات...'):(role==='tech'?React.createElement(TechView,{tasks,saveTasks,showToast,currentUser,refreshTasks:loadTasks}):React.createElement(ManagerView,{tasks,updateTask:updateManagerTask,showToast,refreshTasks:loadTasks,managerLoading,lastUpdated,currentUser})),
