@@ -1250,6 +1250,136 @@
   }
 }
 
+
+/* ========================================================
+   Cost capture + maintenance cost dashboard 10.7
+   ======================================================== */
+.cost-capture{
+  margin:16px 0 4px;
+  padding:14px;
+  border:1px solid #dfe8e3;
+  border-radius:14px;
+  background:linear-gradient(180deg,#fbfdfc,#f7faf8);
+}
+.cost-capture.compact{margin-top:14px}
+.cost-capture-head{display:flex;justify-content:space-between;gap:10px;margin-bottom:11px}
+.cost-capture-head b{display:block;font-size:11px;color:var(--ink)}
+.cost-capture-head span{display:block;margin-top:3px;font-size:8px;color:var(--ink-soft)}
+.cost-status-choice{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.cost-choice{
+  text-align:right;padding:10px 11px;border:1px solid var(--line);border-radius:11px;background:#fff;
+  font-family:inherit;cursor:pointer;transition:.16s ease
+}
+.cost-choice b{display:block;font-size:9.5px;color:var(--ink)}
+.cost-choice span{display:block;margin-top:4px;font-size:7.7px;color:var(--ink-soft);line-height:1.6}
+.cost-choice.active{border-color:#2f6f5e;background:#f1f8f5;box-shadow:0 0 0 2px rgba(47,111,94,.08)}
+.cost-choice.active.pending{border-color:#b8721f;background:#fff8ec;box-shadow:0 0 0 2px rgba(184,114,31,.08)}
+.cost-input-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}
+.cost-input-grid label{margin:0}
+.cost-input-grid label>span{display:block;margin-bottom:5px;font-size:8px;color:var(--ink-soft)}
+.money-input{position:relative}
+.money-input input{padding-left:48px!important;direction:ltr;text-align:left}
+.money-input em{
+  position:absolute;left:9px;top:50%;transform:translateY(-50%);font-style:normal;font-size:7px;color:var(--ink-soft)
+}
+.cost-total{
+  display:flex;align-items:center;justify-content:space-between;margin-top:10px;padding:11px 12px;border-radius:10px;background:#173e35;color:#fff
+}
+.cost-total span{font-size:8px;opacity:.78}
+.cost-total b{font-size:13px}
+.cost-pending-note{margin-top:10px;padding:9px 10px;border-radius:9px;background:#fff4df;color:#8b5b13;font-size:8.5px;line-height:1.8}
+.cost-summary{
+  display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;
+  margin-top:9px;padding:10px 11px;border:1px solid #dbe8e2;border-radius:10px;background:#f5faf7
+}
+.cost-summary-main span{display:block;font-size:7.5px;color:var(--ink-soft)}
+.cost-summary-main b{font-size:11px;color:#1e6655}
+.cost-summary-breakdown{display:flex;gap:6px;flex-wrap:wrap}
+.cost-summary-breakdown span{padding:4px 7px;border-radius:7px;background:#fff;font-size:7.5px;color:#5c6963}
+.cost-summary small{width:100%;font-size:7px;color:var(--ink-soft)}
+.cost-summary.pending{display:block;border-color:#f0d8ad;background:#fff8ed;color:#8b5b13}
+.cost-summary.pending b,.cost-summary.legacy b{display:block;font-size:9px}
+.cost-summary.pending span,.cost-summary.legacy span{display:block;margin-top:3px;font-size:7.8px;line-height:1.6}
+.cost-summary.legacy{display:block;border-color:#e5e7e6;background:#fafbfa;color:#69736f}
+.inline-cost-editor{margin-top:8px}
+.cost-edit-btn{background:#f7faf8!important;border-color:#cddbd5!important;color:#24594d!important}
+.cost-editor-panel{padding:10px;border:1px dashed #cddbd5;border-radius:11px;background:#fbfdfc}
+.cost-dashboard-head{
+  padding:18px 20px;border:1px solid #d8e4df;border-radius:16px;
+  background:radial-gradient(circle at 4% 10%,rgba(47,111,94,.10),transparent 28%),linear-gradient(135deg,#fbfdfc,#f4f9f6);
+  box-shadow:var(--shadow)
+}
+.cost-dashboard-badge{
+  display:inline-flex;padding:5px 8px;border-radius:999px;margin-bottom:7px;background:#e7f3ee;color:#286252;
+  font-size:8px;font-weight:900;letter-spacing:.7px;direction:ltr
+}
+.cost-dashboard-filters{grid-template-columns:repeat(2,minmax(0,220px));margin-top:14px}
+.cost-kpi-grid{grid-template-columns:repeat(3,1fr)}
+.cost-chart{height:340px}
+.cost-store-card{margin-top:16px}
+.cost-store-list{display:flex;flex-direction:column;gap:6px}
+.cost-store-row{
+  display:grid;grid-template-columns:34px minmax(0,1fr) auto;align-items:center;gap:10px;
+  padding:9px 10px;border:1px solid var(--line);border-radius:10px;background:#fff
+}
+.cost-rank{
+  width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;background:#f1f4f2;color:#53605a;font-size:9px;font-weight:900
+}
+.cost-store-name b{display:block;font-size:9.5px}
+.cost-store-name span{display:block;margin-top:3px;font-size:7.5px;color:var(--ink-soft)}
+.cost-store-row strong{font-size:10px;color:#1f6554}
+@media(max-width:900px){
+  .cost-input-grid,.cost-kpi-grid{grid-template-columns:1fr 1fr}
+}
+@media(max-width:620px){
+  .cost-status-choice,.cost-input-grid,.cost-kpi-grid,.cost-dashboard-filters{grid-template-columns:1fr}
+  .cost-store-row{grid-template-columns:30px minmax(0,1fr)}
+  .cost-store-row strong{grid-column:2}
+}
+
+
+/* ========================================================
+   No-cost status 10.8
+   ======================================================== */
+.cost-status-choice.three{
+  grid-template-columns:repeat(3,1fr);
+}
+.cost-choice.active.no-cost{
+  border-color:#2f6f5e;
+  background:#edf8f3;
+  box-shadow:0 0 0 2px rgba(47,111,94,.08);
+}
+.cost-no-cost-note{
+  margin-top:10px;
+  padding:9px 10px;
+  border-radius:9px;
+  background:#edf8f3;
+  color:#26604f;
+  font-size:8.5px;
+  line-height:1.8;
+}
+.cost-summary.no-cost{
+  display:block;
+  border-color:#cfe4db;
+  background:#eff8f4;
+  color:#276050;
+}
+.cost-summary.no-cost b{
+  display:block;
+  font-size:9px;
+}
+.cost-summary.no-cost span{
+  display:block;
+  margin-top:3px;
+  font-size:7.8px;
+  line-height:1.6;
+}
+@media(max-width:760px){
+  .cost-status-choice.three{
+    grid-template-columns:1fr;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -1382,18 +1512,38 @@ async function sendOutsourceCompletion(ticket, completion, token){
     method:'POST', mode:'no-cors', headers:{'Content-Type':'text/plain'},
     body:JSON.stringify({
       action:'completeOutsource', token:String(token||''), rowNumber:ticket.rowNumber,
-      completionNote:completion.completionNote||'', completionParts:completion.completionParts||[], finalCause:completion.finalCause||'', finalCauseDetails:completion.finalCauseDetails||''
+      completionNote:completion.completionNote||'', completionParts:completion.completionParts||[],
+      finalCause:completion.finalCause||'', finalCauseDetails:completion.finalCauseDetails||'',
+      costStatus:completion.costStatus||'',
+      partsCost:completion.partsCost||0,
+      serviceCost:completion.serviceCost||0,
+      otherCost:completion.otherCost||0
     })
   });
 }
 
-async function sendManagerUpdate(ticket, token){
+async function sendManagerUpdate(ticket, token, patch={}){
+  const payload={
+    action:'updateTicket', token, rowNumber:ticket.rowNumber,
+    type:ticket.type, level1:ticket.level1||'', level2:ticket.level2||[], otherText:ticket.otherText||'',
+    consumedParts:ticket.consumedParts||[], hotParts:ticket.hotParts||[], outsourceReason:ticket.outsourceReason||'',
+    reviewStatus:ticket.reviewStatus||'', managerNote:ticket.managerNote||'',
+    initialCause:ticket.initialCause||'', initialCauseDetails:ticket.initialCauseDetails||'',
+    finalCause:ticket.finalCause||'', finalCauseDetails:ticket.finalCauseDetails||''
+  };
+
+  // اطلاعات هزینه فقط وقتی ارسال می‌شود که مدیر عمداً بخش هزینه را تغییر داده باشد.
+  // در نتیجه بررسی/تأیید یک تیکت قدیمی، وضعیت هزینه آن را دستکاری نمی‌کند.
+  if(Object.prototype.hasOwnProperty.call(patch,'costStatus')){
+    payload.costStatus=patch.costStatus;
+    payload.partsCost=patch.partsCost||0;
+    payload.serviceCost=patch.serviceCost||0;
+    payload.otherCost=patch.otherCost||0;
+  }
+
   await fetch(SHEET_URL, {
     method:'POST', mode:'no-cors', headers:{'Content-Type':'text/plain'},
-    body:JSON.stringify({action:'updateTicket', token, rowNumber:ticket.rowNumber,
-      type:ticket.type, level1:ticket.level1||'', level2:ticket.level2||[], otherText:ticket.otherText||'',
-      consumedParts:ticket.consumedParts||[], hotParts:ticket.hotParts||[], outsourceReason:ticket.outsourceReason||'',
-      reviewStatus:ticket.reviewStatus||'', managerNote:ticket.managerNote||'', initialCause:ticket.initialCause||'', initialCauseDetails:ticket.initialCauseDetails||'', finalCause:ticket.finalCause||'', finalCauseDetails:ticket.finalCauseDetails||''})
+    body:JSON.stringify(payload)
   });
 }
 
@@ -1405,6 +1555,21 @@ async function sendTechnicianUpdate(ticket, draft, store, token){
       storeCode:store.code, type:draft.type, level1:draft.level1||'', level2:draft.level2||[],
       otherText:draft.otherText||'', consumedParts:draft.consumedParts||[], hotParts:draft.hotParts||[],
       outsourceReason:draft.outsourceReason||'', initialCause:draft.initialCause||'', initialCauseDetails:draft.initialCauseDetails||''
+    })
+  });
+}
+
+async function sendTechnicianCostUpdate(ticket, cost, token){
+  await fetch(SHEET_URL, {
+    method:'POST', mode:'no-cors', headers:{'Content-Type':'text/plain'},
+    body:JSON.stringify({
+      action:'technicianUpdateCost',
+      token:String(token||''),
+      rowNumber:ticket.rowNumber,
+      costStatus:cost.costStatus||'',
+      partsCost:cost.partsCost||0,
+      serviceCost:cost.serviceCost||0,
+      otherCost:cost.otherCost||0
     })
   });
 }
@@ -1453,6 +1618,10 @@ async function sendToSheet(t){
       workStatus: t.workStatus || '',
       completedAt: t.completedAt || '',
       ticketNumber: t.ticketNumber || '',
+      costStatus: t.costStatus || '',
+      partsCost: t.partsCost || 0,
+      serviceCost: t.serviceCost || 0,
+      otherCost: t.otherCost || 0,
       token: t.token || ''
     })
   });
@@ -1729,6 +1898,225 @@ function TicketFields({ draft, setDraft }){
 }
 
 
+
+function normalizeMoneyInput(value){
+  return String(value==null?'':value)
+    .replace(/[۰-۹]/g,d=>'۰۱۲۳۴۵۶۷۸۹'.indexOf(d))
+    .replace(/[٠-٩]/g,d=>'٠١٢٣٤٥٦٧٨٩'.indexOf(d))
+    .replace(/[,\u066c\u060c\s]/g,'')
+    .replace(/[^\d]/g,'')
+    .replace(/^0+(?=\d)/,'');
+}
+
+function moneyValue(value){
+  const clean=normalizeMoneyInput(value);
+  return clean?Number(clean):0;
+}
+
+function formatToman(value){
+  return Number(value||0).toLocaleString('fa-IR')+' تومان';
+}
+
+function emptyCostDraft(){
+  return {costStatus:'',partsCost:'',serviceCost:'',otherCost:''};
+}
+
+function normalizeCostDraft(cost){
+  const status=String((cost&&cost.costStatus)||'');
+  if(status==='no_cost'){
+    return {costStatus:'no_cost',partsCost:0,serviceCost:0,otherCost:0,totalCost:0};
+  }
+  if(status==='pending'){
+    return {costStatus:'pending',partsCost:0,serviceCost:0,otherCost:0,totalCost:0};
+  }
+  const partsCost=moneyValue(cost&&cost.partsCost);
+  const serviceCost=moneyValue(cost&&cost.serviceCost);
+  const otherCost=moneyValue(cost&&cost.otherCost);
+  return {
+    costStatus:'final',
+    partsCost,
+    serviceCost,
+    otherCost,
+    totalCost:partsCost+serviceCost+otherCost
+  };
+}
+
+function validCostDraft(cost){
+  return !!cost&&(cost.costStatus==='final'||cost.costStatus==='pending'||cost.costStatus==='no_cost');
+}
+
+function CostCaptureFields({cost,setCost,title='اطلاعات هزینه پایان کار',compact=false}){
+  const total=moneyValue(cost.partsCost)+moneyValue(cost.serviceCost)+moneyValue(cost.otherCost);
+  const setStatus=status=>setCost(prev=>({
+    ...prev,
+    costStatus:status,
+    ...((status==='pending'||status==='no_cost')?{partsCost:'',serviceCost:'',otherCost:''}:{})
+  }));
+  const update=(key,value)=>setCost(prev=>({...prev,[key]:normalizeMoneyInput(value)}));
+
+  return React.createElement('div',{className:'cost-capture'+(compact?' compact':'')},
+    React.createElement('div',{className:'cost-capture-head'},
+      React.createElement('div',null,
+        React.createElement('b',null,title),
+        React.createElement('span',null,'مبالغ به تومان ثبت می‌شوند')
+      )
+    ),
+    React.createElement('div',{className:'cost-status-choice three'},
+      React.createElement('button',{
+        type:'button',
+        className:'cost-choice'+(cost.costStatus==='no_cost'?' active no-cost':''),
+        onClick:()=>setStatus('no_cost')
+      },
+        React.createElement('b',null,'بدون هزینه'),
+        React.createElement('span',null,'کار توسط نیروی داخلی انجام شده و هزینه مستقیم ندارد')
+      ),
+      React.createElement('button',{
+        type:'button',
+        className:'cost-choice'+(cost.costStatus==='final'?' active':''),
+        onClick:()=>setStatus('final')
+      },
+        React.createElement('b',null,'هزینه نهایی مشخص است'),
+        React.createElement('span',null,'مبالغ واقعی را ثبت می‌کنم')
+      ),
+      React.createElement('button',{
+        type:'button',
+        className:'cost-choice'+(cost.costStatus==='pending'?' active pending':''),
+        onClick:()=>setStatus('pending')
+      },
+        React.createElement('b',null,'هنوز مشخص نیست'),
+        React.createElement('span',null,'کار بسته شود؛ هزینه بعداً تکمیل می‌شود')
+      )
+    ),
+    cost.costStatus==='final'&&React.createElement(React.Fragment,null,
+      React.createElement('div',{className:'cost-input-grid'},
+        React.createElement('label',null,
+          React.createElement('span',null,'هزینه قطعات'),
+          React.createElement('div',{className:'money-input'},
+            React.createElement('input',{inputMode:'numeric',value:cost.partsCost,onChange:e=>update('partsCost',e.target.value),placeholder:'0'}),
+            React.createElement('em',null,'تومان')
+          )
+        ),
+        React.createElement('label',null,
+          React.createElement('span',null,'هزینه خدمات / پیمانکار'),
+          React.createElement('div',{className:'money-input'},
+            React.createElement('input',{inputMode:'numeric',value:cost.serviceCost,onChange:e=>update('serviceCost',e.target.value),placeholder:'0'}),
+            React.createElement('em',null,'تومان')
+          )
+        ),
+        React.createElement('label',null,
+          React.createElement('span',null,'سایر هزینه'),
+          React.createElement('div',{className:'money-input'},
+            React.createElement('input',{inputMode:'numeric',value:cost.otherCost,onChange:e=>update('otherCost',e.target.value),placeholder:'0'}),
+            React.createElement('em',null,'تومان')
+          )
+        )
+      ),
+      React.createElement('div',{className:'cost-total'},
+        React.createElement('span',null,'هزینه کل'),
+        React.createElement('b',null,formatToman(total))
+      )
+    ),
+    cost.costStatus==='no_cost'&&React.createElement('div',{className:'cost-no-cost-note'},
+      'این اقدام با هزینه مستقیم صفر ثبت می‌شود؛ یعنی تعمیر یا خدمت توسط منابع داخلی انجام شده و مبلغی بابت قطعه، خدمات یا سایر هزینه‌ها ثبت نشده است.'
+    ),
+    cost.costStatus==='pending'&&React.createElement('div',{className:'cost-pending-note'},
+      'تیکت از نظر فنی تکمیل می‌شود و هزینه بعداً توسط کارشناس یا مدیر فنی قابل ثبت است.'
+    )
+  );
+}
+
+function CostSummary({ticket,muted=false}){
+  const done=ticket.type!=='outsourced'||ticket.workStatus==='completed';
+  if(!done||ticket.reviewStatus==='cancelled')return null;
+
+  if(ticket.costStatus==='final'){
+    return React.createElement('div',{className:'cost-summary'},
+      React.createElement('div',{className:'cost-summary-main'},
+        React.createElement('span',null,'هزینه نهایی'),
+        React.createElement('b',null,formatToman(ticket.totalCost))
+      ),
+      React.createElement('div',{className:'cost-summary-breakdown'},
+        React.createElement('span',null,'قطعات: '+formatToman(ticket.partsCost)),
+        React.createElement('span',null,'خدمات: '+formatToman(ticket.serviceCost)),
+        React.createElement('span',null,'سایر: '+formatToman(ticket.otherCost))
+      ),
+      ticket.costUpdatedBy&&React.createElement('small',null,'آخرین ثبت: '+ticket.costUpdatedBy)
+    );
+  }
+
+  if(ticket.costStatus==='no_cost'){
+    return React.createElement('div',{className:'cost-summary no-cost'},
+      React.createElement('b',null,'بدون هزینه مستقیم'),
+      React.createElement('span',null,'این اقدام با هزینه مستقیم صفر ثبت شده است.')
+    );
+  }
+
+  if(ticket.costStatus==='pending'){
+    return React.createElement('div',{className:'cost-summary pending'},
+      React.createElement('b',null,'هزینه در انتظار تکمیل'),
+      React.createElement('span',null,'پایان فنی ثبت شده اما مبلغ نهایی هنوز مشخص نیست.')
+    );
+  }
+
+  return React.createElement('div',{className:'cost-summary legacy'+(muted?' muted':'')},
+    React.createElement('b',null,'هزینه ثبت نشده'),
+    React.createElement('span',null,'این تیکت فاقد اطلاعات هزینه است؛ در صورت نیاز قابل تکمیل است.')
+  );
+}
+
+function InlineCostEditor({ticket,onSave,label='ثبت / اصلاح هزینه'}){
+  const [open,setOpen]=useState(false);
+  const [saving,setSaving]=useState(false);
+  const [cost,setCost]=useState(()=>{
+    if(ticket.costStatus==='final'){
+      return {
+        costStatus:'final',
+        partsCost:String(ticket.partsCost||''),
+        serviceCost:String(ticket.serviceCost||''),
+        otherCost:String(ticket.otherCost||'')
+      };
+    }
+    return {costStatus:(ticket.costStatus==='pending'||ticket.costStatus==='no_cost')?ticket.costStatus:'',partsCost:'',serviceCost:'',otherCost:''};
+  });
+
+  useEffect(()=>{
+    if(!open)return;
+    if(ticket.costStatus==='final'){
+      setCost({
+        costStatus:'final',
+        partsCost:String(ticket.partsCost||''),
+        serviceCost:String(ticket.serviceCost||''),
+        otherCost:String(ticket.otherCost||'')
+      });
+    }else{
+      setCost({costStatus:(ticket.costStatus==='pending'||ticket.costStatus==='no_cost')?ticket.costStatus:'',partsCost:'',serviceCost:'',otherCost:''});
+    }
+  },[open,ticket.costStatus,ticket.partsCost,ticket.serviceCost,ticket.otherCost]);
+
+  const save=async()=>{
+    if(!validCostDraft(cost))return;
+    setSaving(true);
+    try{
+      await onSave(ticket,normalizeCostDraft(cost));
+      setOpen(false);
+    }finally{
+      setSaving(false);
+    }
+  };
+
+  return React.createElement('div',{className:'inline-cost-editor'},
+    !open
+      ?React.createElement('button',{className:'a-btn cost-edit-btn',disabled:!ticket.rowNumber,onClick:()=>setOpen(true)},label)
+      :React.createElement('div',{className:'cost-editor-panel'},
+        React.createElement(CostCaptureFields,{cost,setCost,title:'تکمیل اطلاعات هزینه',compact:true}),
+        React.createElement('div',{className:'actions'},
+          React.createElement('button',{className:'a-btn a-ok',disabled:saving||!validCostDraft(cost),onClick:save},saving?'در حال ثبت...':'ذخیره هزینه'),
+          React.createElement('button',{className:'a-btn',disabled:saving,onClick:()=>setOpen(false)},'انصراف')
+        )
+      )
+  );
+}
+
 function emptyDraft(locationType='active'){
   return {
     locationType:locationType==='preopening'?'preopening':'active',
@@ -1768,6 +2156,7 @@ function OutsourceOpenItem({t,onComplete}){
   const [finalCause,setFinalCause]=useState(preOpening?'فعالیت پیش‌افتتاح':'');
   const [finalCauseDetails,setFinalCauseDetails]=useState('');
   const [parts,setParts]=useState([]);
+  const [cost,setCost]=useState(emptyCostDraft());
   const [submitting,setSubmitting]=useState(false);
   const invalidParts=hasInvalidPartQty(parts);
   const invalidCause=preOpening?false:(!finalCause||(finalCause==='سایر'&&!finalCauseDetails.trim()));
@@ -1775,16 +2164,17 @@ function OutsourceOpenItem({t,onComplete}){
   const updatePart=(idx,key,val)=>setParts(x=>x.map((p,i)=>i===idx?{...p,[key]:val}:p));
   const removePart=idx=>setParts(x=>x.filter((_,i)=>i!==idx));
   const submit=async()=>{
-    if(!note.trim()||invalidParts||invalidCause)return;
+    if(!note.trim()||invalidParts||invalidCause||!validCostDraft(cost))return;
     setSubmitting(true);
     try{
       await onComplete(t,{
         completionNote:note.trim(),
         completionParts:normalizePartsQty(parts.filter(p=>p.name)),
         finalCause:preOpening?'فعالیت پیش‌افتتاح':finalCause,
-        finalCauseDetails:preOpening?'':finalCauseDetails.trim()
+        finalCauseDetails:preOpening?'':finalCauseDetails.trim(),
+        ...normalizeCostDraft(cost)
       });
-      setOpen(false);setNote('');setFinalCause(preOpening?'فعالیت پیش‌افتتاح':'');setFinalCauseDetails('');setParts([]);
+      setOpen(false);setNote('');setFinalCause(preOpening?'فعالیت پیش‌افتتاح':'');setFinalCauseDetails('');setParts([]);setCost(emptyCostDraft());
     }finally{setSubmitting(false);}
   };
   return React.createElement('div',{className:'outsource-open-card'},
@@ -1821,8 +2211,9 @@ function OutsourceOpenItem({t,onComplete}){
               React.createElement('button',{type:'button',className:'rm-btn',onClick:()=>removePart(idx)},'✕')
             )),
             React.createElement('button',{type:'button',className:'add-part',onClick:addPart},'+ افزودن قطعه'),
+            React.createElement(CostCaptureFields,{cost,setCost,title:'اطلاعات هزینه پایان کار',compact:true}),
             React.createElement('div',{className:'actions'},
-              React.createElement('button',{className:'a-btn a-ok',disabled:submitting||!note.trim()||invalidParts||invalidCause,onClick:submit},submitting?'در حال ثبت...':'ثبت پایان کار'),
+              React.createElement('button',{className:'a-btn a-ok',disabled:submitting||!note.trim()||invalidParts||invalidCause||!validCostDraft(cost),onClick:submit},submitting?'در حال ثبت...':'ثبت پایان کار'),
               React.createElement('button',{className:'a-btn',disabled:submitting,onClick:()=>setOpen(false)},'انصراف')
             )
           )
@@ -1841,6 +2232,7 @@ function TechView({ tasks, saveTasks, showToast, currentUser, refreshTasks }){
   const [draft,setDraft]=useState(emptyDraft('active'));
   const [askMore,setAskMore]=useState(false);
   const [submitting,setSubmitting]=useState(false);
+  const [costDraft,setCostDraft]=useState(emptyCostDraft());
 
   const [preOpeningStores,setPreOpeningStores]=useState([]);
   const [availableRegions,setAvailableRegions]=useState([]);
@@ -1943,6 +2335,7 @@ function TechView({ tasks, saveTasks, showToast, currentUser, refreshTasks }){
     setShowFinalCode(false);
     setFinalCode('');
     setDraft(emptyDraft(mode));
+    setCostDraft(emptyCostDraft());
   };
 
   const selectPreOpening=store=>{
@@ -2028,11 +2421,16 @@ function TechView({ tasks, saveTasks, showToast, currentUser, refreshTasks }){
     setVisitActive(true);
     setVisitCount(0);
     setDraft(emptyDraft(isPreOpeningLocation(storeInfo.locationType,storeInfo.code)?'preopening':'active'));
+    setCostDraft(emptyCostDraft());
     setAskMore(false);
   };
 
   const submitItem=async()=>{
     if(!validDraft(draft)){showToast('لطفاً همه مراحل ثبت کار را کامل کنید');return;}
+    if(draft.type==='internal'&&!validCostDraft(costDraft)){
+      showToast('وضعیت هزینه پایان کار را مشخص کنید');
+      return;
+    }
     if(!storeInfo){showToast('اطلاعات محل پیدا نشد');return;}
     setSubmitting(true);
     const createdAt=new Date().toISOString();
@@ -2053,6 +2451,7 @@ function TechView({ tasks, saveTasks, showToast, currentUser, refreshTasks }){
       completedAt:cleanDraft.type==='internal'?createdAt:'',
       finalCause:cleanDraft.type==='internal'?cleanDraft.initialCause:'',
       finalCauseDetails:cleanDraft.type==='internal'?cleanDraft.initialCauseDetails:'',
+      ...(cleanDraft.type==='internal'?normalizeCostDraft(costDraft):{costStatus:'',partsCost:0,serviceCost:0,otherCost:0,totalCost:0}),
       ...cleanDraft
     };
     try{
@@ -2064,6 +2463,7 @@ function TechView({ tasks, saveTasks, showToast, currentUser, refreshTasks }){
       await saveTasks(list=>[savedTicket,...list.filter(x=>x.id!==savedTicket.id)]);
       setVisitCount(c=>c+1);
       setDraft(emptyDraft(preOpening?'preopening':'active'));
+      setCostDraft(emptyCostDraft());
       setAskMore(true);
       showToast(preOpening
         ? 'گزارش پیش‌افتتاح '+savedTicket.ticketNumber+' ثبت شد'
@@ -2086,6 +2486,18 @@ function TechView({ tasks, saveTasks, showToast, currentUser, refreshTasks }){
     await saveTasks(list=>list.map(t=>t.id===ticket.id?{...t,workStatus:'completed',completedAt:new Date().toISOString(),...completion}:t));
     showToast('پایان کار برون‌سپاری ثبت شد');
     setTimeout(refreshTasks,700);setTimeout(refreshTasks,2200);
+  };
+
+  const updateOwnCost=async(ticket,cost)=>{
+    if(!ticket.rowNumber){
+      showToast('تیکت هنوز با سرور همگام نشده است');
+      refreshTasks();
+      return;
+    }
+    await sendTechnicianCostUpdate(ticket,cost,currentUser.token);
+    await saveTasks(list=>list.map(t=>t.id===ticket.id?{...t,...cost,costUpdatedBy:name,costUpdatedAt:new Date().toISOString()}:t));
+    showToast(cost.costStatus==='no_cost'?'تیکت «بدون هزینه مستقیم» ثبت شد':(cost.costStatus==='pending'?'وضعیت هزینه روی «در انتظار» ثبت شد':'هزینه تیکت ثبت شد'));
+    setTimeout(refreshTasks,700);setTimeout(refreshTasks,1800);
   };
 
   const editOwnTicket=async(ticket,updatedDraft,updatedStore)=>{
@@ -2125,12 +2537,13 @@ function TechView({ tasks, saveTasks, showToast, currentUser, refreshTasks }){
   const endVisit=()=>{
     setVisitActive(false);setStoreCode('');setStoreInfo(null);setStoreError('');
     setAskMore(false);setVisitCount(0);setShowFinalCode(false);setFinalCode('');
-    setDraft(emptyDraft(locationMode));
+    setDraft(emptyDraft(locationMode));setCostDraft(emptyCostDraft());
     if(locationMode==='preopening')loadPreOpening();
   };
   const addAnother=()=>{
     setAskMore(false);
     setDraft(emptyDraft(isPreOpeningLocation(storeInfo&&storeInfo.locationType,storeInfo&&storeInfo.code)?'preopening':'active'));
+    setCostDraft(emptyCostDraft());
   };
   const mine=tasks.filter(t=>String(t.technicianCode||'')===String(currentUser.username)||t.technician===name).slice(0,20);
   const openOutsources=tasks.filter(t=>(String(t.technicianCode||'')===String(currentUser.username)||t.technician===name)&&t.type==='outsourced'&&t.workStatus!=='completed'&&t.reviewStatus!=='cancelled');
@@ -2288,7 +2701,7 @@ function TechView({ tasks, saveTasks, showToast, currentUser, refreshTasks }){
         React.createElement('button',{className:'btn btn-primary',disabled:storeLoading||preOpeningLoading||!storeInfo,onClick:startVisit},'ادامه ثبت کار')
       ),
       openSection,
-      React.createElement('div',{className:'card'},React.createElement('h3',null,'کارهای اخیر من'),mine.length===0?React.createElement('div',{className:'empty'},'هنوز کاری ثبت نکرده‌اید'):mine.map(t=>React.createElement(TechnicianTicketItem,{key:t.id,t,currentUser,showToast,onEdit:editOwnTicket,onCancel:cancelOwnTicket})))
+      React.createElement('div',{className:'card'},React.createElement('h3',null,'کارهای اخیر من'),mine.length===0?React.createElement('div',{className:'empty'},'هنوز کاری ثبت نکرده‌اید'):mine.map(t=>React.createElement(TechnicianTicketItem,{key:t.id,t,currentUser,showToast,onEdit:editOwnTicket,onCancel:cancelOwnTicket,onCostUpdate:updateOwnCost})))
     );
   }
 
@@ -2308,10 +2721,15 @@ function TechView({ tasks, saveTasks, showToast, currentUser, refreshTasks }){
           React.createElement('h3',null,currentPreOpening?'ثبت اقدام فنی پیش‌افتتاح':'ثبت خرابی یا خدمات'),
           React.createElement('p',{className:'sub'},(storeInfo?storeInfo.name:(currentPreOpening?'پروژه ':'فروشگاه ')+storeCode)+(storeInfo?' · '+storeInfo.region:'')+' · مراحل را به‌ترتیب تکمیل کنید'),
           React.createElement(TicketFields,{draft,setDraft}),
-          React.createElement('button',{className:'btn btn-primary',disabled:submitting||!validDraft(draft),onClick:submitItem},submitting?'در حال ثبت...':(currentPreOpening?'ثبت این اقدام':'ثبت این کار'))
+          draft.type==='internal'&&React.createElement(CostCaptureFields,{cost:costDraft,setCost:setCostDraft}),
+          React.createElement('button',{
+            className:'btn btn-primary',
+            disabled:submitting||!validDraft(draft)||(draft.type==='internal'&&!validCostDraft(costDraft)),
+            onClick:submitItem
+          },submitting?'در حال ثبت...':(currentPreOpening?'ثبت این اقدام':'ثبت این کار'))
         ),
     openSection,
-    React.createElement('div',{className:'card'},React.createElement('h3',null,'کارهای اخیر من'),mine.length===0?React.createElement('div',{className:'empty'},'هنوز کاری ثبت نکرده‌اید'):mine.map(t=>React.createElement(TechnicianTicketItem,{key:t.id,t,currentUser,showToast,onEdit:editOwnTicket,onCancel:cancelOwnTicket})))
+    React.createElement('div',{className:'card'},React.createElement('h3',null,'کارهای اخیر من'),mine.length===0?React.createElement('div',{className:'empty'},'هنوز کاری ثبت نکرده‌اید'):mine.map(t=>React.createElement(TechnicianTicketItem,{key:t.id,t,currentUser,showToast,onEdit:editOwnTicket,onCancel:cancelOwnTicket,onCostUpdate:updateOwnCost})))
   );
 }
 
@@ -2325,7 +2743,7 @@ function ticketSummary(t){
   return chunks.join(' — ');
 }
 
-function TechnicianTicketItem({t,currentUser,showToast,onEdit,onCancel}){
+function TechnicianTicketItem({t,currentUser,showToast,onEdit,onCancel,onCostUpdate}){
   const [editing,setEditing]=useState(false);
   const [draft,setDraft]=useState(null);
   const [editStoreCode,setEditStoreCode]=useState(t.storeCode||'');
@@ -2412,6 +2830,8 @@ function TechnicianTicketItem({t,currentUser,showToast,onEdit,onCancel}){
     !editing&&!isPreOpeningLocation(t.locationType,t.storeCode)&&t.initialCause&&React.createElement('div',{className:'cause-summary'},React.createElement('b',null,t.type==='outsourced'?'تشخیص اولیه: ':'علت خرابی: '),t.initialCause,t.initialCauseDetails?' — '+t.initialCauseDetails:''),
     !editing&&!isPreOpeningLocation(t.locationType,t.storeCode)&&t.type==='outsourced'&&t.finalCause&&React.createElement('div',{className:'cause-summary'},React.createElement('b',null,'علت نهایی خرابی: '),t.finalCause,t.finalCauseDetails?' — '+t.finalCauseDetails:''),
     t.completionNote&&!editing&&React.createElement('div',{className:'completion-note'},React.createElement('b',null,'پایان کار: '),t.completionNote),
+    !editing&&React.createElement(CostSummary,{ticket:t,muted:true}),
+    !editing&&workDone&&reviewStatus!=='cancelled'&&onCostUpdate&&React.createElement(InlineCostEditor,{ticket:t,onSave:onCostUpdate,label:t.costStatus==='final'?'اصلاح هزینه':'ثبت هزینه'}),
     reviewStatus==='cancelled'&&!editing&&React.createElement('div',{className:'cancelled-box'},React.createElement('b',null,'این تیکت توسط کارشناس لغو شده است.'),t.cancelledAt?React.createElement('div',null,'زمان لغو: '+new Date(t.cancelledAt).toLocaleString('fa-IR')):null),
     t.managerNote&&reviewStatus!=='cancelled'&&!editing&&React.createElement('div',{className:'note'},'📝 '+t.managerNote),
     editing&&React.createElement('div',{className:'tech-edit-panel'},
@@ -2435,7 +2855,7 @@ function TechnicianTicketItem({t,currentUser,showToast,onEdit,onCancel}){
   );
 }
 
-function TaskItem({t,onReview,onReject,onEdit}){
+function TaskItem({t,onReview,onReject,onEdit,onCostEdit}){
   const [editing,setEditing]=useState(false);
   const [draft,setDraft]=useState(null);
   const [note,setNote]=useState('');
@@ -2468,6 +2888,8 @@ function TaskItem({t,onReview,onReject,onEdit}){
     !editing&&!isPreOpeningLocation(t.locationType,t.storeCode)&&t.initialCause&&React.createElement('div',{className:'cause-summary'},React.createElement('b',null,t.type==='outsourced'?'تشخیص اولیه: ':'علت خرابی: '),t.initialCause,t.initialCauseDetails?' — '+t.initialCauseDetails:''),
     !editing&&!isPreOpeningLocation(t.locationType,t.storeCode)&&t.type==='outsourced'&&t.finalCause&&React.createElement('div',{className:'cause-summary'},React.createElement('b',null,'علت نهایی خرابی: '),t.finalCause,t.finalCauseDetails?' — '+t.finalCauseDetails:''),
     t.completionNote&&!editing&&React.createElement('div',{className:'completion-note'},React.createElement('b',null,'پایان کار: '),t.completionNote,t.completedAt?React.createElement('div',{className:'store-submeta'},'ثبت پایان: '+new Date(t.completedAt).toLocaleString('fa-IR')):null,t.completionParts&&t.completionParts.length?React.createElement('div',{className:'store-submeta'},'قطعات پایان کار: '+t.completionParts.map(p=>p.name+' ×'+p.qty).join('، ')):null),
+    !editing&&React.createElement(CostSummary,{ticket:t}),
+    !editing&&workDone&&reviewStatus!=='cancelled'&&onCostEdit&&React.createElement(InlineCostEditor,{ticket:t,onSave:onCostEdit,label:t.costStatus==='final'?'اصلاح هزینه':'تکمیل هزینه'}),
     reviewStatus==='cancelled'&&!editing&&React.createElement('div',{className:'cancelled-box'},React.createElement('b',null,'لغوشده توسط کارشناس فنی'),t.cancelledBy?React.createElement('div',null,'لغو توسط: '+t.cancelledBy):null,t.cancelledAt?React.createElement('div',null,'زمان لغو: '+new Date(t.cancelledAt).toLocaleString('fa-IR')):null),
     t.managerNote&&reviewStatus!=='cancelled'&&!editing&&React.createElement('div',{className:'note'},'📝 '+t.managerNote),
     editing&&React.createElement('div',{style:{marginTop:'10px'}},React.createElement(TicketFields,{draft,setDraft}),React.createElement('div',{className:'actions'},React.createElement('button',{className:'a-btn a-ok',disabled:!validDraft(draft),onClick:saveEdit},'ذخیره اصلاحات'),React.createElement('button',{className:'a-btn',onClick:()=>setEditing(false)},'انصراف'))),
@@ -2835,6 +3257,144 @@ function PreOpeningManagerDashboard({tasks,onRefresh,loading,lastUpdated,current
   return h(React.Fragment,null,head,filters,kpis,charts,table);
 }
 
+
+function CostDashboard({tasks,onRefresh,loading,lastUpdated}){
+  const h=React.createElement;
+  const [scope,setScope]=useState('active');
+  const [range,setRange]=useState('all');
+
+  const completed=tasks.filter(t=>{
+    const cancelled=t.reviewStatus==='cancelled'||t.workStatus==='cancelled';
+    if(cancelled)return false;
+    const done=t.type==='internal'||t.workStatus==='completed';
+    if(!done)return false;
+    if(scope==='active'&&isPreOpeningLocation(t.locationType,t.storeCode))return false;
+    if(scope==='preopening'&&!isPreOpeningLocation(t.locationType,t.storeCode))return false;
+    return true;
+  });
+
+  const allDates=[...new Set(completed.map(ticketDate).filter(Boolean))].sort(compareTicketDateLabels);
+  const allowed=range==='30'?new Set(allDates.slice(-30)):range==='90'?new Set(allDates.slice(-90)):null;
+  const relevant=completed.filter(t=>!allowed||allowed.has(ticketDate(t)));
+
+  const finalCost=relevant.filter(t=>t.costStatus==='final');
+  const noCost=relevant.filter(t=>t.costStatus==='no_cost');
+  const pending=relevant.filter(t=>t.costStatus==='pending');
+  const missing=relevant.filter(t=>!t.costStatus);
+
+  const total=finalCost.reduce((s,t)=>s+Number(t.totalCost||0),0);
+  const parts=finalCost.reduce((s,t)=>s+Number(t.partsCost||0),0);
+  const service=finalCost.reduce((s,t)=>s+Number(t.serviceCost||0),0);
+  const other=finalCost.reduce((s,t)=>s+Number(t.otherCost||0),0);
+  const average=finalCost.length?Math.round(total/finalCost.length):0;
+
+  const regionMap={};
+  finalCost.forEach(t=>{
+    const key=t.region||'نامشخص';
+    regionMap[key]=(regionMap[key]||0)+Number(t.totalCost||0);
+  });
+  const regionRows=Object.entries(regionMap).sort((a,b)=>b[1]-a[1]);
+
+  const categoryMap={};
+  finalCost.forEach(t=>{
+    const key=t.level1||'نامشخص';
+    categoryMap[key]=(categoryMap[key]||0)+Number(t.totalCost||0);
+  });
+  const categoryRows=Object.entries(categoryMap).sort((a,b)=>b[1]-a[1]).slice(0,10);
+
+  const storeMap={};
+  finalCost.forEach(t=>{
+    const code=String(t.storeCode||'');
+    if(!storeMap[code])storeMap[code]={code,name:t.storeName||code,region:t.region||'',total:0,count:0};
+    storeMap[code].total+=Number(t.totalCost||0);
+    storeMap[code].count++;
+  });
+  const expensiveStores=Object.values(storeMap).sort((a,b)=>b.total-a.total).slice(0,10);
+
+  const moneyCompact=v=>{
+    const n=Number(v||0);
+    if(n>=1e9)return (n/1e9).toLocaleString('fa-IR',{maximumFractionDigits:1})+' میلیارد';
+    if(n>=1e6)return (n/1e6).toLocaleString('fa-IR',{maximumFractionDigits:1})+' میلیون';
+    return n.toLocaleString('fa-IR');
+  };
+
+  const regionData={
+    labels:regionRows.map(x=>x[0]),
+    datasets:[{label:'هزینه',data:regionRows.map(x=>x[1]),backgroundColor:'#2f6f5e',borderRadius:7,borderSkipped:false}]
+  };
+  const categoryData={
+    labels:categoryRows.map(x=>x[0]),
+    datasets:[{label:'هزینه',data:categoryRows.map(x=>x[1]),backgroundColor:'#b8721f',borderRadius:7,borderSkipped:false}]
+  };
+  const opts={
+    responsive:true,maintainAspectRatio:false,indexAxis:'y',
+    plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>moneyCompact(ctx.raw)+' تومان'}}},
+    scales:{
+      x:{beginAtZero:true,ticks:{callback:v=>moneyCompact(v)},grid:{color:'rgba(0,0,0,.05)'}},
+      y:{grid:{display:false},ticks:{font:{size:9}}}
+    }
+  };
+
+  return h(React.Fragment,null,
+    h('div',{className:'dashboard-head cost-dashboard-head'},
+      h('div',{className:'dashboard-title'},
+        h('div',{className:'cost-dashboard-badge'},'COST CONTROL'),
+        h('h2',null,'کنترل هزینه تعمیر و نگهداری'),
+        h('p',null,'تفکیک هزینه نهایی، اقدامات بدون هزینه مستقیم و موارد در انتظار تکمیل'),
+        lastUpdated&&h('div',{className:'dashboard-meta'},'آخرین به‌روزرسانی: '+new Date(lastUpdated).toLocaleTimeString('fa-IR',{hour:'2-digit',minute:'2-digit'}))
+      ),
+      h('button',{className:'refresh-btn',onClick:onRefresh,disabled:loading},loading?'در حال دریافت...':'↻ تازه‌سازی')
+    ),
+    h('div',{className:'dashboard-filters cost-dashboard-filters'},
+      h('select',{value:scope,onChange:e=>setScope(e.target.value)},
+        h('option',{value:'active'},'فروشگاه‌های فعال'),
+        h('option',{value:'preopening'},'پروژه‌های پیش‌افتتاح'),
+        h('option',{value:'all'},'همه')
+      ),
+      h('select',{value:range,onChange:e=>setRange(e.target.value)},
+        h('option',{value:'all'},'کل بازه'),
+        h('option',{value:'30'},'۳۰ روز ثبت‌شده اخیر'),
+        h('option',{value:'90'},'۹۰ روز ثبت‌شده اخیر')
+      )
+    ),
+    h('div',{className:'kpi-grid cost-kpi-grid'},
+      h(Kpi,{label:'هزینه نهایی ثبت‌شده',value:moneyCompact(total)+' تومان',note:finalCost.length+' تیکت دارای هزینه قطعی',icon:'💰'}),
+      h(Kpi,{label:'اقدامات بدون هزینه مستقیم',value:noCost.length,note:(relevant.length?pct(noCost.length,relevant.length):0)+'٪ از اقدامات تکمیل‌شده',icon:'🛠️'}),
+      h(Kpi,{label:'در انتظار تکمیل هزینه',value:pending.length,note:'کار فنی تمام شده؛ مبلغ نهایی مانده',icon:'⏳',tone:'amber'}),
+      h(Kpi,{label:'میانگین هر تیکت هزینه‌دار',value:moneyCompact(average)+' تومان',note:'فقط تیکت‌های دارای هزینه نهایی',icon:'📊'}),
+      h(Kpi,{label:'هزینه قطعات',value:moneyCompact(parts)+' تومان',note:total?pct(parts,total)+'٪ از کل':'—',icon:'⚙️'}),
+      h(Kpi,{label:'هزینه خدمات / پیمانکار',value:moneyCompact(service)+' تومان',note:total?pct(service,total)+'٪ از کل':'—',icon:'🧾'}),
+      h(Kpi,{label:'سایر هزینه',value:moneyCompact(other)+' تومان',note:missing.length?missing.length+' تیکت قدیمی بدون وضعیت هزینه':'اطلاعات قدیمی بدون وضعیت وجود ندارد',icon:'➕'})
+    ),
+    h('div',{className:'dash-grid'},
+      h('div',{className:'dash-card'},
+        h('div',{className:'dash-card-head'},h('div',null,h('h3',null,'هزینه به تفکیک منطقه'),h('p',null,'تمام مناطق دارای هزینه نهایی'))),
+        regionRows.length
+          ?h('div',{className:'cost-chart',style:{height:Math.max(300,regionRows.length*34)+'px'}},h(ChartBox,{type:'bar',data:regionData,options:opts}))
+          :h('div',{className:'dash-empty'},'هزینه نهایی برای نمایش وجود ندارد')
+      ),
+      h('div',{className:'dash-card'},
+        h('div',{className:'dash-card-head'},h('div',null,h('h3',null,'گران‌ترین گروه‌های خرابی'),h('p',null,'۱۰ گروه با بیشترین هزینه ثبت‌شده'))),
+        categoryRows.length
+          ?h('div',{className:'cost-chart'},h(ChartBox,{type:'bar',data:categoryData,options:opts}))
+          :h('div',{className:'dash-empty'},'هزینه نهایی برای نمایش وجود ندارد')
+      )
+    ),
+    h('div',{className:'dash-card cost-store-card'},
+      h('div',{className:'dash-card-head'},h('div',null,h('h3',null,'گران‌ترین فروشگاه‌ها / پروژه‌ها'),h('p',null,'براساس مجموع هزینه نهایی ثبت‌شده'))),
+      expensiveStores.length
+        ?h('div',{className:'cost-store-list'},
+          ...expensiveStores.map((s,i)=>h('div',{className:'cost-store-row',key:s.code},
+            h('span',{className:'cost-rank'},i+1),
+            h('div',{className:'cost-store-name'},h('b',null,s.name),h('span',null,s.code+(s.region?' · '+s.region:'')+' · '+s.count+' تیکت هزینه‌دار')),
+            h('strong',null,moneyCompact(s.total)+' تومان')
+          ))
+        )
+        :h('div',{className:'dash-empty'},'هزینه‌ای ثبت نشده است')
+    )
+  );
+}
+
 function ManagerView({ tasks, updateTask, showToast, refreshTasks, managerLoading, lastUpdated, currentUser, technicianDirectory }){
   const [tab, setTab] = useState('report');
   const [storeFilter, setStoreFilter] = useState('');
@@ -2860,6 +3420,11 @@ function ManagerView({ tasks, updateTask, showToast, refreshTasks, managerLoadin
     showToast('تیکت اصلاح و تأیید شد');
   };
 
+  const editCost = async (ticket, cost) => {
+    await updateTask(ticket.id,cost);
+    showToast(cost.costStatus==='no_cost'?'تیکت «بدون هزینه مستقیم» ثبت شد':(cost.costStatus==='pending'?'هزینه در وضعیت انتظار ثبت شد':'هزینه تیکت به‌روزرسانی شد'));
+  };
+
   const filtered = tasks.filter(t => {const q=storeFilter.trim().toLowerCase();return !q||String(t.storeCode||'').toLowerCase().includes(q)||String(t.storeName||'').toLowerCase().includes(q)||String(t.region||'').toLowerCase().includes(q)||String(t.ticketNumber||'').toLowerCase().includes(q);});
   const pending = filtered.filter(t => !t.reviewStatus || t.reviewStatus==='pending');
 
@@ -2867,19 +3432,20 @@ function ManagerView({ tasks, updateTask, showToast, refreshTasks, managerLoadin
     React.createElement('div',{className:'tabs manager-main-tabs'},
       React.createElement('button',{className:tab==='report'?'active':'',onClick:()=>setTab('report')},'فروشگاه‌های فعال'),
       React.createElement('button',{className:tab==='preopening'?'active':'',onClick:()=>setTab('preopening')},'پیش‌افتتاح'+(preOpeningProjects?' ('+preOpeningProjects+')':'')),
+      React.createElement('button',{className:tab==='cost'?'active':'',onClick:()=>setTab('cost')},'کنترل هزینه'),
       React.createElement('button',{className:tab==='pending'?'active':'',onClick:()=>setTab('pending')},'در انتظار ('+pending.length+')'),
       React.createElement('button',{className:tab==='all'?'active':'',onClick:()=>setTab('all')},'همه تیکت‌ها')
     ),
-    tab!=='report' && React.createElement('div',{className:'filter-row'},
+    !['report','preopening','cost'].includes(tab) && React.createElement('div',{className:'filter-row'},
       React.createElement('input',{placeholder:'جست‌وجوی شماره تیکت، کد، نام فروشگاه یا منطقه...',value:storeFilter,onChange:e=>setStoreFilter(e.target.value)}),
       React.createElement('button',{className:'refresh-btn',onClick:refreshTasks,disabled:managerLoading},managerLoading?'در حال دریافت...':'↻ تازه‌سازی')
     ),
     tab==='pending' && (pending.length===0
       ? React.createElement('div',{className:'card'},React.createElement('div',{className:'empty'},managerLoading?'در حال دریافت...':'تیکتی در انتظار بررسی نیست'))
-      : pending.map(t=>React.createElement(TaskItem,{key:t.id,t,onReview:review,onReject:reject,onEdit:edit}))),
+      : pending.map(t=>React.createElement(TaskItem,{key:t.id,t,onReview:review,onReject:reject,onEdit:edit,onCostEdit:editCost}))),
     tab==='all' && (filtered.length===0
       ? React.createElement('div',{className:'card'},React.createElement('div',{className:'empty'},managerLoading?'در حال دریافت...':'تیکتی ثبت نشده'))
-      : filtered.map(t=>React.createElement(TaskItem,{key:t.id,t,onReview:review,onReject:reject,onEdit:edit}))),
+      : filtered.map(t=>React.createElement(TaskItem,{key:t.id,t,onReview:review,onReject:reject,onEdit:edit,onCostEdit:editCost}))),
     tab==='report' && React.createElement(ReportView,{
       tasks:tasks.filter(t=>!isPreOpeningLocation(t.locationType,t.storeCode)),
       technicianDirectory,
@@ -2893,6 +3459,12 @@ function ManagerView({ tasks, updateTask, showToast, refreshTasks, managerLoadin
       loading:managerLoading,
       lastUpdated,
       currentUser
+    }),
+    tab==='cost' && React.createElement(CostDashboard,{
+      tasks,
+      onRefresh:refreshTasks,
+      loading:managerLoading,
+      lastUpdated
     })
   );
 }
@@ -3662,7 +4234,7 @@ function ExecutiveDashboard({tasks,onRefresh,loading,lastUpdated,currentUser,onL
 
 /* ---------- اپ اصلی ---------- */
 
-/* ---------- Boardroom CEO Dashboard — نسخه 10.6 ---------- */
+/* ---------- Boardroom CEO Dashboard — نسخه 10.8 ---------- */
 function CEODashboard({tasks,onRefresh,loading,lastUpdated,currentUser,onLogout}){
   const h=React.createElement;
   const [range,setRange]=useState('90');
@@ -3954,7 +4526,7 @@ function CEODashboard({tasks,onRefresh,loading,lastUpdated,currentUser,onLogout}
         )
       ),
 
-      h('footer',{className:'c8-footer'},h('span',null,'نسخه 10.6 · دسترسی فقط خواندنی مدیرعامل'),h('span',null,'ریسک فروشگاه‌های فعال و فعالیت‌های پیش‌افتتاح به‌صورت جداگانه تحلیل می‌شوند.'))
+      h('footer',{className:'c8-footer'},h('span',null,'نسخه 10.8 · دسترسی فقط خواندنی مدیرعامل'),h('span',null,'ریسک فروشگاه‌های فعال و فعالیت‌های پیش‌افتتاح به‌صورت جداگانه تحلیل می‌شوند.'))
     ),
 
     modal
@@ -4373,7 +4945,7 @@ function RegionalDashboard({tasks,onRefresh,loading,lastUpdated,currentUser,onLo
       ),
 
       h('footer',{className:'rm-footer'},
-        h('span',null,'نسخه 10.6 · دسترسی مدیر منطقه · فقط خواندنی'),
+        h('span',null,'نسخه 10.8 · دسترسی مدیر منطقه · فقط خواندنی'),
         h('span',null,'فیلتر دسترسی در سرور انجام می‌شود و فقط اطلاعات مناطق تخصیص‌یافته به این حساب ارسال می‌شود.')
       )
     ),
@@ -4394,7 +4966,7 @@ function LoginView({ onLogin }){
   useEffect(()=>{
     // هیچ تلاش ناموفقی در مرورگر ذخیره یا قفل نمی‌شود.
     // ورود قبلیِ ناقص نیز پاک می‌شود تا کاربران فعلی بتوانند دوباره تلاش کنند.
-    try{ sessionStorage.removeItem('ticketing-user-v106'); }catch(e){}
+    try{ sessionStorage.removeItem('ticketing-user-v108'); }catch(e){}
   },[]);
 
   const clearError = () => {
@@ -4407,7 +4979,7 @@ function LoginView({ onLogin }){
     setError('');
     setUsername('');
     setPassword('');
-    try{ sessionStorage.removeItem('ticketing-user-v106'); }catch(e){}
+    try{ sessionStorage.removeItem('ticketing-user-v108'); }catch(e){}
     setTimeout(()=>usernameRef.current && usernameRef.current.focus(),30);
   };
 
@@ -4444,7 +5016,7 @@ function LoginView({ onLogin }){
 
       if(result && result.success){
         // هیچ خطای قبلی یا نشست ناقصی به ورود درست منتقل نمی‌شود.
-        try{ sessionStorage.removeItem('ticketing-user-v106'); }catch(e){}
+        try{ sessionStorage.removeItem('ticketing-user-v108'); }catch(e){}
         onLogin({
           username: String(result.username || cleanUsername).trim(),
           name: String(result.name || '').trim(),
@@ -4545,7 +5117,7 @@ function LoginView({ onLogin }){
 
 /* ---------- اپ اصلی ---------- */
 function App(){
-  const [currentUser,setCurrentUser]=useState(()=>{try{const raw=sessionStorage.getItem('ticketing-user-v106');return raw?JSON.parse(raw):null;}catch(e){return null;}});
+  const [currentUser,setCurrentUser]=useState(()=>{try{const raw=sessionStorage.getItem('ticketing-user-v108');return raw?JSON.parse(raw):null;}catch(e){return null;}});
   const [tasks,setTasks]=useState([]);
   const [technicianDirectory,setTechnicianDirectory]=useState([]);
   const [loaded,setLoaded]=useState(false);
@@ -4565,8 +5137,8 @@ function App(){
     : null;
   const showToast=m=>{setToastMsg(m);clearTimeout(toastTimer.current);toastTimer.current=setTimeout(()=>setToastMsg(''),2600);};
 
-  const handleLogin=user=>{sessionStorage.setItem('ticketing-user-v106',JSON.stringify(user));setCurrentUser(user);setLoaded(false);};
-  const logout=()=>{sessionStorage.removeItem('ticketing-user-v106');setCurrentUser(null);setTasks([]);setTechnicianDirectory([]);setLoaded(false);};
+  const handleLogin=user=>{sessionStorage.setItem('ticketing-user-v108',JSON.stringify(user));setCurrentUser(user);setLoaded(false);};
+  const logout=()=>{sessionStorage.removeItem('ticketing-user-v108');setCurrentUser(null);setTasks([]);setTechnicianDirectory([]);setLoaded(false);};
 
   const loadTasks=useCallback(async()=>{
     if(!currentUser)return;
@@ -4660,7 +5232,7 @@ function App(){
     const original=tasks.find(t=>t.id===id);if(!original)return;
     const updated={...original,...patch,managerNote:patch.managerNote!==undefined?(patch.managerNote||original.managerNote):original.managerNote};
     setTasks(list=>list.map(t=>t.id===id?updated:t));
-    try{await sendManagerUpdate(updated,currentUser.token);setTimeout(loadTasks,900);}catch(e){showToast('ارسال تغییرات انجام نشد');}
+    try{await sendManagerUpdate(updated,currentUser.token,patch);setTimeout(loadTasks,900);}catch(e){showToast('ارسال تغییرات انجام نشد');}
   };
 
   if(!currentUser)return React.createElement(LoginView,{onLogin:handleLogin});
@@ -4683,7 +5255,7 @@ function App(){
 
   return React.createElement('div',{className:'wrap'},
     React.createElement('div',{className:'top'},
-      React.createElement('div',{className:'brand'},React.createElement('span',{className:'dot'}),React.createElement('div',null,React.createElement('h1',null,'پشتیبانی فنی فروشگاه‌ها'),React.createElement('span',null,(role==='tech'?'محیط نیروی فنی':'مرکز کنترل مدیریت فنی')+' • نسخه 10.6'))),
+      React.createElement('div',{className:'brand'},React.createElement('span',{className:'dot'}),React.createElement('div',null,React.createElement('h1',null,'پشتیبانی فنی فروشگاه‌ها'),React.createElement('span',null,(role==='tech'?'محیط نیروی فنی':'مرکز کنترل مدیریت فنی')+' • نسخه 10.8'))),
       React.createElement('div',{className:'user-bar'},React.createElement('div',{className:'user-info'},React.createElement('b',null,currentUser.name),React.createElement('span',null,role==='manager'?'مدیر فنی':'کد پرسنلی: '+currentUser.username)),React.createElement('button',{className:'logout-btn',onClick:logout},'خروج'))
     ),
     !loaded?React.createElement('div',{className:'empty'},'در حال بارگذاری اطلاعات...'):(role==='tech'?React.createElement(TechView,{tasks,saveTasks,showToast,currentUser,refreshTasks:loadTasks}):React.createElement(ManagerView,{tasks,updateTask:updateManagerTask,showToast,refreshTasks:loadTasks,managerLoading,lastUpdated,currentUser,technicianDirectory})),
