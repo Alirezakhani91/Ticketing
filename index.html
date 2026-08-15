@@ -1550,6 +1550,37 @@
   }
 }
 
+
+/* ========================================================
+   Performance pass 11.2
+   ======================================================== */
+.dashboard-defer-card{
+  min-height:74px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.dash-loading-line{
+  position:relative;
+  padding-right:18px;
+  color:var(--ink-soft);
+  font-size:8.5px;
+}
+.dash-loading-line:before{
+  content:'';
+  position:absolute;
+  right:0;
+  top:50%;
+  width:10px;
+  height:10px;
+  margin-top:-5px;
+  border:2px solid #d8e1dd;
+  border-top-color:#2f6f5e;
+  border-radius:50%;
+  animation:perfSpin .7s linear infinite;
+}
+@keyframes perfSpin{to{transform:rotate(360deg)}}
+
 </style>
 </head>
 <body>
@@ -1643,6 +1674,10 @@ function fetchCeoTickets(token){
 }
 function fetchTechnicianTickets(token){
   return jsonpRequest({action:'mytickets', token:String(token||'')}, 30000);
+}
+
+function fetchDataRevision(token){
+  return jsonpRequest({action:'revision', token:String(token||'')}, 10000);
 }
 
 function lookupStoreWithSheet(code, token){
@@ -2657,9 +2692,8 @@ function TechView({ tasks, saveTasks, showToast, currentUser, refreshTasks }){
       // با تازه‌سازی‌های کوتاه بعدی وارد پنل می‌شوند.
       syncPromise
         .then(()=>{
-          setTimeout(refreshTasks,500);
-          setTimeout(refreshTasks,1400);
-          setTimeout(refreshTasks,3200);
+          // یک همگام‌سازی کافی است؛ تغییرات بعدی با Revision سبک تشخیص داده می‌شوند.
+          setTimeout(()=>refreshTasks({silent:true}),850);
         })
         .catch(()=>{
           showToast('تیکت روی دستگاه ثبت شد اما همگام‌سازی سرور انجام نشد؛ اینترنت را بررسی کنید');
@@ -2678,7 +2712,7 @@ function TechView({ tasks, saveTasks, showToast, currentUser, refreshTasks }){
     await sendOutsourceCompletion(ticket,completion,currentUser.token);
     await saveTasks(list=>list.map(t=>t.id===ticket.id?{...t,workStatus:'completed',completedAt:new Date().toISOString(),...completion}:t));
     showToast('پایان کار برون‌سپاری ثبت شد');
-    setTimeout(refreshTasks,700);setTimeout(refreshTasks,2200);
+    setTimeout(()=>refreshTasks({silent:true}),850);
   };
 
   const updateOwnCost=async(ticket,cost)=>{
@@ -2690,7 +2724,7 @@ function TechView({ tasks, saveTasks, showToast, currentUser, refreshTasks }){
     await sendTechnicianCostUpdate(ticket,cost,currentUser.token);
     await saveTasks(list=>list.map(t=>t.id===ticket.id?{...t,...cost,costUpdatedBy:name,costUpdatedAt:new Date().toISOString()}:t));
     showToast(cost.costStatus==='no_cost'?'تیکت «بدون هزینه مستقیم» ثبت شد':(cost.costStatus==='pending'?'وضعیت هزینه روی «در انتظار» ثبت شد':'هزینه تیکت ثبت شد'));
-    setTimeout(refreshTasks,700);setTimeout(refreshTasks,1800);
+    setTimeout(()=>refreshTasks({silent:true}),850);
   };
 
   const editOwnTicket=async(ticket,updatedDraft,updatedStore)=>{
@@ -2712,7 +2746,7 @@ function TechView({ tasks, saveTasks, showToast, currentUser, refreshTasks }){
       finalCauseDetails:cleanDraft.type==='internal'?cleanDraft.initialCauseDetails:(x.type==='outsourced'&&x.workStatus==='completed'?(x.finalCauseDetails||''):'')
     }:x));
     showToast('تیکت '+(ticket.ticketNumber||'')+' ویرایش شد');
-    setTimeout(refreshTasks,700);setTimeout(refreshTasks,2200);
+    setTimeout(()=>refreshTasks({silent:true}),850);
   };
 
   const cancelOwnTicket=async(ticket)=>{
@@ -2724,7 +2758,7 @@ function TechView({ tasks, saveTasks, showToast, currentUser, refreshTasks }){
       cancelledAt,cancelledBy:name
     }:x));
     showToast('تیکت '+(ticket.ticketNumber||'')+' لغو شد');
-    setTimeout(refreshTasks,700);setTimeout(refreshTasks,2200);
+    setTimeout(()=>refreshTasks({silent:true}),850);
   };
 
   const endVisit=()=>{
@@ -3583,6 +3617,7 @@ function Kpi({label,value,note,icon,tone}){
 function ReportView({tasks,technicianDirectory=[],activeStoreDirectory=[],onRefresh,loading,lastUpdated}){
   const h=React.createElement;
   const [range,setRange]=useState('all');
+  const [heavyVisualsReady,setHeavyVisualsReady]=useState(false);
   const [tech,setTech]=useState('all');
   const [region,setRegion]=useState('all');
   const [store,setStore]=useState('all');
@@ -3610,6 +3645,12 @@ function ReportView({tasks,technicianDirectory=[],activeStoreDirectory=[],onRefr
     if(code&&!storeLookup[code])storeLookup[code]={code,name:t.storeName||('فروشگاه '+code),region:t.region||'',city:''};
   });
   const stores=Object.values(storeLookup).sort((a,b)=>a.code.localeCompare(b.code,'fa',{numeric:true}));
+
+  useEffect(()=>{
+    setHeavyVisualsReady(false);
+    const timer=setTimeout(()=>setHeavyVisualsReady(true),90);
+    return()=>clearTimeout(timer);
+  },[tasks,range,tech,region,store,type,status,work]);
 
   useEffect(()=>{
     setLeaderPage(0);
@@ -4293,13 +4334,13 @@ function ReportView({tasks,technicianDirectory=[],activeStoreDirectory=[],onRefr
     filters,
     kpis,
     costKpis,
-    overview,
+    heavyVisualsReady?overview:h('div',{className:'dash-card dashboard-defer-card'},h('div',{className:'dash-loading-line'},'در حال آماده‌سازی نمودارهای عملیاتی...')),
     people,
     regionsSection,
-    costByTechnician,
-    costByRegion,
-    costDeepDive,
-    patterns,
+    heavyVisualsReady?costByTechnician:null,
+    heavyVisualsReady?costByRegion:null,
+    heavyVisualsReady?costDeepDive:null,
+    heavyVisualsReady?patterns:null,
     storesTable
   );
 }
@@ -4652,7 +4693,7 @@ function ExecutiveDashboard({tasks,onRefresh,loading,lastUpdated,currentUser,onL
 
 /* ---------- اپ اصلی ---------- */
 
-/* ---------- Boardroom CEO Dashboard — نسخه 11.1 ---------- */
+/* ---------- Boardroom CEO Dashboard — نسخه 11.2 ---------- */
 function CEODashboard({tasks,onRefresh,loading,lastUpdated,currentUser,onLogout}){
   const h=React.createElement;
   const [range,setRange]=useState('90');
@@ -4944,7 +4985,7 @@ function CEODashboard({tasks,onRefresh,loading,lastUpdated,currentUser,onLogout}
         )
       ),
 
-      h('footer',{className:'c8-footer'},h('span',null,'نسخه 11.1 · دسترسی فقط خواندنی مدیرعامل'),h('span',null,'ریسک فروشگاه‌های فعال و فعالیت‌های پیش‌افتتاح به‌صورت جداگانه تحلیل می‌شوند.'))
+      h('footer',{className:'c8-footer'},h('span',null,'نسخه 11.2 · دسترسی فقط خواندنی مدیرعامل'),h('span',null,'ریسک فروشگاه‌های فعال و فعالیت‌های پیش‌افتتاح به‌صورت جداگانه تحلیل می‌شوند.'))
     ),
 
     modal
@@ -5363,7 +5404,7 @@ function RegionalDashboard({tasks,onRefresh,loading,lastUpdated,currentUser,onLo
       ),
 
       h('footer',{className:'rm-footer'},
-        h('span',null,'نسخه 11.1 · دسترسی مدیر منطقه · فقط خواندنی'),
+        h('span',null,'نسخه 11.2 · دسترسی مدیر منطقه · فقط خواندنی'),
         h('span',null,'فیلتر دسترسی در سرور انجام می‌شود و فقط اطلاعات مناطق تخصیص‌یافته به این حساب ارسال می‌شود.')
       )
     ),
@@ -5384,7 +5425,7 @@ function LoginView({ onLogin }){
   useEffect(()=>{
     // هیچ تلاش ناموفقی در مرورگر ذخیره یا قفل نمی‌شود.
     // ورود قبلیِ ناقص نیز پاک می‌شود تا کاربران فعلی بتوانند دوباره تلاش کنند.
-    try{ sessionStorage.removeItem('ticketing-user-v111'); }catch(e){}
+    try{ sessionStorage.removeItem('ticketing-user-v112'); }catch(e){}
   },[]);
 
   const clearError = () => {
@@ -5397,7 +5438,7 @@ function LoginView({ onLogin }){
     setError('');
     setUsername('');
     setPassword('');
-    try{ sessionStorage.removeItem('ticketing-user-v111'); }catch(e){}
+    try{ sessionStorage.removeItem('ticketing-user-v112'); }catch(e){}
     setTimeout(()=>usernameRef.current && usernameRef.current.focus(),30);
   };
 
@@ -5434,7 +5475,7 @@ function LoginView({ onLogin }){
 
       if(result && result.success){
         // هیچ خطای قبلی یا نشست ناقصی به ورود درست منتقل نمی‌شود.
-        try{ sessionStorage.removeItem('ticketing-user-v111'); }catch(e){}
+        try{ sessionStorage.removeItem('ticketing-user-v112'); }catch(e){}
         onLogin({
           username: String(result.username || cleanUsername).trim(),
           name: String(result.name || '').trim(),
@@ -5535,7 +5576,7 @@ function LoginView({ onLogin }){
 
 /* ---------- اپ اصلی ---------- */
 function App(){
-  const [currentUser,setCurrentUser]=useState(()=>{try{const raw=sessionStorage.getItem('ticketing-user-v111');return raw?JSON.parse(raw):null;}catch(e){return null;}});
+  const [currentUser,setCurrentUser]=useState(()=>{try{const raw=sessionStorage.getItem('ticketing-user-v112');return raw?JSON.parse(raw):null;}catch(e){return null;}});
   const [tasks,setTasks]=useState([]);
   const [technicianDirectory,setTechnicianDirectory]=useState([]);
   const [activeStoreDirectory,setActiveStoreDirectory]=useState([]);
@@ -5545,6 +5586,9 @@ function App(){
   const [toastMsg,setToastMsg]=useState('');
   const toastTimer=useRef(null);
   const lastSyncError=useRef('');
+  const dataRevisionRef=useRef('');
+  const lastFullSyncRef=useRef(0);
+  const revisionPollBusyRef=useRef(false);
   const role=currentUser
     ? (currentUser.role==='admin'
       ? 'admin'
@@ -5556,11 +5600,27 @@ function App(){
     : null;
   const showToast=m=>{setToastMsg(m);clearTimeout(toastTimer.current);toastTimer.current=setTimeout(()=>setToastMsg(''),2600);};
 
-  const handleLogin=user=>{sessionStorage.setItem('ticketing-user-v111',JSON.stringify(user));setCurrentUser(user);setLoaded(false);};
-  const logout=()=>{sessionStorage.removeItem('ticketing-user-v111');setCurrentUser(null);setTasks([]);setTechnicianDirectory([]);setActiveStoreDirectory([]);setLoaded(false);};
+  const handleLogin=user=>{
+    sessionStorage.setItem('ticketing-user-v112',JSON.stringify(user));
+    dataRevisionRef.current='';
+    lastFullSyncRef.current=0;
+    setCurrentUser(user);
+    setLoaded(false);
+  };
+  const logout=()=>{
+    sessionStorage.removeItem('ticketing-user-v112');
+    dataRevisionRef.current='';
+    lastFullSyncRef.current=0;
+    setCurrentUser(null);
+    setTasks([]);
+    setTechnicianDirectory([]);
+    setActiveStoreDirectory([]);
+    setLoaded(false);
+  };
 
-  const loadTasks=useCallback(async()=>{
+  const loadTasks=useCallback(async(options={})=>{
     if(!currentUser)return;
+    const silent=!!(options&&options.silent);
 
     const showSyncErrorOnce=(message)=>{
       const msg=String(message||'').trim();
@@ -5571,7 +5631,7 @@ function App(){
 
     if(currentUser.role==='manager'||currentUser.role==='admin'||currentUser.role==='regional_manager'||currentUser.role==='executive_manager'){
       if(!currentUser.token){logout();return;}
-      setManagerLoading(true);
+      if(!silent)setManagerLoading(true);
       try{
         const fetchForRole=()=>currentUser.role==='admin'
           ? fetchExecutiveTickets(currentUser.token)
@@ -5595,6 +5655,8 @@ function App(){
             setTechnicianDirectory(Array.isArray(result.technicians)?result.technicians:[]);
             setActiveStoreDirectory(Array.isArray(result.activeStores)?result.activeStores:[]);
           }
+          dataRevisionRef.current=String(result.revision||dataRevisionRef.current||'0');
+          lastFullSyncRef.current=Date.now();
           setLastUpdated(result.updatedAt||new Date().toISOString());
           setLoaded(true);
         }else if(result&&result.sessionExpired){
@@ -5611,7 +5673,7 @@ function App(){
         showSyncErrorOnce('ارتباط با داده‌های مدیریتی برقرار نشد');
         setLoaded(true);
       }finally{
-        setManagerLoading(false);
+        if(!silent)setManagerLoading(false);
       }
     }else{
       if(!currentUser.token){logout();return;}
@@ -5620,6 +5682,8 @@ function App(){
         if(result&&result.success){
           lastSyncError.current='';
           setTasks(result.tickets||[]);
+          dataRevisionRef.current=String(result.revision||dataRevisionRef.current||'0');
+          lastFullSyncRef.current=Date.now();
           setLastUpdated(result.updatedAt||new Date().toISOString());
           setLoaded(true);
         }else if(result&&result.sessionExpired){
@@ -5644,15 +5708,65 @@ function App(){
     }
   },[currentUser]);
 
-  useEffect(()=>{if(!currentUser)return;loadTasks();const iv=setInterval(loadTasks,(currentUser.role==='manager'||currentUser.role==='admin'||currentUser.role==='regional_manager'||currentUser.role==='executive_manager')?30000:15000);return()=>clearInterval(iv);},[currentUser,loadTasks]);
+  const checkForUpdates=useCallback(async()=>{
+    if(!currentUser||!currentUser.token||revisionPollBusyRef.current)return;
+    revisionPollBusyRef.current=true;
 
-  const saveTasks=async updater=>{const next=updater(tasks);try{await window.storage.set('tasks',JSON.stringify(next),true);}catch(e){}setTasks(next);return next;};
+    try{
+      const result=await fetchDataRevision(currentUser.token);
+
+      if(result&&result.sessionExpired){
+        showToast(result.message||'نشست معتبر نیست؛ دوباره وارد شوید');
+        logout();
+        return;
+      }
+
+      if(!(result&&result.success))return;
+
+      const incomingRevision=String(result.revision||'0');
+      const currentRevision=String(dataRevisionRef.current||'');
+      const forceSafetyRefresh=Date.now()-Number(lastFullSyncRef.current||0)>300000;
+
+      if(!currentRevision||incomingRevision!==currentRevision||forceSafetyRefresh){
+        await loadTasks({silent:true});
+      }
+    }catch(e){
+      // بررسی نسخه یک درخواست بسیار سبک پس‌زمینه است؛
+      // خطای لحظه‌ای آن نباید تجربه کاربر را مختل کند.
+    }finally{
+      revisionPollBusyRef.current=false;
+    }
+  },[currentUser,loadTasks]);
+
+  useEffect(()=>{
+    if(!currentUser)return;
+    loadTasks();
+
+    // به جای دانلود کامل تمام Tickets هر 15/30 ثانیه،
+    // فقط یک Revision چندبایتی بررسی می‌شود.
+    const intervalMs=(currentUser.role==='manager'||currentUser.role==='admin'||currentUser.role==='regional_manager'||currentUser.role==='executive_manager')
+      ?20000
+      :12000;
+
+    const iv=setInterval(checkForUpdates,intervalMs);
+    return()=>clearInterval(iv);
+  },[currentUser,loadTasks,checkForUpdates]);
+
+  const saveTasks=async updater=>{
+    const next=updater(tasks);
+    // رابط کاربری بلافاصله آپدیت می‌شود؛ ذخیره محلی در پس‌زمینه است.
+    setTasks(next);
+    Promise.resolve()
+      .then(()=>window.storage.set('tasks',JSON.stringify(next),true))
+      .catch(()=>{});
+    return next;
+  };
 
   const updateManagerTask=async(id,patch)=>{
     const original=tasks.find(t=>t.id===id);if(!original)return;
     const updated={...original,...patch,managerNote:patch.managerNote!==undefined?(patch.managerNote||original.managerNote):original.managerNote};
     setTasks(list=>list.map(t=>t.id===id?updated:t));
-    try{await sendManagerUpdate(updated,currentUser.token,patch);setTimeout(loadTasks,900);}catch(e){showToast('ارسال تغییرات انجام نشد');}
+    try{await sendManagerUpdate(updated,currentUser.token,patch);setTimeout(()=>loadTasks({silent:true}),850);}catch(e){showToast('ارسال تغییرات انجام نشد');}
   };
 
   if(!currentUser)return React.createElement(LoginView,{onLogin:handleLogin});
@@ -5675,7 +5789,7 @@ function App(){
 
   return React.createElement('div',{className:'wrap'},
     React.createElement('div',{className:'top'},
-      React.createElement('div',{className:'brand'},React.createElement('span',{className:'dot'}),React.createElement('div',null,React.createElement('h1',null,'پشتیبانی فنی فروشگاه‌ها'),React.createElement('span',null,(role==='tech'?'محیط نیروی فنی':'مرکز کنترل مدیریت فنی')+' • نسخه 11.1'))),
+      React.createElement('div',{className:'brand'},React.createElement('span',{className:'dot'}),React.createElement('div',null,React.createElement('h1',null,'پشتیبانی فنی فروشگاه‌ها'),React.createElement('span',null,(role==='tech'?'محیط نیروی فنی':'مرکز کنترل مدیریت فنی')+' • نسخه 11.2'))),
       React.createElement('div',{className:'user-bar'},React.createElement('div',{className:'user-info'},React.createElement('b',null,currentUser.name),React.createElement('span',null,role==='manager'?'مدیر فنی':'کد پرسنلی: '+currentUser.username)),React.createElement('button',{className:'logout-btn',onClick:logout},'خروج'))
     ),
     !loaded?React.createElement('div',{className:'empty'},'در حال بارگذاری اطلاعات...'):(role==='tech'?React.createElement(TechView,{tasks,saveTasks,showToast,currentUser,refreshTasks:loadTasks}):React.createElement(ManagerView,{tasks,updateTask:updateManagerTask,showToast,refreshTasks:loadTasks,managerLoading,lastUpdated,currentUser,technicianDirectory,activeStoreDirectory})),
