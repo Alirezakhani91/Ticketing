@@ -1397,6 +1397,159 @@
   text-align:left;
 }
 
+
+/* ========================================================
+   Unified operations + cost dashboard 11.0
+   ======================================================== */
+.integrated-cost-section{
+  margin-top:18px;
+  padding:17px;
+  border:1px solid #d8e5df;
+  border-radius:17px;
+  background:
+    radial-gradient(circle at 6% 8%,rgba(47,111,94,.10),transparent 24%),
+    linear-gradient(135deg,#fbfdfc,#f5faf7 58%,#fffaf2);
+  box-shadow:var(--shadow);
+}
+.integrated-section-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:16px;
+  margin-bottom:14px;
+}
+.integrated-section-head>div:first-child>span{
+  display:inline-flex;
+  padding:5px 8px;
+  border-radius:999px;
+  background:#e7f3ee;
+  color:#2b6656;
+  font-size:7.5px;
+  font-weight:900;
+  letter-spacing:.7px;
+  direction:ltr;
+}
+.integrated-section-head h2{
+  margin:7px 0 2px;
+  font-size:17px;
+}
+.integrated-section-head p{
+  margin:0;
+  color:var(--ink-soft);
+  font-size:8.5px;
+  line-height:1.8;
+}
+.cost-coverage{
+  min-width:125px;
+  padding:10px 12px;
+  border:1px solid #d7e5df;
+  border-radius:12px;
+  background:#fff;
+  text-align:center;
+}
+.cost-coverage b{
+  display:block;
+  font-size:18px;
+  color:#245c4f;
+}
+.cost-coverage span{
+  display:block;
+  margin-top:3px;
+  font-size:7.5px;
+  color:var(--ink-soft);
+}
+.integrated-cost-kpis{
+  grid-template-columns:repeat(4,1fr);
+}
+.integrated-cost-card{
+  margin-top:16px;
+}
+.cost-card-meta{
+  padding:5px 8px;
+  border-radius:999px;
+  background:#f1f4f2;
+  color:#62706a;
+  font-size:8px;
+  white-space:nowrap;
+}
+.integrated-cost-chart{
+  height:340px;
+}
+.leader-cost-line{
+  display:block!important;
+  margin-top:4px!important;
+  color:#1f6654!important;
+  font-weight:800!important;
+  font-size:8px!important;
+}
+.leader-total-dual{
+  min-width:82px;
+}
+.leader-total-dual small{
+  display:block;
+  margin-top:3px;
+  color:#256150;
+  font-size:7px;
+  font-weight:900;
+  white-space:nowrap;
+}
+.cost-region-table-wrap{
+  margin-top:14px;
+  overflow:auto;
+  border:1px solid var(--line);
+  border-radius:11px;
+}
+.cost-region-table{
+  width:100%;
+  min-width:920px;
+  border-collapse:collapse;
+  background:#fff;
+}
+.cost-region-table th,
+.cost-region-table td{
+  padding:9px 10px;
+  border-bottom:1px solid #edf0ee;
+  text-align:right;
+  font-size:8.5px;
+  white-space:nowrap;
+}
+.cost-region-table th{
+  background:#f6f8f7;
+  color:#66716c;
+  font-weight:900;
+}
+.cost-region-table tbody tr:hover{
+  background:#fbfdfc;
+}
+.money-strong{
+  color:#1e6654;
+  font-weight:900;
+}
+.cost-deep-grid{
+  margin-top:16px;
+}
+@media(max-width:1100px){
+  .integrated-cost-kpis{
+    grid-template-columns:repeat(2,1fr);
+  }
+}
+@media(max-width:720px){
+  .integrated-section-head{
+    flex-direction:column;
+  }
+  .cost-coverage{
+    width:100%;
+  }
+  .integrated-cost-kpis{
+    grid-template-columns:1fr 1fr;
+  }
+}
+@media(max-width:520px){
+  .integrated-cost-kpis{
+    grid-template-columns:1fr;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -3236,7 +3389,7 @@ function PreOpeningManagerDashboard({tasks,onRefresh,loading,lastUpdated,current
     if(isOpen){
       rows.push(
         h('tr',{key:'detail-'+p.code,className:'store-detail-row'},
-          h('td',{colSpan:8},
+          h('td',{colSpan:9},
             h('div',{className:'preopening-project-panel'},
               h('div',{className:'preopening-project-meta'},
                 h('div',null,h('span',null,'نام پروژه'),h('b',null,p.name||'—')),
@@ -3302,144 +3455,7 @@ function PreOpeningManagerDashboard({tasks,onRefresh,loading,lastUpdated,current
 }
 
 
-function CostDashboard({tasks,onRefresh,loading,lastUpdated}){
-  const h=React.createElement;
-  const [scope,setScope]=useState('active');
-  const [range,setRange]=useState('all');
-
-  const completed=tasks.filter(t=>{
-    const cancelled=t.reviewStatus==='cancelled'||t.workStatus==='cancelled';
-    if(cancelled)return false;
-    const done=t.type==='internal'||t.workStatus==='completed';
-    if(!done)return false;
-    if(scope==='active'&&isPreOpeningLocation(t.locationType,t.storeCode))return false;
-    if(scope==='preopening'&&!isPreOpeningLocation(t.locationType,t.storeCode))return false;
-    return true;
-  });
-
-  const allDates=[...new Set(completed.map(ticketDate).filter(Boolean))].sort(compareTicketDateLabels);
-  const allowed=range==='30'?new Set(allDates.slice(-30)):range==='90'?new Set(allDates.slice(-90)):null;
-  const relevant=completed.filter(t=>!allowed||allowed.has(ticketDate(t)));
-
-  const finalCost=relevant.filter(t=>t.costStatus==='final');
-  const noCost=relevant.filter(t=>t.costStatus==='no_cost');
-  const pending=relevant.filter(t=>t.costStatus==='pending');
-  const missing=relevant.filter(t=>!t.costStatus);
-
-  const total=finalCost.reduce((s,t)=>s+Number(t.totalCost||0),0);
-  const parts=finalCost.reduce((s,t)=>s+Number(t.partsCost||0),0);
-  const service=finalCost.reduce((s,t)=>s+Number(t.serviceCost||0),0);
-  const other=finalCost.reduce((s,t)=>s+Number(t.otherCost||0),0);
-  const average=finalCost.length?Math.round(total/finalCost.length):0;
-
-  const regionMap={};
-  finalCost.forEach(t=>{
-    const key=t.region||'نامشخص';
-    regionMap[key]=(regionMap[key]||0)+Number(t.totalCost||0);
-  });
-  const regionRows=Object.entries(regionMap).sort((a,b)=>b[1]-a[1]);
-
-  const categoryMap={};
-  finalCost.forEach(t=>{
-    const key=t.level1||'نامشخص';
-    categoryMap[key]=(categoryMap[key]||0)+Number(t.totalCost||0);
-  });
-  const categoryRows=Object.entries(categoryMap).sort((a,b)=>b[1]-a[1]).slice(0,10);
-
-  const storeMap={};
-  finalCost.forEach(t=>{
-    const code=String(t.storeCode||'');
-    if(!storeMap[code])storeMap[code]={code,name:t.storeName||code,region:t.region||'',total:0,count:0};
-    storeMap[code].total+=Number(t.totalCost||0);
-    storeMap[code].count++;
-  });
-  const expensiveStores=Object.values(storeMap).sort((a,b)=>b.total-a.total).slice(0,10);
-
-  const moneyCompact=v=>{
-    const n=Number(v||0);
-    if(n>=1e9)return (n/1e9).toLocaleString('fa-IR',{maximumFractionDigits:1})+' میلیارد';
-    if(n>=1e6)return (n/1e6).toLocaleString('fa-IR',{maximumFractionDigits:1})+' میلیون';
-    return n.toLocaleString('fa-IR');
-  };
-
-  const regionData={
-    labels:regionRows.map(x=>x[0]),
-    datasets:[{label:'هزینه',data:regionRows.map(x=>x[1]),backgroundColor:'#2f6f5e',borderRadius:7,borderSkipped:false}]
-  };
-  const categoryData={
-    labels:categoryRows.map(x=>x[0]),
-    datasets:[{label:'هزینه',data:categoryRows.map(x=>x[1]),backgroundColor:'#b8721f',borderRadius:7,borderSkipped:false}]
-  };
-  const opts={
-    responsive:true,maintainAspectRatio:false,indexAxis:'y',
-    plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>moneyCompact(ctx.raw)+' تومان'}}},
-    scales:{
-      x:{beginAtZero:true,ticks:{callback:v=>moneyCompact(v)},grid:{color:'rgba(0,0,0,.05)'}},
-      y:{grid:{display:false},ticks:{font:{size:9}}}
-    }
-  };
-
-  return h(React.Fragment,null,
-    h('div',{className:'dashboard-head cost-dashboard-head'},
-      h('div',{className:'dashboard-title'},
-        h('div',{className:'cost-dashboard-badge'},'COST CONTROL'),
-        h('h2',null,'کنترل هزینه تعمیر و نگهداری'),
-        h('p',null,'تفکیک هزینه نهایی، اقدامات بدون هزینه مستقیم و موارد در انتظار تکمیل'),
-        lastUpdated&&h('div',{className:'dashboard-meta'},'آخرین به‌روزرسانی: '+new Date(lastUpdated).toLocaleTimeString('fa-IR',{hour:'2-digit',minute:'2-digit'}))
-      ),
-      h('button',{className:'refresh-btn',onClick:onRefresh,disabled:loading},loading?'در حال دریافت...':'↻ تازه‌سازی')
-    ),
-    h('div',{className:'dashboard-filters cost-dashboard-filters'},
-      h('select',{value:scope,onChange:e=>setScope(e.target.value)},
-        h('option',{value:'active'},'فروشگاه‌های فعال'),
-        h('option',{value:'preopening'},'پروژه‌های پیش‌افتتاح'),
-        h('option',{value:'all'},'همه')
-      ),
-      h('select',{value:range,onChange:e=>setRange(e.target.value)},
-        h('option',{value:'all'},'کل بازه'),
-        h('option',{value:'30'},'۳۰ روز ثبت‌شده اخیر'),
-        h('option',{value:'90'},'۹۰ روز ثبت‌شده اخیر')
-      )
-    ),
-    h('div',{className:'kpi-grid cost-kpi-grid'},
-      h(Kpi,{label:'هزینه نهایی ثبت‌شده',value:moneyCompact(total)+' تومان',note:finalCost.length+' تیکت دارای هزینه قطعی',icon:'💰'}),
-      h(Kpi,{label:'اقدامات بدون هزینه مستقیم',value:noCost.length,note:(relevant.length?pct(noCost.length,relevant.length):0)+'٪ از اقدامات تکمیل‌شده',icon:'🛠️'}),
-      h(Kpi,{label:'در انتظار تکمیل هزینه',value:pending.length,note:'کار فنی تمام شده؛ مبلغ نهایی مانده',icon:'⏳',tone:'amber'}),
-      h(Kpi,{label:'میانگین هر تیکت هزینه‌دار',value:moneyCompact(average)+' تومان',note:'فقط تیکت‌های دارای هزینه نهایی',icon:'📊'}),
-      h(Kpi,{label:'هزینه قطعات',value:moneyCompact(parts)+' تومان',note:total?pct(parts,total)+'٪ از کل':'—',icon:'⚙️'}),
-      h(Kpi,{label:'هزینه خدمات / پیمانکار',value:moneyCompact(service)+' تومان',note:total?pct(service,total)+'٪ از کل':'—',icon:'🧾'}),
-      h(Kpi,{label:'سایر هزینه',value:moneyCompact(other)+' تومان',note:missing.length?missing.length+' تیکت قدیمی بدون وضعیت هزینه':'اطلاعات قدیمی بدون وضعیت وجود ندارد',icon:'➕'})
-    ),
-    h('div',{className:'dash-grid'},
-      h('div',{className:'dash-card'},
-        h('div',{className:'dash-card-head'},h('div',null,h('h3',null,'هزینه به تفکیک منطقه'),h('p',null,'تمام مناطق دارای هزینه نهایی'))),
-        regionRows.length
-          ?h('div',{className:'cost-chart',style:{height:Math.max(300,regionRows.length*34)+'px'}},h(ChartBox,{type:'bar',data:regionData,options:opts}))
-          :h('div',{className:'dash-empty'},'هزینه نهایی برای نمایش وجود ندارد')
-      ),
-      h('div',{className:'dash-card'},
-        h('div',{className:'dash-card-head'},h('div',null,h('h3',null,'گران‌ترین گروه‌های خرابی'),h('p',null,'۱۰ گروه با بیشترین هزینه ثبت‌شده'))),
-        categoryRows.length
-          ?h('div',{className:'cost-chart'},h(ChartBox,{type:'bar',data:categoryData,options:opts}))
-          :h('div',{className:'dash-empty'},'هزینه نهایی برای نمایش وجود ندارد')
-      )
-    ),
-    h('div',{className:'dash-card cost-store-card'},
-      h('div',{className:'dash-card-head'},h('div',null,h('h3',null,'گران‌ترین فروشگاه‌ها / پروژه‌ها'),h('p',null,'براساس مجموع هزینه نهایی ثبت‌شده'))),
-      expensiveStores.length
-        ?h('div',{className:'cost-store-list'},
-          ...expensiveStores.map((s,i)=>h('div',{className:'cost-store-row',key:s.code},
-            h('span',{className:'cost-rank'},i+1),
-            h('div',{className:'cost-store-name'},h('b',null,s.name),h('span',null,s.code+(s.region?' · '+s.region:'')+' · '+s.count+' تیکت هزینه‌دار')),
-            h('strong',null,moneyCompact(s.total)+' تومان')
-          ))
-        )
-        :h('div',{className:'dash-empty'},'هزینه‌ای ثبت نشده است')
-    )
-  );
-}
-
-function ManagerView({ tasks, updateTask, showToast, refreshTasks, managerLoading, lastUpdated, currentUser, technicianDirectory }){
+function ManagerView({ tasks, updateTask, showToast, refreshTasks, managerLoading, lastUpdated, currentUser, technicianDirectory, activeStoreDirectory }){
   const [tab, setTab] = useState('report');
   const [storeFilter, setStoreFilter] = useState('');
   const preOpeningTasks=tasks.filter(t=>isPreOpeningLocation(t.locationType,t.storeCode));
@@ -3476,11 +3492,10 @@ function ManagerView({ tasks, updateTask, showToast, refreshTasks, managerLoadin
     React.createElement('div',{className:'tabs manager-main-tabs'},
       React.createElement('button',{className:tab==='report'?'active':'',onClick:()=>setTab('report')},'فروشگاه‌های فعال'),
       React.createElement('button',{className:tab==='preopening'?'active':'',onClick:()=>setTab('preopening')},'پیش‌افتتاح'+(preOpeningProjects?' ('+preOpeningProjects+')':'')),
-      React.createElement('button',{className:tab==='cost'?'active':'',onClick:()=>setTab('cost')},'کنترل هزینه'),
       React.createElement('button',{className:tab==='pending'?'active':'',onClick:()=>setTab('pending')},'در انتظار ('+pending.length+')'),
       React.createElement('button',{className:tab==='all'?'active':'',onClick:()=>setTab('all')},'همه تیکت‌ها')
     ),
-    !['report','preopening','cost'].includes(tab) && React.createElement('div',{className:'filter-row'},
+    !['report','preopening'].includes(tab) && React.createElement('div',{className:'filter-row'},
       React.createElement('input',{placeholder:'جست‌وجوی شماره تیکت، کد، نام فروشگاه یا منطقه...',value:storeFilter,onChange:e=>setStoreFilter(e.target.value)}),
       React.createElement('button',{className:'refresh-btn',onClick:refreshTasks,disabled:managerLoading},managerLoading?'در حال دریافت...':'↻ تازه‌سازی')
     ),
@@ -3493,6 +3508,7 @@ function ManagerView({ tasks, updateTask, showToast, refreshTasks, managerLoadin
     tab==='report' && React.createElement(ReportView,{
       tasks:tasks.filter(t=>!isPreOpeningLocation(t.locationType,t.storeCode)),
       technicianDirectory,
+      activeStoreDirectory,
       onRefresh:refreshTasks,
       loading:managerLoading,
       lastUpdated
@@ -3503,12 +3519,6 @@ function ManagerView({ tasks, updateTask, showToast, refreshTasks, managerLoadin
       loading:managerLoading,
       lastUpdated,
       currentUser
-    }),
-    tab==='cost' && React.createElement(CostDashboard,{
-      tasks,
-      onRefresh:refreshTasks,
-      loading:managerLoading,
-      lastUpdated
     })
   );
 }
@@ -3570,7 +3580,7 @@ function Kpi({label,value,note,icon,tone}){
   );
 }
 
-function ReportView({tasks,technicianDirectory=[],onRefresh,loading,lastUpdated}){
+function ReportView({tasks,technicianDirectory=[],activeStoreDirectory=[],onRefresh,loading,lastUpdated}){
   const h=React.createElement;
   const [range,setRange]=useState('all');
   const [tech,setTech]=useState('all');
@@ -3591,7 +3601,14 @@ function ReportView({tasks,technicianDirectory=[],onRefresh,loading,lastUpdated}
   ])].sort((a,b)=>a.localeCompare(b,'fa'));
   const regions=[...new Set(tasks.map(t=>t.region).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'fa'));
   const storeLookup={};
-  tasks.forEach(t=>{const code=String(t.storeCode||'');if(code&&!storeLookup[code])storeLookup[code]={code,name:t.storeName||('فروشگاه '+code),region:t.region||''};});
+  activeStoreDirectory.forEach(s=>{
+    const code=String((s&&s.code)||'').trim();
+    if(code)storeLookup[code]={code,name:s.name||('فروشگاه '+code),region:s.region||'',city:s.city||''};
+  });
+  tasks.forEach(t=>{
+    const code=String(t.storeCode||'');
+    if(code&&!storeLookup[code])storeLookup[code]={code,name:t.storeName||('فروشگاه '+code),region:t.region||'',city:''};
+  });
   const stores=Object.values(storeLookup).sort((a,b)=>a.code.localeCompare(b.code,'fa',{numeric:true}));
 
   useEffect(()=>{
@@ -3610,6 +3627,101 @@ function ReportView({tasks,technicianDirectory=[],onRefresh,loading,lastUpdated}
     if(work!=='all'&&(t.workStatus||(t.type==='outsourced'?'open':'completed'))!==work)return false;
     return true;
   });
+
+  const isCompletedForCost=t=>{
+    if((t.reviewStatus||'')==='cancelled'||t.workStatus==='cancelled')return false;
+    return t.type==='internal'||t.workStatus==='completed';
+  };
+  const isFinalCost=t=>isCompletedForCost(t)&&t.costStatus==='final';
+  const isNoCost=t=>isCompletedForCost(t)&&t.costStatus==='no_cost';
+  const isPendingCost=t=>isCompletedForCost(t)&&t.costStatus==='pending';
+
+  const moneyCompact=v=>{
+    const n=Number(v||0);
+    if(n>=1e9)return (n/1e9).toLocaleString('fa-IR',{maximumFractionDigits:1})+' میلیارد';
+    if(n>=1e6)return (n/1e6).toLocaleString('fa-IR',{maximumFractionDigits:1})+' میلیون';
+    if(n>=1e3)return (n/1e3).toLocaleString('fa-IR',{maximumFractionDigits:0})+' هزار';
+    return n.toLocaleString('fa-IR');
+  };
+
+  const currentCostTickets=relevant.filter(isFinalCost);
+  const currentNoCost=relevant.filter(isNoCost);
+  const currentPendingCost=relevant.filter(isPendingCost);
+  const currentMissingCost=relevant.filter(t=>isCompletedForCost(t)&&!t.costStatus);
+
+  const currentTotalCost=currentCostTickets.reduce((s,t)=>s+Number(t.totalCost||0),0);
+  const currentPartsCost=currentCostTickets.reduce((s,t)=>s+Number(t.partsCost||0),0);
+  const currentServiceCost=currentCostTickets.reduce((s,t)=>s+Number(t.serviceCost||0),0);
+  const currentOtherCost=currentCostTickets.reduce((s,t)=>s+Number(t.otherCost||0),0);
+
+  // مرجع کشور: همان فیلتر زمانی/کارشناس/نوع/وضعیت، ولی مستقل از فیلتر منطقه و فروشگاه.
+  const geographyBase=tasks.filter(t=>{
+    const d=ticketDate(t);
+    if(range==='today'&&d!==today)return false;
+    if(allowedDates&&!allowedDates.has(d))return false;
+    if(tech!=='all'&&t.technician!==tech)return false;
+    if(type!=='all'&&t.type!==type)return false;
+    if(status!=='all'&&(t.reviewStatus||'pending')!==status)return false;
+    if(work!=='all'&&(t.workStatus||(t.type==='outsourced'?'open':'completed'))!==work)return false;
+    return true;
+  });
+
+  const geographyFinal=geographyBase.filter(isFinalCost);
+  const nationalCost=geographyFinal.reduce((s,t)=>s+Number(t.totalCost||0),0);
+
+  const directoryStores=activeStoreDirectory.length
+    ?activeStoreDirectory
+    :stores;
+
+  const nationalStoreCount=directoryStores.length;
+  const nationalAvgPerStore=nationalStoreCount?Math.round(nationalCost/nationalStoreCount):0;
+
+  const regionStoreCountMap={};
+  directoryStores.forEach(s=>{
+    const r=String((s&&s.region)||'').trim()||'منطقه نامشخص';
+    regionStoreCountMap[r]=(regionStoreCountMap[r]||0)+1;
+  });
+
+  const regionCostMap={};
+  geographyFinal.forEach(t=>{
+    const r=t.region||'منطقه نامشخص';
+    if(!regionCostMap[r])regionCostMap[r]={totalCost:0,costTickets:0,noCost:0,pending:0};
+    regionCostMap[r].totalCost+=Number(t.totalCost||0);
+    regionCostMap[r].costTickets++;
+  });
+  geographyBase.filter(isNoCost).forEach(t=>{
+    const r=t.region||'منطقه نامشخص';
+    if(!regionCostMap[r])regionCostMap[r]={totalCost:0,costTickets:0,noCost:0,pending:0};
+    regionCostMap[r].noCost++;
+  });
+  geographyBase.filter(isPendingCost).forEach(t=>{
+    const r=t.region||'منطقه نامشخص';
+    if(!regionCostMap[r])regionCostMap[r]={totalCost:0,costTickets:0,noCost:0,pending:0};
+    regionCostMap[r].pending++;
+  });
+
+  const costRegionNames=[...new Set([
+    ...Object.keys(regionStoreCountMap),
+    ...Object.keys(regionCostMap)
+  ])].filter(Boolean);
+
+  const regionCostRows=costRegionNames.map(name=>{
+    const c=regionCostMap[name]||{totalCost:0,costTickets:0,noCost:0,pending:0};
+    const storeCount=regionStoreCountMap[name]||0;
+    return{
+      name,
+      totalCost:c.totalCost,
+      costTickets:c.costTickets,
+      noCost:c.noCost,
+      pending:c.pending,
+      storeCount,
+      avgPerStore:storeCount?Math.round(c.totalCost/storeCount):0
+    };
+  }).sort((a,b)=>b.totalCost-a.totalCost||b.avgPerStore-a.avgPerStore||a.name.localeCompare(b.name,'fa'));
+
+  const selectedRegionBenchmark=region!=='all'
+    ?regionCostRows.find(r=>r.name===region)
+    :null;
 
   const total=relevant.length;
   const internal=relevant.filter(t=>t.type==='internal').length;
@@ -3658,6 +3770,10 @@ function ReportView({tasks,technicianDirectory=[],onRefresh,loading,lastUpdated}
         outsourced:0,
         pending:0,
         reviewed:0,
+        cost:0,
+        costTickets:0,
+        noCost:0,
+        pendingCost:0,
         stores:new Set(),
         regions:new Set()
       };
@@ -3665,12 +3781,15 @@ function ReportView({tasks,technicianDirectory=[],onRefresh,loading,lastUpdated}
 
   relevant.forEach(t=>{
     const n=t.technician||'نامشخص';
-    if(!techMap[n])techMap[n]={name:n,total:0,internal:0,outsourced:0,pending:0,reviewed:0,stores:new Set(),regions:new Set()};
+    if(!techMap[n])techMap[n]={name:n,total:0,internal:0,outsourced:0,pending:0,reviewed:0,cost:0,costTickets:0,noCost:0,pendingCost:0,stores:new Set(),regions:new Set()};
     const x=techMap[n];x.total++;
     if(t.type==='internal')x.internal++;
     if(t.type==='outsourced')x.outsourced++;
     if(!t.reviewStatus||t.reviewStatus==='pending')x.pending++;
     if(t.reviewStatus==='reviewed')x.reviewed++;
+    if(isFinalCost(t)){x.cost+=Number(t.totalCost||0);x.costTickets++;}
+    if(isNoCost(t))x.noCost++;
+    if(isPendingCost(t))x.pendingCost++;
     if(t.storeCode)x.stores.add(String(t.storeCode));
     if(t.region)x.regions.add(t.region);
   });
@@ -3685,11 +3804,14 @@ function ReportView({tasks,technicianDirectory=[],onRefresh,loading,lastUpdated}
   const regionMap={};
   relevant.forEach(t=>{
     const k=t.region||'منطقه نامشخص';
-    if(!regionMap[k])regionMap[k]={name:k,total:0,internal:0,outsourced:0,pending:0,stores:new Set(),techs:new Set()};
+    if(!regionMap[k])regionMap[k]={name:k,total:0,internal:0,outsourced:0,pending:0,cost:0,costTickets:0,noCost:0,pendingCost:0,stores:new Set(),techs:new Set()};
     const x=regionMap[k];x.total++;
     if(t.type==='internal')x.internal++;
     if(t.type==='outsourced')x.outsourced++;
     if(!t.reviewStatus||t.reviewStatus==='pending')x.pending++;
+    if(isFinalCost(t)){x.cost+=Number(t.totalCost||0);x.costTickets++;}
+    if(isNoCost(t))x.noCost++;
+    if(isPendingCost(t))x.pendingCost++;
     if(t.storeCode)x.stores.add(String(t.storeCode));
     if(t.technician)x.techs.add(t.technician);
   });
@@ -3702,11 +3824,14 @@ function ReportView({tasks,technicianDirectory=[],onRefresh,loading,lastUpdated}
   const storeMap={};
   relevant.forEach(t=>{
     const k=String(t.storeCode||'نامشخص');
-    if(!storeMap[k])storeMap[k]={store:k,name:t.storeName||('فروشگاه '+k),region:t.region||'',total:0,internal:0,outsourced:0,pending:0,tickets:[]};
+    if(!storeMap[k])storeMap[k]={store:k,name:t.storeName||('فروشگاه '+k),region:t.region||'',total:0,internal:0,outsourced:0,pending:0,cost:0,costTickets:0,noCost:0,pendingCost:0,tickets:[]};
     const x=storeMap[k];x.total++;x.tickets.push(t);
     if(t.type==='internal')x.internal++;
     if(t.type==='outsourced')x.outsourced++;
     if(!t.reviewStatus||t.reviewStatus==='pending')x.pending++;
+    if(isFinalCost(t)){x.cost+=Number(t.totalCost||0);x.costTickets++;}
+    if(isNoCost(t))x.noCost++;
+    if(isPendingCost(t))x.pendingCost++;
   });
   const storeRows=Object.values(storeMap).sort((a,b)=>b.total-a.total).slice(0,15);
   const attention=leaders.filter(x=>x.pending>0||(x.total>=2&&x.outsourced/x.total>=.5)).slice(0,6);
@@ -3732,7 +3857,7 @@ function ReportView({tasks,technicianDirectory=[],onRefresh,loading,lastUpdated}
   const head=h('div',{className:'dashboard-head'},
     h('div',{className:'dashboard-title'},
       h('h2',null,'داشبورد مدیریت پشتیبانی فنی'),
-      h('p',null,'تحلیل فعالیت نیروها، مناطق، فروشگاه‌ها و الگوی خرابی‌ها'),
+      h('p',null,'نمای یکپارچه فعالیت، بهره‌وری عملیاتی و هزینه تعمیر و نگهداری شبکه'),
       lastUpdated&&h('div',{className:'dashboard-meta'},'آخرین به‌روزرسانی: '+new Date(lastUpdated).toLocaleTimeString('fa-IR',{hour:'2-digit',minute:'2-digit'}))
     ),
     h('button',{className:'refresh-btn',onClick:onRefresh,disabled:loading},loading?'در حال تازه‌سازی...':'↻ تازه‌سازی داده‌ها')
@@ -3764,6 +3889,42 @@ function ReportView({tasks,technicianDirectory=[],onRefresh,loading,lastUpdated}
     return h(React.Fragment,null,head,filters,kpis,h('div',{className:'dash-card'},h('div',{className:'dash-empty'},loading?'در حال دریافت داده‌ها...':'برای فیلتر انتخاب‌شده داده‌ای وجود ندارد')));
   }
 
+  const costKpis=h('div',{className:'integrated-cost-section'},
+    h('div',{className:'integrated-section-head'},
+      h('div',null,
+        h('span',null,'COST & PRODUCTIVITY'),
+        h('h2',null,'تصویر مالی تعمیر و نگهداری'),
+        h('p',null,'هزینه فقط از تیکت‌های تکمیل‌شده با وضعیت هزینه نهایی محاسبه می‌شود؛ «بدون هزینه» و «در انتظار هزینه» جدا هستند.')
+      ),
+      h('div',{className:'cost-coverage'},
+        h('b',null,(currentCostTickets.length+currentNoCost.length+currentPendingCost.length)),
+        h('span',null,'تیکت تکمیل‌شده دارای وضعیت هزینه')
+      )
+    ),
+    h('div',{className:'kpi-grid integrated-cost-kpis'},
+      h(Kpi,{label:'کل هزینه ثبت‌شده',value:moneyCompact(currentTotalCost)+' تومان',note:currentCostTickets.length+' تیکت دارای هزینه نهایی',icon:'💰'}),
+      h(Kpi,{label:'متوسط هزینه هر فروشگاه کشور',value:moneyCompact(nationalAvgPerStore)+' تومان',note:'کل هزینه کشور ÷ '+nationalStoreCount+' فروشگاه فعال در Stores',icon:'🏪'}),
+      h(Kpi,{
+        label:region==='all'?'متوسط هزینه هر فروشگاه در محدوده فیلتر':'متوسط هزینه هر فروشگاه '+region,
+        value:moneyCompact(
+          region!=='all'&&selectedRegionBenchmark
+            ?selectedRegionBenchmark.avgPerStore
+            :(activeStores?Math.round(currentTotalCost/activeStores):0)
+        )+' تومان',
+        note:region!=='all'&&selectedRegionBenchmark
+          ?selectedRegionBenchmark.storeCount+' فروشگاه فعال در منطقه'
+          :'براساس فروشگاه‌های دارای فعالیت در فیلتر جاری',
+        icon:'📍',
+        tone:'blue'
+      }),
+      h(Kpi,{label:'اقدامات بدون هزینه مستقیم',value:currentNoCost.length,note:pct(currentNoCost.length,relevant.filter(isCompletedForCost).length)+'٪ اقدامات تکمیل‌شده',icon:'🛠️'}),
+      h(Kpi,{label:'در انتظار تکمیل هزینه',value:currentPendingCost.length,note:'کار فنی بسته شده ولی مبلغ نهایی مانده',icon:'⏳',tone:'amber'}),
+      h(Kpi,{label:'هزینه قطعات',value:moneyCompact(currentPartsCost)+' تومان',note:currentTotalCost?pct(currentPartsCost,currentTotalCost)+'٪ از هزینه نهایی':'—',icon:'⚙️'}),
+      h(Kpi,{label:'خدمات / پیمانکار',value:moneyCompact(currentServiceCost)+' تومان',note:currentTotalCost?pct(currentServiceCost,currentTotalCost)+'٪ از هزینه نهایی':'—',icon:'🧾'}),
+      h(Kpi,{label:'سایر هزینه',value:moneyCompact(currentOtherCost)+' تومان',note:currentMissingCost.length?currentMissingCost.length+' تیکت قدیمی بدون وضعیت هزینه':'پوشش هزینه قدیمی کامل است',icon:'➕'})
+    )
+  );
+
   const overview=h('div',{className:'dash-grid'},
     h('div',{className:'dash-card'},h('div',{className:'dash-card-head'},h('div',null,h('h3',null,'روند ثبت تیکت‌ها'),h('p',null,'۱۴ تاریخ اخیر؛ مرتب‌سازی عددی سال، ماه و روز'))),h(ChartBox,{type:'line',data:trendData,options:baseOptions})),
     h('div',{className:'dash-card'},h('div',{className:'dash-card-head'},h('div',null,h('h3',null,'ترکیب اجرای کار'),h('p',null,'درون‌سپاری در برابر برون‌سپاری'))),h(ChartBox,{type:'doughnut',data:typeData,options:donutOptions,small:true}))
@@ -3786,10 +3947,18 @@ function ReportView({tasks,technicianDirectory=[],onRefresh,loading,lastUpdated}
           x.total===0
             ? 'بدون تیکت ثبت‌شده در بازه انتخابی'
             : x.stores.size+' فروشگاه · '+x.regions.size+' منطقه · '+pct(x.internal,x.total)+'٪ درون‌سپاری'+(x.pending?' · '+x.pending+' در انتظار':'')
+        ),
+        h('span',{className:'leader-cost-line'},
+          'هزینه: '+moneyCompact(x.cost)+' تومان'+
+          (x.noCost?' · '+x.noCost+' بدون هزینه':'')+
+          (x.pendingCost?' · '+x.pendingCost+' هزینه در انتظار':'')
         )
       ),
       h('div',{className:'mini-track'},h('div',{className:'mini-fill',style:{width:(x.total/maxLeader*100)+'%'}})),
-      h('div',{className:'leader-total'},x.total,h('span',null,'تیکت'))
+      h('div',{className:'leader-total leader-total-dual'},
+        x.total,h('span',null,'تیکت'),
+        h('small',null,moneyCompact(x.cost)+' تومان')
+      )
     );
   });
 
@@ -3815,8 +3984,8 @@ function ReportView({tasks,technicianDirectory=[],onRefresh,loading,lastUpdated}
     h('div',{className:'dash-card'},
       h('div',{className:'dash-card-head'},
         h('div',null,
-          h('h3',null,'لیدربورد فعالیت نیروها'),
-          h('p',null,'رتبه‌بندی تمام نیروها بر اساس تعداد تیکت ثبت‌شده · نمایش '+(leaders.length?leaderStart+1:0)+' تا '+leaderEnd+' از '+leaders.length)
+          h('h3',null,'لیدربورد فعالیت و هزینه نیروها'),
+          h('p',null,'رتبه‌بندی فعالیت تمام نیروها همراه با هزینه ثبت‌شده · نمایش '+(leaders.length?leaderStart+1:0)+' تا '+leaderEnd+' از '+leaders.length)
         )
       ),
       h('div',{className:'leader-list'},...leaderItems),
@@ -3827,12 +3996,19 @@ function ReportView({tasks,technicianDirectory=[],onRefresh,loading,lastUpdated}
 
   const regionItems=regionRows.slice(0,10).map((x,i)=>h('div',{className:'leader-item',key:x.name},
     h('div',{className:'rank '+(i<3?'top':'')},i+1),
-    h('div',{className:'leader-name'},h('b',null,x.name),h('span',null,x.stores.size+' فروشگاه · '+x.techs.size+' نیروی فعال · '+pct(x.outsourced,x.total)+'٪ برون‌سپاری'+(x.pending?' · '+x.pending+' در انتظار':''))),
+    h('div',{className:'leader-name'},
+      h('b',null,x.name),
+      h('span',null,x.stores.size+' فروشگاه دارای فعالیت · '+x.techs.size+' نیروی فعال · '+pct(x.outsourced,x.total)+'٪ برون‌سپاری'+(x.pending?' · '+x.pending+' در انتظار':'')),
+      h('span',{className:'leader-cost-line'},
+        'هزینه: '+moneyCompact(x.cost)+' تومان · متوسط هر فروشگاه: '+
+        moneyCompact((regionStoreCountMap[x.name]||0)?Math.round(x.cost/(regionStoreCountMap[x.name]||1)):0)+' تومان'
+      )
+    ),
     h('div',{className:'mini-track'},h('div',{className:'mini-fill',style:{width:(x.total/maxRegion*100)+'%',background:'var(--amber)'}})),
-    h('div',{className:'leader-total'},x.total,h('span',null,'تیکت'))
+    h('div',{className:'leader-total leader-total-dual'},x.total,h('span',null,'تیکت'),h('small',null,moneyCompact(x.cost)+' تومان'))
   ));
   const regionsSection=h('div',{className:'dash-grid'},
-    h('div',{className:'dash-card'},h('div',{className:'dash-card-head'},h('div',null,h('h3',null,'لیدربورد مناطق'),h('p',null,'مقایسه حجم فعالیت، فروشگاه‌ها و نرخ برون‌سپاری'))),h('div',{className:'leader-list'},...regionItems)),
+    h('div',{className:'dash-card'},h('div',{className:'dash-card-head'},h('div',null,h('h3',null,'لیدربورد مناطق'),h('p',null,'مقایسه حجم فعالیت، هزینه، متوسط هر فروشگاه و نرخ برون‌سپاری'))),h('div',{className:'leader-list'},...regionItems)),
     h('div',{className:'dash-card region-all-card'},
       h('div',{className:'dash-card-head'},
         h('div',null,
@@ -3843,6 +4019,165 @@ function ReportView({tasks,technicianDirectory=[],onRefresh,loading,lastUpdated}
       h('div',{className:'region-all-chart',style:{height:Math.max(300,regionRows.length*34)+'px'}},
         h(ChartBox,{type:'bar',data:regionData,options:barOptions})
       )
+    )
+  );
+
+
+  const technicianCostRows=leaders.slice().sort((a,b)=>b.cost-a.cost||b.total-a.total||String(a.name).localeCompare(String(b.name),'fa'));
+  const technicianCostData={
+    labels:technicianCostRows.map(x=>x.name),
+    datasets:[{
+      label:'هزینه',
+      data:technicianCostRows.map(x=>x.cost),
+      backgroundColor:'#245c4f',
+      borderRadius:7,
+      borderSkipped:false
+    }]
+  };
+
+  const regionCostData={
+    labels:regionCostRows.map(x=>x.name),
+    datasets:[
+      {
+        label:'کل هزینه منطقه',
+        data:regionCostRows.map(x=>x.totalCost),
+        backgroundColor:'#315f89',
+        borderRadius:7,
+        borderSkipped:false
+      },
+      {
+        label:'متوسط هزینه هر فروشگاه',
+        data:regionCostRows.map(x=>x.avgPerStore),
+        backgroundColor:'#c08a32',
+        borderRadius:7,
+        borderSkipped:false
+      }
+    ]
+  };
+
+  const costBarOptions={
+    responsive:true,
+    maintainAspectRatio:false,
+    indexAxis:'y',
+    plugins:{
+      legend:{display:false},
+      tooltip:{callbacks:{label:ctx=>moneyCompact(ctx.raw)+' تومان'}}
+    },
+    scales:{
+      x:{beginAtZero:true,ticks:{callback:v=>moneyCompact(v)},grid:{color:'rgba(0,0,0,.05)'}},
+      y:{grid:{display:false},ticks:{font:{size:9},autoSkip:false}}
+    }
+  };
+
+  const regionCostBarOptions={
+    responsive:true,
+    maintainAspectRatio:false,
+    indexAxis:'y',
+    plugins:{
+      legend:{position:'bottom',labels:{usePointStyle:true,boxWidth:7,font:{size:9}}},
+      tooltip:{callbacks:{label:ctx=>(ctx.dataset.label||'')+': '+moneyCompact(ctx.raw)+' تومان'}}
+    },
+    scales:{
+      x:{beginAtZero:true,ticks:{callback:v=>moneyCompact(v)},grid:{color:'rgba(0,0,0,.05)'}},
+      y:{grid:{display:false},ticks:{font:{size:9},autoSkip:false}}
+    }
+  };
+
+  const costByTechnician=h('div',{className:'dash-card integrated-cost-card'},
+    h('div',{className:'dash-card-head'},
+      h('div',null,
+        h('h3',null,'هزینه به تفکیک کارشناس فنی'),
+        h('p',null,'تمام نیروها؛ عدد صفر یعنی در بازه انتخابی هزینه نهایی ثبت نشده است')
+      ),
+      h('span',{className:'cost-card-meta'},technicianCostRows.length+' نفر')
+    ),
+    h('div',{className:'integrated-cost-chart',style:{height:Math.max(320,technicianCostRows.length*31)+'px'}},
+      h(ChartBox,{type:'bar',data:technicianCostData,options:costBarOptions})
+    )
+  );
+
+  const regionCostTableRows=regionCostRows
+    .filter(r=>region==='all'||r.name===region)
+    .map((r,i)=>h('tr',{key:r.name},
+      h('td',null,i+1),
+      h('td',null,h('b',null,r.name)),
+      h('td',null,r.storeCount.toLocaleString('fa-IR')),
+      h('td',null,r.costTickets.toLocaleString('fa-IR')),
+      h('td',null,h('strong',{className:'money-strong'},moneyCompact(r.totalCost)+' تومان')),
+      h('td',null,h('strong',null,moneyCompact(r.avgPerStore)+' تومان')),
+      h('td',null,r.noCost.toLocaleString('fa-IR')),
+      h('td',null,r.pending.toLocaleString('fa-IR'))
+    ));
+
+  const costByRegion=h('div',{className:'dash-card integrated-cost-card'},
+    h('div',{className:'dash-card-head'},
+      h('div',null,
+        h('h3',null,'هزینه و متوسط هر فروشگاه در مناطق'),
+        h('p',null,'مخرج متوسط منطقه = تعداد کل فروشگاه‌های فعال آن منطقه در شیت Stores')
+      ),
+      h('span',{className:'cost-card-meta'},regionCostRows.length+' منطقه')
+    ),
+    h('div',{className:'integrated-cost-chart region-cost-chart',style:{height:Math.max(330,regionCostRows.length*35)+'px'}},
+      h(ChartBox,{type:'bar',data:regionCostData,options:regionCostBarOptions})
+    ),
+    h('div',{className:'cost-region-table-wrap'},
+      h('table',{className:'cost-region-table'},
+        h('thead',null,h('tr',null,
+          h('th',null,'#'),
+          h('th',null,'منطقه'),
+          h('th',null,'فروشگاه فعال'),
+          h('th',null,'تیکت هزینه‌دار'),
+          h('th',null,'کل هزینه'),
+          h('th',null,'متوسط / فروشگاه'),
+          h('th',null,'بدون هزینه'),
+          h('th',null,'هزینه در انتظار')
+        )),
+        h('tbody',null,...regionCostTableRows)
+      )
+    )
+  );
+
+  const categoryCostMap={};
+  currentCostTickets.forEach(t=>{
+    const k=t.level1||'نامشخص';
+    categoryCostMap[k]=(categoryCostMap[k]||0)+Number(t.totalCost||0);
+  });
+  const categoryCostRows=Object.entries(categoryCostMap).sort((a,b)=>b[1]-a[1]).slice(0,10);
+  const categoryCostData={
+    labels:categoryCostRows.map(x=>x[0]),
+    datasets:[{label:'هزینه',data:categoryCostRows.map(x=>x[1]),backgroundColor:'#9d6125',borderRadius:7,borderSkipped:false}]
+  };
+
+  const expensiveStoreRows=Object.values(storeMap)
+    .filter(s=>s.cost>0)
+    .sort((a,b)=>b.cost-a.cost||b.total-a.total)
+    .slice(0,12);
+
+  const costDeepDive=h('div',{className:'dash-grid cost-deep-grid'},
+    h('div',{className:'dash-card integrated-cost-card'},
+      h('div',{className:'dash-card-head'},
+        h('div',null,h('h3',null,'گران‌ترین گروه‌های خرابی'),h('p',null,'هزینه نهایی بر اساس سطح اول خرابی / خدمت'))
+      ),
+      categoryCostRows.length
+        ?h('div',{className:'integrated-cost-chart'},h(ChartBox,{type:'bar',data:categoryCostData,options:costBarOptions}))
+        :h('div',{className:'dash-empty'},'برای فیلتر جاری هزینه نهایی ثبت نشده است')
+    ),
+    h('div',{className:'dash-card integrated-cost-card'},
+      h('div',{className:'dash-card-head'},
+        h('div',null,h('h3',null,'گران‌ترین فروشگاه‌ها'),h('p',null,'فروشگاه‌هایی که بیشترین هزینه نهایی را در فیلتر جاری داشته‌اند'))
+      ),
+      expensiveStoreRows.length
+        ?h('div',{className:'cost-store-list'},
+          ...expensiveStoreRows.map((s,i)=>h('div',{className:'cost-store-row',key:s.store},
+            h('span',{className:'cost-rank'},i+1),
+            h('div',{className:'cost-store-name'},
+              h('b',null,s.name),
+              h('span',null,s.store+' · '+s.region+' · '+s.costTickets+' تیکت هزینه‌دار')
+            ),
+            h('strong',null,moneyCompact(s.cost)+' تومان')
+          ))
+        )
+        :h('div',{className:'dash-empty'},'برای فیلتر جاری هزینه نهایی ثبت نشده است')
     )
   );
 
@@ -3882,6 +4217,15 @@ function ReportView({tasks,technicianDirectory=[],onRefresh,loading,lastUpdated}
       h('td',null,r.internal),
       h('td',null,r.outsourced),
       h('td',null,r.pending),
+      h('td',null,
+        r.cost>0
+          ?h('strong',{className:'money-strong'},moneyCompact(r.cost)+' تومان')
+          :(r.noCost>0
+            ?h('span',{className:'status-pill status-good'},'بدون هزینه')
+            :(r.pendingCost>0
+              ?h('span',{className:'status-pill status-warn'},'در انتظار هزینه')
+              :'—'))
+      ),
       h('td',null,h('span',{className:'status-pill '+cls},lab))
     ));
     if(isOpen){
@@ -3898,6 +4242,9 @@ function ReportView({tasks,technicianDirectory=[],onRefresh,loading,lastUpdated}
         if(t.completionNote)extras.push('شرح پایان کار: '+t.completionNote);
         if(completion)extras.push('قطعات پایان کار: '+completion);
         if(t.managerNote)extras.push('یادداشت مدیر: '+t.managerNote);
+        if(t.costStatus==='final')extras.push('هزینه نهایی: '+formatToman(t.totalCost));
+        else if(t.costStatus==='no_cost')extras.push('هزینه: بدون هزینه مستقیم');
+        else if(t.costStatus==='pending')extras.push('هزینه: در انتظار تکمیل');
         return h('div',{className:'ticket-detail-item',key:t.id||t.ticketNumber||t.rowNumber},
           h('div',null,h('span',{className:'ticket-detail-label'},'شماره تیکت'),h('span',{className:'ticket-detail-number'},t.ticketNumber||('DM-'+String(Math.max(1,(t.rowNumber||1)-1)).padStart(7,'0')))),
           h('div',null,h('span',{className:'ticket-detail-label'},'تاریخ و ساعت'),h('span',{className:'ticket-detail-value'},(t.dateText||ticketDate(t)||'—')+' '+(t.timeText||''))),
@@ -3919,15 +4266,28 @@ function ReportView({tasks,technicianDirectory=[],onRefresh,loading,lastUpdated}
     }
   });
   const storesTable=h('div',{className:'dash-card'},
-    h('div',{className:'dash-card-head'},h('div',null,h('h3',null,'فروشگاه‌های پرتیکت'),h('p',null,'برای مشاهده شماره و جزئیات تیکت‌ها روی هر ردیف کلیک کنید'))),
+    h('div',{className:'dash-card-head'},h('div',null,h('h3',null,'فروشگاه‌های پرتیکت و هزینه‌بر'),h('p',null,'تعداد تیکت و هزینه در یک ردیف؛ برای مشاهده جزئیات روی فروشگاه کلیک کنید'))),
     h('div',{className:'store-table-wrap'},h('table',{className:'store-table'},
-      h('thead',null,h('tr',null,h('th',null,'شماره تیکت'),h('th',null,'فروشگاه'),h('th',null,'منطقه'),h('th',null,'کل'),h('th',null,'درون‌سپاری'),h('th',null,'برون‌سپاری'),h('th',null,'در انتظار'),h('th',null,'وضعیت'))),
+      h('thead',null,h('tr',null,h('th',null,'شماره تیکت'),h('th',null,'فروشگاه'),h('th',null,'منطقه'),h('th',null,'کل'),h('th',null,'درون‌سپاری'),h('th',null,'برون‌سپاری'),h('th',null,'در انتظار'),h('th',null,'هزینه'),h('th',null,'وضعیت'))),
       h('tbody',null,...storeTrs)
     ))
   );
 
 
-  return h(React.Fragment,null,head,filters,kpis,overview,people,regionsSection,patterns,storesTable);
+  return h(React.Fragment,null,
+    head,
+    filters,
+    kpis,
+    costKpis,
+    overview,
+    people,
+    regionsSection,
+    costByTechnician,
+    costByRegion,
+    costDeepDive,
+    patterns,
+    storesTable
+  );
 }
 
 
@@ -4278,7 +4638,7 @@ function ExecutiveDashboard({tasks,onRefresh,loading,lastUpdated,currentUser,onL
 
 /* ---------- اپ اصلی ---------- */
 
-/* ---------- Boardroom CEO Dashboard — نسخه 10.9 ---------- */
+/* ---------- Boardroom CEO Dashboard — نسخه 11.0 ---------- */
 function CEODashboard({tasks,onRefresh,loading,lastUpdated,currentUser,onLogout}){
   const h=React.createElement;
   const [range,setRange]=useState('90');
@@ -4570,7 +4930,7 @@ function CEODashboard({tasks,onRefresh,loading,lastUpdated,currentUser,onLogout}
         )
       ),
 
-      h('footer',{className:'c8-footer'},h('span',null,'نسخه 10.9 · دسترسی فقط خواندنی مدیرعامل'),h('span',null,'ریسک فروشگاه‌های فعال و فعالیت‌های پیش‌افتتاح به‌صورت جداگانه تحلیل می‌شوند.'))
+      h('footer',{className:'c8-footer'},h('span',null,'نسخه 11.0 · دسترسی فقط خواندنی مدیرعامل'),h('span',null,'ریسک فروشگاه‌های فعال و فعالیت‌های پیش‌افتتاح به‌صورت جداگانه تحلیل می‌شوند.'))
     ),
 
     modal
@@ -4989,7 +5349,7 @@ function RegionalDashboard({tasks,onRefresh,loading,lastUpdated,currentUser,onLo
       ),
 
       h('footer',{className:'rm-footer'},
-        h('span',null,'نسخه 10.9 · دسترسی مدیر منطقه · فقط خواندنی'),
+        h('span',null,'نسخه 11.0 · دسترسی مدیر منطقه · فقط خواندنی'),
         h('span',null,'فیلتر دسترسی در سرور انجام می‌شود و فقط اطلاعات مناطق تخصیص‌یافته به این حساب ارسال می‌شود.')
       )
     ),
@@ -5010,7 +5370,7 @@ function LoginView({ onLogin }){
   useEffect(()=>{
     // هیچ تلاش ناموفقی در مرورگر ذخیره یا قفل نمی‌شود.
     // ورود قبلیِ ناقص نیز پاک می‌شود تا کاربران فعلی بتوانند دوباره تلاش کنند.
-    try{ sessionStorage.removeItem('ticketing-user-v109'); }catch(e){}
+    try{ sessionStorage.removeItem('ticketing-user-v110'); }catch(e){}
   },[]);
 
   const clearError = () => {
@@ -5023,7 +5383,7 @@ function LoginView({ onLogin }){
     setError('');
     setUsername('');
     setPassword('');
-    try{ sessionStorage.removeItem('ticketing-user-v109'); }catch(e){}
+    try{ sessionStorage.removeItem('ticketing-user-v110'); }catch(e){}
     setTimeout(()=>usernameRef.current && usernameRef.current.focus(),30);
   };
 
@@ -5060,7 +5420,7 @@ function LoginView({ onLogin }){
 
       if(result && result.success){
         // هیچ خطای قبلی یا نشست ناقصی به ورود درست منتقل نمی‌شود.
-        try{ sessionStorage.removeItem('ticketing-user-v109'); }catch(e){}
+        try{ sessionStorage.removeItem('ticketing-user-v110'); }catch(e){}
         onLogin({
           username: String(result.username || cleanUsername).trim(),
           name: String(result.name || '').trim(),
@@ -5161,9 +5521,10 @@ function LoginView({ onLogin }){
 
 /* ---------- اپ اصلی ---------- */
 function App(){
-  const [currentUser,setCurrentUser]=useState(()=>{try{const raw=sessionStorage.getItem('ticketing-user-v109');return raw?JSON.parse(raw):null;}catch(e){return null;}});
+  const [currentUser,setCurrentUser]=useState(()=>{try{const raw=sessionStorage.getItem('ticketing-user-v110');return raw?JSON.parse(raw):null;}catch(e){return null;}});
   const [tasks,setTasks]=useState([]);
   const [technicianDirectory,setTechnicianDirectory]=useState([]);
+  const [activeStoreDirectory,setActiveStoreDirectory]=useState([]);
   const [loaded,setLoaded]=useState(false);
   const [managerLoading,setManagerLoading]=useState(false);
   const [lastUpdated,setLastUpdated]=useState('');
@@ -5181,8 +5542,8 @@ function App(){
     : null;
   const showToast=m=>{setToastMsg(m);clearTimeout(toastTimer.current);toastTimer.current=setTimeout(()=>setToastMsg(''),2600);};
 
-  const handleLogin=user=>{sessionStorage.setItem('ticketing-user-v109',JSON.stringify(user));setCurrentUser(user);setLoaded(false);};
-  const logout=()=>{sessionStorage.removeItem('ticketing-user-v109');setCurrentUser(null);setTasks([]);setTechnicianDirectory([]);setLoaded(false);};
+  const handleLogin=user=>{sessionStorage.setItem('ticketing-user-v110',JSON.stringify(user));setCurrentUser(user);setLoaded(false);};
+  const logout=()=>{sessionStorage.removeItem('ticketing-user-v110');setCurrentUser(null);setTasks([]);setTechnicianDirectory([]);setActiveStoreDirectory([]);setLoaded(false);};
 
   const loadTasks=useCallback(async()=>{
     if(!currentUser)return;
@@ -5218,6 +5579,7 @@ function App(){
           setTasks(result.tickets||[]);
           if(currentUser.role==='manager'){
             setTechnicianDirectory(Array.isArray(result.technicians)?result.technicians:[]);
+            setActiveStoreDirectory(Array.isArray(result.activeStores)?result.activeStores:[]);
           }
           setLastUpdated(result.updatedAt||new Date().toISOString());
           setLoaded(true);
@@ -5299,10 +5661,10 @@ function App(){
 
   return React.createElement('div',{className:'wrap'},
     React.createElement('div',{className:'top'},
-      React.createElement('div',{className:'brand'},React.createElement('span',{className:'dot'}),React.createElement('div',null,React.createElement('h1',null,'پشتیبانی فنی فروشگاه‌ها'),React.createElement('span',null,(role==='tech'?'محیط نیروی فنی':'مرکز کنترل مدیریت فنی')+' • نسخه 10.9'))),
+      React.createElement('div',{className:'brand'},React.createElement('span',{className:'dot'}),React.createElement('div',null,React.createElement('h1',null,'پشتیبانی فنی فروشگاه‌ها'),React.createElement('span',null,(role==='tech'?'محیط نیروی فنی':'مرکز کنترل مدیریت فنی')+' • نسخه 11.0'))),
       React.createElement('div',{className:'user-bar'},React.createElement('div',{className:'user-info'},React.createElement('b',null,currentUser.name),React.createElement('span',null,role==='manager'?'مدیر فنی':'کد پرسنلی: '+currentUser.username)),React.createElement('button',{className:'logout-btn',onClick:logout},'خروج'))
     ),
-    !loaded?React.createElement('div',{className:'empty'},'در حال بارگذاری اطلاعات...'):(role==='tech'?React.createElement(TechView,{tasks,saveTasks,showToast,currentUser,refreshTasks:loadTasks}):React.createElement(ManagerView,{tasks,updateTask:updateManagerTask,showToast,refreshTasks:loadTasks,managerLoading,lastUpdated,currentUser,technicianDirectory})),
+    !loaded?React.createElement('div',{className:'empty'},'در حال بارگذاری اطلاعات...'):(role==='tech'?React.createElement(TechView,{tasks,saveTasks,showToast,currentUser,refreshTasks:loadTasks}):React.createElement(ManagerView,{tasks,updateTask:updateManagerTask,showToast,refreshTasks:loadTasks,managerLoading,lastUpdated,currentUser,technicianDirectory,activeStoreDirectory})),
     React.createElement(Toast,{msg:toastMsg})
   );
 }
