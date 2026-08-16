@@ -1759,6 +1759,156 @@
   }
 }
 
+
+/* ========================================================
+   Executive chart system 11.4
+   ======================================================== */
+.smart-tech-cost-chart{
+  position:relative;
+  padding-top:30px;
+}
+.chart-insight-badge{
+  position:absolute;
+  top:0;
+  right:0;
+  z-index:2;
+  padding:5px 8px;
+  border-radius:999px;
+  background:#f1f6f4;
+  color:#37675b;
+  font-size:7.4px;
+  font-weight:800;
+}
+.smart-tech-cost-chart>.chart-wrap{
+  height:calc(100% - 30px)!important;
+}
+
+/* Region scatter / managerial quadrant */
+.region-scatter-wrap{
+  width:100%;
+}
+.scatter-explainer{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:7px;
+  margin-bottom:10px;
+}
+.scatter-explainer>div{
+  padding:8px 9px;
+  border:1px solid var(--line);
+  border-radius:9px;
+  background:#fafcfb;
+}
+.scatter-explainer b{
+  display:block;
+  margin-bottom:2px;
+  font-size:8px;
+  color:var(--ink);
+}
+.scatter-explainer span{
+  display:block;
+  font-size:7.2px;
+  color:var(--ink-soft);
+  line-height:1.6;
+}
+.region-cost-scatter-chart{
+  height:410px;
+}
+.region-cost-scatter-chart>.chart-wrap{
+  height:100%!important;
+}
+
+/* Pareto */
+.pareto-chart-wrap{
+  height:345px;
+}
+.pareto-chart-wrap>.chart-wrap{
+  height:100%!important;
+}
+.costliest-store-chart>.chart-wrap{
+  height:100%!important;
+}
+
+/* Cost composition + trend */
+.cost-story-grid{
+  margin-top:16px;
+  grid-template-columns:minmax(300px,.72fr) minmax(0,1.28fr);
+  align-items:stretch;
+}
+.cost-mix-chart{
+  height:315px;
+}
+.cost-mix-chart>.chart-wrap{
+  height:100%!important;
+}
+.cost-trend-chart{
+  height:315px;
+}
+.cost-trend-chart>.chart-wrap{
+  height:100%!important;
+}
+
+/* Operational visual variety */
+.pattern-visual-grid{
+  align-items:stretch;
+}
+.pattern-column-chart,
+.pattern-donut-chart{
+  height:310px;
+}
+.pattern-column-chart>.chart-wrap,
+.pattern-donut-chart>.chart-wrap{
+  height:100%!important;
+}
+.cause-ranking-card{
+  margin-top:16px;
+}
+.cause-ranking-chart>.chart-wrap{
+  height:100%!important;
+}
+
+/* Make the two deep-dive cards visually balanced without forcing blanks */
+.cost-deep-grid{
+  align-items:start!important;
+}
+.cost-deep-grid>.dash-card{
+  width:100%;
+}
+
+/* subtle chart canvas discipline */
+.chart-wrap{
+  min-width:0;
+}
+.chart-wrap canvas{
+  width:100%!important;
+}
+
+@media(max-width:980px){
+  .cost-story-grid{
+    grid-template-columns:1fr;
+  }
+  .scatter-explainer{
+    grid-template-columns:1fr;
+  }
+  .region-cost-scatter-chart{
+    height:370px;
+  }
+}
+@media(max-width:620px){
+  .region-cost-scatter-chart{
+    height:340px;
+  }
+  .pareto-chart-wrap{
+    height:320px;
+  }
+  .pattern-column-chart,
+  .pattern-donut-chart,
+  .cost-mix-chart,
+  .cost-trend-chart{
+    height:290px;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -4065,9 +4215,65 @@ function ReportView({tasks,technicianDirectory=[],activeStoreDirectory=[],onRefr
   const typeData={labels:['درون‌سپاری','برون‌سپاری'],datasets:[{data:[internal,outsourced],backgroundColor:['#2f6f5e','#2b5a8c'],borderWidth:0,hoverOffset:5}]};
   const reviewData={labels:['در انتظار','بررسی‌شده','ردشده','لغوشده'],datasets:[{data:[pending,reviewed,rejected,cancelledCount],backgroundColor:['#b8721f','#2f6f5e','#a8382c','#7b827e'],borderWidth:0,hoverOffset:5}]};
   const donutOptions={responsive:true,maintainAspectRatio:false,cutout:'66%',plugins:{legend:{position:'bottom',labels:{usePointStyle:true,boxWidth:7,font:{size:10}}}}};
-  const catData={labels:catRows.map(x=>x[0]),datasets:[{label:'تعداد',data:catRows.map(x=>x[1]),backgroundColor:'#2f6f5e',borderRadius:7,borderSkipped:false}]};
-  const reasonData={labels:reasonRows.map(x=>x[0]),datasets:[{label:'تعداد',data:reasonRows.map(x=>x[1]),backgroundColor:'#2b5a8c',borderRadius:7,borderSkipped:false}]};
-  const causeData={labels:causeRows.map(x=>x[0]),datasets:[{label:'تعداد',data:causeRows.map(x=>x[1]),backgroundColor:'#a8382c',borderRadius:7,borderSkipped:false}]};
+  const catData={labels:catRows.map(x=>x[0]),datasets:[{
+    label:'تعداد',
+    data:catRows.map(x=>x[1]),
+    backgroundColor:'#2f6f5e',
+    borderRadius:7,
+    borderSkipped:false,
+    maxBarThickness:42
+  }]};
+  const reasonData={labels:reasonRows.map(x=>x[0]),datasets:[{
+    data:reasonRows.map(x=>x[1]),
+    backgroundColor:['#315f89','#2f6f5e','#b8721f','#8a5e8c','#a8382c','#66716c'],
+    borderWidth:0,
+    hoverOffset:5
+  }]};
+  const causeData={labels:causeRows.map(x=>x[0]),datasets:[{
+    label:'تعداد',
+    data:causeRows.map(x=>x[1]),
+    backgroundColor:'#a8382c',
+    borderRadius:7,
+    borderSkipped:false
+  }]};
+
+  const categoryCountOptions={
+    responsive:true,
+    maintainAspectRatio:false,
+    plugins:{
+      legend:{display:false},
+      tooltip:{callbacks:{label:ctx=>'تعداد: '+Number(ctx.raw||0).toLocaleString('fa-IR')}}
+    },
+    scales:{
+      x:{
+        grid:{display:false},
+        ticks:{font:{size:8.5},maxRotation:34,minRotation:0,autoSkip:false}
+      },
+      y:{beginAtZero:true,ticks:{precision:0},grid:{color:'rgba(0,0,0,.05)'}}
+    }
+  };
+
+  const reasonDonutOptions={
+    responsive:true,
+    maintainAspectRatio:false,
+    cutout:'62%',
+    plugins:{
+      legend:{position:'bottom',labels:{usePointStyle:true,boxWidth:7,font:{size:8.5},padding:12}},
+      tooltip:{callbacks:{label:ctx=>(ctx.label||'')+': '+Number(ctx.raw||0).toLocaleString('fa-IR')+' مورد'}}
+    }
+  };
+
+  const causeRankOptions={
+    responsive:true,
+    maintainAspectRatio:false,
+    indexAxis:'y',
+    plugins:{legend:{display:false}},
+    scales:{
+      x:{beginAtZero:true,ticks:{precision:0},grid:{color:'rgba(0,0,0,.05)'}},
+      y:{grid:{display:false},ticks:{font:{size:8.5},autoSkip:false}}
+    }
+  };
+
   const regionData={
     labels:regionRows.map(x=>x.name),
     datasets:[{
@@ -4259,62 +4465,155 @@ function ReportView({tasks,technicianDirectory=[],activeStoreDirectory=[],onRefr
 
 
   const technicianCostRows=leaders.slice().sort((a,b)=>b.cost-a.cost||b.total-a.total||String(a.name).localeCompare(String(b.name),'fa'));
+  const technicianCostHorizontal=technicianCostRows.length>10;
+
   const technicianCostData={
     labels:technicianCostRows.map(x=>x.name),
     datasets:[{
-      label:'هزینه',
+      label:'هزینه ثبت‌شده',
       data:technicianCostRows.map(x=>x.cost),
       backgroundColor:'#245c4f',
-      borderRadius:7,
-      borderSkipped:false
+      borderRadius:8,
+      borderSkipped:false,
+      maxBarThickness:technicianCostHorizontal?20:46
     }]
   };
 
-  const regionCostData={
-    labels:regionCostRows.map(x=>x.name),
+  const technicianCostOptions={
+    responsive:true,
+    maintainAspectRatio:false,
+    indexAxis:technicianCostHorizontal?'y':'x',
+    plugins:{
+      legend:{display:false},
+      tooltip:{
+        callbacks:{
+          label:ctx=>'هزینه: '+moneyCompact(ctx.raw)+' تومان'
+        }
+      }
+    },
+    scales:technicianCostHorizontal
+      ?{
+          x:{beginAtZero:true,ticks:{callback:v=>moneyCompact(v)},grid:{color:'rgba(0,0,0,.05)'}},
+          y:{grid:{display:false},ticks:{font:{size:8.5},autoSkip:false}}
+        }
+      :{
+          x:{
+            grid:{display:false},
+            ticks:{font:{size:8.5},maxRotation:32,minRotation:0,autoSkip:false}
+          },
+          y:{
+            beginAtZero:true,
+            ticks:{callback:v=>moneyCompact(v)},
+            grid:{color:'rgba(0,0,0,.05)'}
+          }
+        }
+  };
+
+  const medianOf=values=>{
+    const nums=values.filter(v=>Number.isFinite(Number(v))).map(Number).sort((a,b)=>a-b);
+    if(!nums.length)return 0;
+    const mid=Math.floor(nums.length/2);
+    return nums.length%2?nums[mid]:(nums[mid-1]+nums[mid])/2;
+  };
+
+  const scatterRegionRows=regionCostRows.filter(r=>r.totalCost>0&&r.avgPerStore>0);
+  const scatterMedianAvg=medianOf(scatterRegionRows.map(r=>r.avgPerStore));
+  const scatterMedianTotal=medianOf(scatterRegionRows.map(r=>r.totalCost));
+  const scatterMaxX=Math.max(1,...scatterRegionRows.map(r=>r.avgPerStore));
+  const scatterMaxY=Math.max(1,...scatterRegionRows.map(r=>r.totalCost));
+
+  const regionCostScatterData={
     datasets:[
       {
-        label:'کل هزینه منطقه',
-        data:regionCostRows.map(x=>x.totalCost),
+        type:'scatter',
+        label:'مناطق',
+        data:scatterRegionRows.map(r=>({
+          x:r.avgPerStore,
+          y:r.totalCost,
+          region:r.name,
+          storeCount:r.storeCount,
+          costTickets:r.costTickets
+        })),
         backgroundColor:'#315f89',
-        borderRadius:7,
-        borderSkipped:false
+        borderColor:'#315f89',
+        pointRadius:ctx=>{
+          const n=Number((ctx.raw&&ctx.raw.storeCount)||1);
+          return Math.max(5,Math.min(11,4+Math.sqrt(n)));
+        },
+        pointHoverRadius:10
       },
       {
-        label:'متوسط هزینه هر فروشگاه',
-        data:regionCostRows.map(x=>x.avgPerStore),
-        backgroundColor:'#c08a32',
-        borderRadius:7,
-        borderSkipped:false
+        type:'line',
+        label:'میانه متوسط فروشگاه',
+        data:[
+          {x:scatterMedianAvg,y:0},
+          {x:scatterMedianAvg,y:scatterMaxY*1.08}
+        ],
+        borderColor:'rgba(184,114,31,.72)',
+        borderDash:[6,5],
+        borderWidth:1.4,
+        pointRadius:0
+      },
+      {
+        type:'line',
+        label:'میانه هزینه منطقه',
+        data:[
+          {x:0,y:scatterMedianTotal},
+          {x:scatterMaxX*1.08,y:scatterMedianTotal}
+        ],
+        borderColor:'rgba(47,111,94,.65)',
+        borderDash:[6,5],
+        borderWidth:1.4,
+        pointRadius:0
       }
     ]
   };
 
-  const costBarOptions={
+  const regionScatterOptions={
     responsive:true,
     maintainAspectRatio:false,
-    indexAxis:'y',
     plugins:{
-      legend:{display:false},
-      tooltip:{callbacks:{label:ctx=>moneyCompact(ctx.raw)+' تومان'}}
+      legend:{
+        position:'bottom',
+        labels:{
+          usePointStyle:true,
+          boxWidth:7,
+          font:{size:8},
+          filter:item=>item.text!=='مناطق'
+        }
+      },
+      tooltip:{
+        callbacks:{
+          title:items=>{
+            const raw=items&&items[0]&&items[0].raw;
+            return raw&&raw.region?raw.region:'';
+          },
+          label:ctx=>{
+            const raw=ctx.raw||{};
+            if(!raw.region)return '';
+            return [
+              'کل هزینه: '+moneyCompact(raw.y)+' تومان',
+              'متوسط هر فروشگاه هزینه‌دار: '+moneyCompact(raw.x)+' تومان',
+              'فروشگاه هزینه‌دار: '+Number(raw.storeCount||0).toLocaleString('fa-IR'),
+              'تیکت هزینه‌دار: '+Number(raw.costTickets||0).toLocaleString('fa-IR')
+            ];
+          }
+        }
+      }
     },
     scales:{
-      x:{beginAtZero:true,ticks:{callback:v=>moneyCompact(v)},grid:{color:'rgba(0,0,0,.05)'}},
-      y:{grid:{display:false},ticks:{font:{size:9},autoSkip:false}}
-    }
-  };
-
-  const regionCostBarOptions={
-    responsive:true,
-    maintainAspectRatio:false,
-    indexAxis:'y',
-    plugins:{
-      legend:{position:'bottom',labels:{usePointStyle:true,boxWidth:7,font:{size:9}}},
-      tooltip:{callbacks:{label:ctx=>(ctx.dataset.label||'')+': '+moneyCompact(ctx.raw)+' تومان'}}
-    },
-    scales:{
-      x:{beginAtZero:true,ticks:{callback:v=>moneyCompact(v)},grid:{color:'rgba(0,0,0,.05)'}},
-      y:{grid:{display:false},ticks:{font:{size:9},autoSkip:false}}
+      x:{
+        beginAtZero:true,
+        title:{display:true,text:'متوسط هزینه هر فروشگاه هزینه‌دار',font:{size:9,weight:'bold'}},
+        ticks:{callback:v=>moneyCompact(v)},
+        grid:{color:'rgba(0,0,0,.045)'}
+      },
+      y:{
+        beginAtZero:true,
+        title:{display:true,text:'کل هزینه منطقه',font:{size:9,weight:'bold'}},
+        ticks:{callback:v=>moneyCompact(v)},
+        grid:{color:'rgba(0,0,0,.045)'}
+      }
     }
   };
 
@@ -4353,10 +4652,17 @@ function ReportView({tasks,technicianDirectory=[],activeStoreDirectory=[],onRefr
     ),
     technicianCostView==='chart'
       ?h('div',{
-          className:'integrated-cost-chart auto-height-cost-chart',
-          style:{height:Math.max(250,Math.min(700,technicianCostRows.length*28+70))+'px'}
+          className:'integrated-cost-chart auto-height-cost-chart smart-tech-cost-chart',
+          style:{
+            height:technicianCostHorizontal
+              ?Math.max(300,Math.min(680,technicianCostRows.length*27+70))+'px'
+              :'350px'
+          }
         },
-        h(ChartBox,{type:'bar',data:technicianCostData,options:costBarOptions})
+        h('div',{className:'chart-insight-badge'},
+          technicianCostHorizontal?'نمای رتبه‌بندی افقی · بیش از ۱۰ کارشناس':'نمای ستونی · مقایسه مستقیم کارشناسان'
+        ),
+        h(ChartBox,{type:'bar',data:technicianCostData,options:technicianCostOptions})
       )
       :h('div',{className:'cost-data-table-wrap'},
         h('table',{className:'cost-data-table'},
@@ -4391,8 +4697,8 @@ function ReportView({tasks,technicianDirectory=[],activeStoreDirectory=[],onRefr
   const costByRegion=h('div',{className:'dash-card integrated-cost-card cost-view-card'},
     h('div',{className:'dash-card-head cost-card-head-with-toggle'},
       h('div',null,
-        h('h3',null,'هزینه و متوسط هر فروشگاه در مناطق'),
-        h('p',null,'مخرج متوسط منطقه = تعداد فروشگاه‌هایی که در همان منطقه حداقل یک هزینه نهایی ثبت‌شده دارند')
+        h('h3',null,'نقشه ریسک هزینه مناطق'),
+        h('p',null,'محور افقی: متوسط هر فروشگاه هزینه‌دار · محور عمودی: کل هزینه منطقه')
       ),
       h('div',{className:'cost-head-actions'},
         h('div',{className:'view-switcher',role:'group','aria-label':'نوع نمایش هزینه مناطق'},
@@ -4400,7 +4706,7 @@ function ReportView({tasks,technicianDirectory=[],activeStoreDirectory=[],onRefr
             type:'button',
             className:regionCostView==='chart'?'active':'',
             onClick:()=>setRegionCostView('chart')
-          },'نمودار'),
+          },'تحلیل'),
           h('button',{
             type:'button',
             className:regionCostView==='table'?'active':'',
@@ -4411,11 +4717,19 @@ function ReportView({tasks,technicianDirectory=[],activeStoreDirectory=[],onRefr
       )
     ),
     regionCostView==='chart'
-      ?h('div',{
-          className:'integrated-cost-chart region-cost-chart auto-height-cost-chart',
-          style:{height:Math.max(270,Math.min(760,regionCostRows.length*30+90))+'px'}
-        },
-        h(ChartBox,{type:'bar',data:regionCostData,options:regionCostBarOptions})
+      ?(
+        scatterRegionRows.length
+          ?h('div',{className:'region-scatter-wrap'},
+            h('div',{className:'scatter-explainer'},
+              h('div',null,h('b',null,'بالا + راست'),h('span',null,'هزینه کل بالا و متوسط بالا؛ اولویت اصلی بررسی')),
+              h('div',null,h('b',null,'بالا + چپ'),h('span',null,'هزینه کل بالا اما توزیع‌شده بین فروشگاه‌های بیشتر')),
+              h('div',null,h('b',null,'پایین + راست'),h('span',null,'هزینه کل پایین‌تر اما هزینه هر فروشگاه بالاست'))
+            ),
+            h('div',{className:'integrated-cost-chart region-cost-scatter-chart'},
+              h(ChartBox,{type:'scatter',data:regionCostScatterData,options:regionScatterOptions})
+            )
+          )
+          :h('div',{className:'dash-empty'},'برای تحلیل مناطق هنوز هزینه نهایی کافی ثبت نشده است')
       )
       :h('div',{className:'cost-region-table-wrap cost-region-table-only'},
         h('table',{className:'cost-region-table'},
@@ -4439,54 +4753,292 @@ function ReportView({tasks,technicianDirectory=[],activeStoreDirectory=[],onRefr
     const k=t.level1||'نامشخص';
     categoryCostMap[k]=(categoryCostMap[k]||0)+Number(t.totalCost||0);
   });
-  const categoryCostRows=Object.entries(categoryCostMap).sort((a,b)=>b[1]-a[1]).slice(0,10);
-  const categoryCostData={
+
+  const allCategoryCostRows=Object.entries(categoryCostMap).sort((a,b)=>b[1]-a[1]);
+  const categoryCostRows=allCategoryCostRows.slice(0,10);
+  const categoryCostGrandTotal=allCategoryCostRows.reduce((s,x)=>s+Number(x[1]||0),0);
+
+  let paretoRunning=0;
+  const paretoCumulative=categoryCostRows.map(x=>{
+    paretoRunning+=Number(x[1]||0);
+    return categoryCostGrandTotal?Math.round((paretoRunning/categoryCostGrandTotal)*1000)/10:0;
+  });
+
+  const paretoData={
     labels:categoryCostRows.map(x=>x[0]),
-    datasets:[{label:'هزینه',data:categoryCostRows.map(x=>x[1]),backgroundColor:'#9d6125',borderRadius:7,borderSkipped:false}]
+    datasets:[
+      {
+        type:'bar',
+        label:'هزینه',
+        data:categoryCostRows.map(x=>x[1]),
+        backgroundColor:'#9d6125',
+        borderRadius:7,
+        borderSkipped:false,
+        yAxisID:'y',
+        maxBarThickness:40
+      },
+      {
+        type:'line',
+        label:'درصد تجمعی از کل هزینه',
+        data:paretoCumulative,
+        borderColor:'#245c4f',
+        backgroundColor:'#245c4f',
+        pointBackgroundColor:'#245c4f',
+        pointRadius:3,
+        pointHoverRadius:5,
+        borderWidth:2,
+        tension:.22,
+        yAxisID:'y1'
+      }
+    ]
+  };
+
+  const paretoOptions={
+    responsive:true,
+    maintainAspectRatio:false,
+    interaction:{mode:'index',intersect:false},
+    plugins:{
+      legend:{position:'bottom',labels:{usePointStyle:true,boxWidth:7,font:{size:8.5}}},
+      tooltip:{
+        callbacks:{
+          label:ctx=>ctx.dataset.yAxisID==='y1'
+            ?'درصد تجمعی: '+Number(ctx.raw||0).toLocaleString('fa-IR')+'٪'
+            :'هزینه: '+moneyCompact(ctx.raw)+' تومان'
+        }
+      }
+    },
+    scales:{
+      x:{grid:{display:false},ticks:{font:{size:8},maxRotation:34,minRotation:0,autoSkip:false}},
+      y:{
+        beginAtZero:true,
+        position:'right',
+        ticks:{callback:v=>moneyCompact(v)},
+        grid:{color:'rgba(0,0,0,.05)'}
+      },
+      y1:{
+        beginAtZero:true,
+        max:100,
+        position:'left',
+        ticks:{callback:v=>v+'٪'},
+        grid:{display:false}
+      }
+    }
   };
 
   const expensiveStoreRows=Object.values(storeMap)
     .filter(s=>s.cost>0)
     .sort((a,b)=>b.cost-a.cost||b.total-a.total)
-    .slice(0,12);
+    .slice(0,10);
+
+  const expensiveStoreData={
+    labels:expensiveStoreRows.map(s=>s.name||s.store),
+    datasets:[{
+      label:'هزینه',
+      data:expensiveStoreRows.map(s=>s.cost),
+      backgroundColor:'#315f89',
+      borderRadius:8,
+      borderSkipped:false,
+      maxBarThickness:22
+    }]
+  };
+
+  const expensiveStoreOptions={
+    responsive:true,
+    maintainAspectRatio:false,
+    indexAxis:'y',
+    plugins:{
+      legend:{display:false},
+      tooltip:{
+        callbacks:{
+          title:items=>{
+            const i=items&&items[0]?items[0].dataIndex:-1;
+            const s=i>=0?expensiveStoreRows[i]:null;
+            return s?(s.name||s.store):'';
+          },
+          label:ctx=>{
+            const s=expensiveStoreRows[ctx.dataIndex]||{};
+            return [
+              'هزینه: '+moneyCompact(ctx.raw)+' تومان',
+              'کد: '+(s.store||'—')+' · منطقه: '+(s.region||'—'),
+              'تیکت هزینه‌دار: '+Number(s.costTickets||0).toLocaleString('fa-IR')
+            ];
+          }
+        }
+      }
+    },
+    scales:{
+      x:{beginAtZero:true,ticks:{callback:v=>moneyCompact(v)},grid:{color:'rgba(0,0,0,.05)'}},
+      y:{grid:{display:false},ticks:{font:{size:8.5},autoSkip:false}}
+    }
+  };
 
   const costDeepDive=h('div',{className:'dash-grid cost-deep-grid'},
     h('div',{className:'dash-card integrated-cost-card'},
       h('div',{className:'dash-card-head'},
-        h('div',null,h('h3',null,'گران‌ترین گروه‌های خرابی'),h('p',null,'هزینه نهایی بر اساس سطح اول خرابی / خدمت'))
+        h('div',null,
+          h('h3',null,'پرهزینه‌ترین گروه‌های خرابی · تحلیل پارتو'),
+          h('p',null,'ستون = هزینه هر گروه · خط = سهم تجمعی از کل هزینه')
+        )
       ),
       categoryCostRows.length
-        ?h('div',{
-            className:'integrated-cost-chart compact-cost-chart auto-height-cost-chart',
-            style:{height:Math.max(240,categoryCostRows.length*27+70)+'px'}
-          },h(ChartBox,{type:'bar',data:categoryCostData,options:costBarOptions}))
+        ?h('div',{className:'pareto-chart-wrap'},
+          h(ChartBox,{type:'bar',data:paretoData,options:paretoOptions})
+        )
         :h('div',{className:'dash-empty'},'برای فیلتر جاری هزینه نهایی ثبت نشده است')
     ),
     h('div',{className:'dash-card integrated-cost-card'},
       h('div',{className:'dash-card-head'},
-        h('div',null,h('h3',null,'پرهزینه‌ترین فروشگاه‌ها'),h('p',null,'فروشگاه‌هایی که بیشترین هزینه نهایی را در فیلتر جاری داشته‌اند'))
+        h('div',null,
+          h('h3',null,'پرهزینه‌ترین فروشگاه‌ها'),
+          h('p',null,'رتبه‌بندی ۱۰ فروشگاه با بیشترین هزینه نهایی ثبت‌شده')
+        )
       ),
       expensiveStoreRows.length
-        ?h('div',{className:'cost-store-list'},
-          ...expensiveStoreRows.map((s,i)=>h('div',{className:'cost-store-row',key:s.store},
-            h('span',{className:'cost-rank'},i+1),
-            h('div',{className:'cost-store-name'},
-              h('b',null,s.name),
-              h('span',null,s.store+' · '+s.region+' · '+s.costTickets+' تیکت هزینه‌دار')
-            ),
-            h('strong',null,moneyCompact(s.cost)+' تومان')
-          ))
+        ?h('div',{
+            className:'costliest-store-chart',
+            style:{height:Math.max(290,expensiveStoreRows.length*31+55)+'px'}
+          },
+          h(ChartBox,{type:'bar',data:expensiveStoreData,options:expensiveStoreOptions})
         )
         :h('div',{className:'dash-empty'},'برای فیلتر جاری هزینه نهایی ثبت نشده است')
     )
   );
 
-  const patterns=h(React.Fragment,null,
-    h('div',{className:'dash-grid equal'},
-      h('div',{className:'dash-card'},h('div',{className:'dash-card-head'},h('div',null,h('h3',null,'پرتکرارترین خرابی‌ها'),h('p',null,'۸ دسته اصلی پرتکرار'))),h(ChartBox,{type:'bar',data:catData,options:barOptions})),
-      h('div',{className:'dash-card'},h('div',{className:'dash-card-head'},h('div',null,h('h3',null,'علل اصلی برون‌سپاری'),h('p',null,'موانع پرتکرار اجرای داخلی'))),reasonRows.length?h(ChartBox,{type:'bar',data:reasonData,options:barOptions}):h('div',{className:'dash-empty'},'برون‌سپاری ثبت نشده است'))
+  // ترکیب هزینه: قطعه / خدمات / سایر
+  const costMixValues=[currentPartsCost,currentServiceCost,currentOtherCost];
+  const costMixTotal=costMixValues.reduce((a,b)=>a+Number(b||0),0);
+  const costMixData={
+    labels:['قطعات','خدمات / پیمانکار','سایر'],
+    datasets:[{
+      data:costMixValues,
+      backgroundColor:['#2f6f5e','#315f89','#b8721f'],
+      borderWidth:0,
+      hoverOffset:6
+    }]
+  };
+  const costMixOptions={
+    responsive:true,
+    maintainAspectRatio:false,
+    cutout:'68%',
+    plugins:{
+      legend:{position:'bottom',labels:{usePointStyle:true,boxWidth:7,font:{size:8.5}}},
+      tooltip:{
+        callbacks:{
+          label:ctx=>{
+            const v=Number(ctx.raw||0);
+            const share=costMixTotal?Math.round(v/costMixTotal*1000)/10:0;
+            return (ctx.label||'')+': '+moneyCompact(v)+' تومان · '+share.toLocaleString('fa-IR')+'٪';
+          }
+        }
+      }
+    }
+  };
+
+  // روند زمانی هزینه نهایی
+  const costTrendMap={};
+  currentCostTickets.forEach(t=>{
+    const d=ticketDate(t);
+    if(!d)return;
+    costTrendMap[d]=(costTrendMap[d]||0)+Number(t.totalCost||0);
+  });
+  const costTrendDates=Object.keys(costTrendMap).sort(compareTicketDateLabels).slice(-14);
+  const costTrendValues=costTrendDates.map(d=>costTrendMap[d]||0);
+  const movingAvg3=costTrendValues.map((v,i)=>{
+    const from=Math.max(0,i-2);
+    const arr=costTrendValues.slice(from,i+1);
+    return arr.length?Math.round(arr.reduce((a,b)=>a+b,0)/arr.length):0;
+  });
+  const costTrendData={
+    labels:costTrendDates,
+    datasets:[
+      {
+        type:'line',
+        label:'هزینه روز',
+        data:costTrendValues,
+        borderColor:'#315f89',
+        backgroundColor:'rgba(49,95,137,.12)',
+        fill:true,
+        tension:.34,
+        pointRadius:3,
+        pointHoverRadius:5,
+        borderWidth:2
+      },
+      {
+        type:'line',
+        label:'میانگین متحرک ۳ روزه',
+        data:movingAvg3,
+        borderColor:'#b8721f',
+        backgroundColor:'#b8721f',
+        borderDash:[6,4],
+        fill:false,
+        tension:.32,
+        pointRadius:0,
+        borderWidth:1.8
+      }
+    ]
+  };
+  const costTrendOptions={
+    responsive:true,
+    maintainAspectRatio:false,
+    plugins:{
+      legend:{position:'bottom',labels:{usePointStyle:true,boxWidth:7,font:{size:8.5}}},
+      tooltip:{callbacks:{label:ctx=>(ctx.dataset.label||'')+': '+moneyCompact(ctx.raw)+' تومان'}}
+    },
+    scales:{
+      x:{grid:{display:false},ticks:{font:{size:8},autoSkip:true,maxTicksLimit:8,maxRotation:0}},
+      y:{beginAtZero:true,ticks:{callback:v=>moneyCompact(v)},grid:{color:'rgba(0,0,0,.05)'}}
+    }
+  };
+
+  const costStory=h('div',{className:'dash-grid cost-story-grid'},
+    h('div',{className:'dash-card integrated-cost-card'},
+      h('div',{className:'dash-card-head'},
+        h('div',null,h('h3',null,'ترکیب هزینه'),h('p',null,'سهم قطعات، خدمات / پیمانکار و سایر هزینه‌ها'))
+      ),
+      costMixTotal>0
+        ?h('div',{className:'cost-mix-chart'},h(ChartBox,{type:'doughnut',data:costMixData,options:costMixOptions,small:true}))
+        :h('div',{className:'dash-empty'},'هزینه نهایی برای نمایش ترکیب ثبت نشده است')
     ),
-    h('div',{className:'dash-card'},h('div',{className:'dash-card-head'},h('div',null,h('h3',null,'پرتکرارترین علل خرابی'),h('p',null,'بر اساس علت نهایی؛ در نبود آن از تشخیص اولیه استفاده می‌شود'))),causeRows.length?h(ChartBox,{type:'bar',data:causeData,options:barOptions}):h('div',{className:'dash-empty'},'هنوز علت خرابی ثبت نشده است'))
+    h('div',{className:'dash-card integrated-cost-card'},
+      h('div',{className:'dash-card-head'},
+        h('div',null,h('h3',null,'روند هزینه تعمیر و نگهداری'),h('p',null,'۱۴ تاریخ دارای هزینه اخیر · همراه میانگین متحرک سه‌روزه'))
+      ),
+      costTrendDates.length
+        ?h('div',{className:'cost-trend-chart'},h(ChartBox,{type:'line',data:costTrendData,options:costTrendOptions}))
+        :h('div',{className:'dash-empty'},'برای نمایش روند زمانی هنوز هزینه نهایی ثبت نشده است')
+    )
+  );
+
+  const patterns=h(React.Fragment,null,
+    h('div',{className:'dash-grid equal pattern-visual-grid'},
+      h('div',{className:'dash-card'},
+        h('div',{className:'dash-card-head'},
+          h('div',null,h('h3',null,'پرتکرارترین خرابی‌ها'),h('p',null,'مقایسه مستقیم ۸ دسته اصلی با ستون‌های عمودی'))
+        ),
+        catRows.length
+          ?h('div',{className:'pattern-column-chart'},h(ChartBox,{type:'bar',data:catData,options:categoryCountOptions}))
+          :h('div',{className:'dash-empty'},'خرابی ثبت نشده است')
+      ),
+      h('div',{className:'dash-card'},
+        h('div',{className:'dash-card-head'},
+          h('div',null,h('h3',null,'ترکیب علل برون‌سپاری'),h('p',null,'سهم هر مانع از کل تصمیم‌های برون‌سپاری'))
+        ),
+        reasonRows.length
+          ?h('div',{className:'pattern-donut-chart'},h(ChartBox,{type:'doughnut',data:reasonData,options:reasonDonutOptions,small:true}))
+          :h('div',{className:'dash-empty'},'برون‌سپاری ثبت نشده است')
+      )
+    ),
+    h('div',{className:'dash-card cause-ranking-card'},
+      h('div',{className:'dash-card-head'},
+        h('div',null,h('h3',null,'پرتکرارترین علل خرابی'),h('p',null,'رتبه‌بندی افقی برای حفظ خوانایی عنوان‌های طولانی علت خرابی'))
+      ),
+      causeRows.length
+        ?h('div',{
+            className:'cause-ranking-chart',
+            style:{height:Math.max(290,causeRows.length*30+60)+'px'}
+          },h(ChartBox,{type:'bar',data:causeData,options:causeRankOptions}))
+        :h('div',{className:'dash-empty'},'هنوز علت خرابی ثبت نشده است')
+    )
   );
 
   const detailStatus=(t)=>{
@@ -4584,6 +5136,7 @@ function ReportView({tasks,technicianDirectory=[],activeStoreDirectory=[],onRefr
     regionsSection,
     heavyVisualsReady?costByTechnician:null,
     heavyVisualsReady?costByRegion:null,
+    heavyVisualsReady?costStory:null,
     heavyVisualsReady?costDeepDive:null,
     heavyVisualsReady?patterns:null,
     storesTable
@@ -4938,7 +5491,7 @@ function ExecutiveDashboard({tasks,onRefresh,loading,lastUpdated,currentUser,onL
 
 /* ---------- اپ اصلی ---------- */
 
-/* ---------- Boardroom CEO Dashboard — نسخه 11.3 ---------- */
+/* ---------- Boardroom CEO Dashboard — نسخه 11.4 ---------- */
 function CEODashboard({tasks,onRefresh,loading,lastUpdated,currentUser,onLogout}){
   const h=React.createElement;
   const [range,setRange]=useState('90');
@@ -5230,7 +5783,7 @@ function CEODashboard({tasks,onRefresh,loading,lastUpdated,currentUser,onLogout}
         )
       ),
 
-      h('footer',{className:'c8-footer'},h('span',null,'نسخه 11.3 · دسترسی فقط خواندنی مدیرعامل'),h('span',null,'ریسک فروشگاه‌های فعال و فعالیت‌های پیش‌افتتاح به‌صورت جداگانه تحلیل می‌شوند.'))
+      h('footer',{className:'c8-footer'},h('span',null,'نسخه 11.4 · دسترسی فقط خواندنی مدیرعامل'),h('span',null,'ریسک فروشگاه‌های فعال و فعالیت‌های پیش‌افتتاح به‌صورت جداگانه تحلیل می‌شوند.'))
     ),
 
     modal
@@ -5649,7 +6202,7 @@ function RegionalDashboard({tasks,onRefresh,loading,lastUpdated,currentUser,onLo
       ),
 
       h('footer',{className:'rm-footer'},
-        h('span',null,'نسخه 11.3 · دسترسی مدیر منطقه · فقط خواندنی'),
+        h('span',null,'نسخه 11.4 · دسترسی مدیر منطقه · فقط خواندنی'),
         h('span',null,'فیلتر دسترسی در سرور انجام می‌شود و فقط اطلاعات مناطق تخصیص‌یافته به این حساب ارسال می‌شود.')
       )
     ),
@@ -5670,7 +6223,7 @@ function LoginView({ onLogin }){
   useEffect(()=>{
     // هیچ تلاش ناموفقی در مرورگر ذخیره یا قفل نمی‌شود.
     // ورود قبلیِ ناقص نیز پاک می‌شود تا کاربران فعلی بتوانند دوباره تلاش کنند.
-    try{ sessionStorage.removeItem('ticketing-user-v113'); }catch(e){}
+    try{ sessionStorage.removeItem('ticketing-user-v114'); }catch(e){}
   },[]);
 
   const clearError = () => {
@@ -5683,7 +6236,7 @@ function LoginView({ onLogin }){
     setError('');
     setUsername('');
     setPassword('');
-    try{ sessionStorage.removeItem('ticketing-user-v113'); }catch(e){}
+    try{ sessionStorage.removeItem('ticketing-user-v114'); }catch(e){}
     setTimeout(()=>usernameRef.current && usernameRef.current.focus(),30);
   };
 
@@ -5720,7 +6273,7 @@ function LoginView({ onLogin }){
 
       if(result && result.success){
         // هیچ خطای قبلی یا نشست ناقصی به ورود درست منتقل نمی‌شود.
-        try{ sessionStorage.removeItem('ticketing-user-v113'); }catch(e){}
+        try{ sessionStorage.removeItem('ticketing-user-v114'); }catch(e){}
         onLogin({
           username: String(result.username || cleanUsername).trim(),
           name: String(result.name || '').trim(),
@@ -5821,7 +6374,7 @@ function LoginView({ onLogin }){
 
 /* ---------- اپ اصلی ---------- */
 function App(){
-  const [currentUser,setCurrentUser]=useState(()=>{try{const raw=sessionStorage.getItem('ticketing-user-v113');return raw?JSON.parse(raw):null;}catch(e){return null;}});
+  const [currentUser,setCurrentUser]=useState(()=>{try{const raw=sessionStorage.getItem('ticketing-user-v114');return raw?JSON.parse(raw):null;}catch(e){return null;}});
   const [tasks,setTasks]=useState([]);
   const [technicianDirectory,setTechnicianDirectory]=useState([]);
   const [activeStoreDirectory,setActiveStoreDirectory]=useState([]);
@@ -5846,14 +6399,14 @@ function App(){
   const showToast=m=>{setToastMsg(m);clearTimeout(toastTimer.current);toastTimer.current=setTimeout(()=>setToastMsg(''),2600);};
 
   const handleLogin=user=>{
-    sessionStorage.setItem('ticketing-user-v113',JSON.stringify(user));
+    sessionStorage.setItem('ticketing-user-v114',JSON.stringify(user));
     dataRevisionRef.current='';
     lastFullSyncRef.current=0;
     setCurrentUser(user);
     setLoaded(false);
   };
   const logout=()=>{
-    sessionStorage.removeItem('ticketing-user-v113');
+    sessionStorage.removeItem('ticketing-user-v114');
     dataRevisionRef.current='';
     lastFullSyncRef.current=0;
     setCurrentUser(null);
@@ -6034,7 +6587,7 @@ function App(){
 
   return React.createElement('div',{className:'wrap'},
     React.createElement('div',{className:'top'},
-      React.createElement('div',{className:'brand'},React.createElement('span',{className:'dot'}),React.createElement('div',null,React.createElement('h1',null,'پشتیبانی فنی فروشگاه‌ها'),React.createElement('span',null,(role==='tech'?'محیط نیروی فنی':'مرکز کنترل مدیریت فنی')+' • نسخه 11.3'))),
+      React.createElement('div',{className:'brand'},React.createElement('span',{className:'dot'}),React.createElement('div',null,React.createElement('h1',null,'پشتیبانی فنی فروشگاه‌ها'),React.createElement('span',null,(role==='tech'?'محیط نیروی فنی':'مرکز کنترل مدیریت فنی')+' • نسخه 11.4'))),
       React.createElement('div',{className:'user-bar'},React.createElement('div',{className:'user-info'},React.createElement('b',null,currentUser.name),React.createElement('span',null,role==='manager'?'مدیر فنی':'کد پرسنلی: '+currentUser.username)),React.createElement('button',{className:'logout-btn',onClick:logout},'خروج'))
     ),
     !loaded?React.createElement('div',{className:'empty'},'در حال بارگذاری اطلاعات...'):(role==='tech'?React.createElement(TechView,{tasks,saveTasks,showToast,currentUser,refreshTasks:loadTasks}):React.createElement(ManagerView,{tasks,updateTask:updateManagerTask,showToast,refreshTasks:loadTasks,managerLoading,lastUpdated,currentUser,technicianDirectory,activeStoreDirectory})),
