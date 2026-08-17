@@ -2056,25 +2056,24 @@ async function sendOutsourceCompletion(ticket, completion, token){
 }
 
 
-function sendManagerReview(ticket, token, reviewStatus, managerNote){
-  return jsonpRequest({
-    action:'reviewticket',
-    token:String(token||''),
-    rowNumber:String(ticket.rowNumber||''),
-    ticketId:String(ticket.id||''),
-    ticketNumber:String(ticket.ticketNumber||''),
-    reviewStatus:String(reviewStatus||''),
-    managerNote:String(managerNote||'')
-  }, 30000);
+async function sendManagerReviewFast(ticket, token, reviewStatus, managerNote){
+  await fetch(SHEET_URL,{
+    method:'POST',
+    mode:'no-cors',
+    headers:{'Content-Type':'text/plain'},
+    body:JSON.stringify({
+      action:'managerReview',
+      token:String(token||''),
+      rowNumber:Number(ticket.rowNumber||0),
+      reviewStatus:String(reviewStatus||''),
+      managerNote:String(managerNote||'')
+    })
+  });
 }
 
 async function sendManagerUpdate(ticket, token, patch={}){
   const payload={
-    action:'updateTicket',
-    token,
-    rowNumber:ticket.rowNumber,
-    ticketId:ticket.id||'',
-    ticketNumber:ticket.ticketNumber||'',
+    action:'updateTicket', token, rowNumber:ticket.rowNumber,
     type:ticket.type, level1:ticket.level1||'', level2:ticket.level2||[], otherText:ticket.otherText||'',
     consumedParts:ticket.consumedParts||[], hotParts:ticket.hotParts||[], outsourceReason:ticket.outsourceReason||'',
     reviewStatus:ticket.reviewStatus||'', managerNote:ticket.managerNote||'',
@@ -2448,6 +2447,21 @@ function TicketFields({ draft, setDraft }){
 }
 
 
+
+
+function ticketClientKey(ticket){
+  if(!ticket)return '';
+  if(ticket.rowNumber)return 'row:'+String(ticket.rowNumber);
+  if(ticket.ticketNumber)return 'number:'+String(ticket.ticketNumber);
+  return 'id:'+String(ticket.id||'');
+}
+
+function sameTicket(a,b){
+  if(!a||!b)return false;
+  if(a.rowNumber&&b.rowNumber)return Number(a.rowNumber)===Number(b.rowNumber);
+  if(a.ticketNumber&&b.ticketNumber)return String(a.ticketNumber)===String(b.ticketNumber);
+  return String(a.id||'')===String(b.id||'');
+}
 
 function normalizeMoneyInput(value){
   return String(value==null?'':value)
@@ -3273,7 +3287,7 @@ function TechView({ tasks, saveTasks, showToast, currentUser, refreshTasks }){
         React.createElement('button',{className:'btn btn-primary',disabled:storeLoading||preOpeningLoading||!storeInfo,onClick:startVisit},'ادامه ثبت کار')
       ),
       openSection,
-      React.createElement('div',{className:'card'},React.createElement('h3',null,'کارهای اخیر من'),mine.length===0?React.createElement('div',{className:'empty'},'هنوز کاری ثبت نکرده‌اید'):mine.map(t=>React.createElement(TechnicianTicketItem,{key:t.id,t,currentUser,showToast,onEdit:editOwnTicket,onCancel:cancelOwnTicket,onCostUpdate:updateOwnCost})))
+      React.createElement('div',{className:'card'},React.createElement('h3',null,'کارهای اخیر من'),mine.length===0?React.createElement('div',{className:'empty'},'هنوز کاری ثبت نکرده‌اید'):mine.map(t=>React.createElement(TechnicianTicketItem,{key:ticketClientKey(t),t,currentUser,showToast,onEdit:editOwnTicket,onCancel:cancelOwnTicket,onCostUpdate:updateOwnCost})))
     );
   }
 
@@ -3305,7 +3319,7 @@ function TechView({ tasks, saveTasks, showToast, currentUser, refreshTasks }){
           },submitting?'در حال ثبت...':(currentPreOpening?'ثبت این اقدام':'ثبت این کار'))
         ),
     openSection,
-    React.createElement('div',{className:'card'},React.createElement('h3',null,'کارهای اخیر من'),mine.length===0?React.createElement('div',{className:'empty'},'هنوز کاری ثبت نکرده‌اید'):mine.map(t=>React.createElement(TechnicianTicketItem,{key:t.id,t,currentUser,showToast,onEdit:editOwnTicket,onCancel:cancelOwnTicket,onCostUpdate:updateOwnCost})))
+    React.createElement('div',{className:'card'},React.createElement('h3',null,'کارهای اخیر من'),mine.length===0?React.createElement('div',{className:'empty'},'هنوز کاری ثبت نکرده‌اید'):mine.map(t=>React.createElement(TechnicianTicketItem,{key:ticketClientKey(t),t,currentUser,showToast,onEdit:editOwnTicket,onCancel:cancelOwnTicket,onCostUpdate:updateOwnCost})))
   );
 }
 
@@ -3441,7 +3455,7 @@ function TaskItem({t,onReview,onReject,onEdit,onCostEdit}){
     setDraft({locationType,type:t.type,level1:t.level1||'',level2:t.level2||[],otherText:t.otherText||'',outsourceReason:t.outsourceReason||'',initialCause:locationType==='preopening'?'فعالیت پیش‌افتتاح':(t.initialCause||''),initialCauseDetails:locationType==='preopening'?'':(t.initialCauseDetails||''),consumedParts:t.consumedParts||[],hotParts:t.hotParts||[]});
     setEditing(true);
   };
-  const saveEdit=()=>{if(!validDraft(draft))return;const preOpening=draft.locationType==='preopening';onEdit(t.id,{...draft,initialCause:preOpening?'فعالیت پیش‌افتتاح':draft.initialCause,initialCauseDetails:preOpening?'':draft.initialCauseDetails,consumedParts:normalizePartsQty(draft.consumedParts),hotParts:normalizePartsQty(draft.hotParts)});setEditing(false);};
+  const saveEdit=()=>{if(!validDraft(draft))return;const preOpening=draft.locationType==='preopening';onEdit(t,{...draft,initialCause:preOpening?'فعالیت پیش‌افتتاح':draft.initialCause,initialCauseDetails:preOpening?'':draft.initialCauseDetails,consumedParts:normalizePartsQty(draft.consumedParts),hotParts:normalizePartsQty(draft.hotParts)});setEditing(false);};
   const rlabel=reviewStatus==='reviewed'?'بررسی‌شده':reviewStatus==='rejected'?'رد شده':reviewStatus==='cancelled'?'لغو شده':'در انتظار بررسی';
   const rcls=reviewStatus==='reviewed'?'r-reviewed':reviewStatus==='rejected'?'r-rejected':reviewStatus==='cancelled'?'r-cancelled':'r-pending';
   const workDone=t.type!=='outsourced'||t.workStatus==='completed';
@@ -3471,7 +3485,7 @@ function TaskItem({t,onReview,onReject,onEdit,onCostEdit}){
     editing&&React.createElement('div',{style:{marginTop:'10px'}},React.createElement(TicketFields,{draft,setDraft}),React.createElement('div',{className:'actions'},React.createElement('button',{className:'a-btn a-ok',disabled:!validDraft(draft),onClick:saveEdit},'ذخیره اصلاحات'),React.createElement('button',{className:'a-btn',onClick:()=>setEditing(false)},'انصراف'))),
     managerCanAct&&!editing&&React.createElement('div',null,
       React.createElement('input',{placeholder:'یادداشت مدیر (اختیاری)',value:note,onChange:e=>setNote(e.target.value),style:{marginTop:'8px'}}),
-      React.createElement('div',{className:'actions'},React.createElement('button',{className:'a-btn a-ok',onClick:()=>onReview(t.id,note)},'✓ بررسی شد'),React.createElement('button',{className:'a-btn a-edit',onClick:beginEdit},'✎ اصلاح'),React.createElement('button',{className:'a-btn a-reject',onClick:()=>onReject(t.id,note)},'✕ رد کردن'))
+      React.createElement('div',{className:'actions'},React.createElement('button',{className:'a-btn a-ok',onClick:()=>onReview(t,note)},'✓ بررسی شد'),React.createElement('button',{className:'a-btn a-edit',onClick:beginEdit},'✎ اصلاح'),React.createElement('button',{className:'a-btn a-reject',onClick:()=>onReject(t,note)},'✕ رد کردن'))
     )
   );
 }
@@ -3840,61 +3854,27 @@ function ManagerView({ tasks, updateTask, showToast, refreshTasks, managerLoadin
   const preOpeningTasks=tasks.filter(t=>isPreOpeningLocation(t.locationType,t.storeCode));
   const preOpeningProjects=new Set(preOpeningTasks.map(t=>String(t.storeCode||'')).filter(Boolean)).size;
 
-  const persistReviewStatus=async(id,status,note)=>{
-    const ticket=tasks.find(t=>t.id===id);
-    if(!ticket){
-      showToast('تیکت پیدا نشد؛ صفحه را تازه‌سازی کنید');
-      return false;
-    }
-
-    try{
-      const result=await sendManagerReview(ticket,currentUser.token,status,note);
-
-      if(result&&result.sessionExpired){
-        showToast(result.message||'نشست مدیر منقضی شده است');
-        return false;
-      }
-
-      if(!(result&&result.success)){
-        showToast((result&&result.message)||'ثبت وضعیت در Google Sheet انجام نشد');
-        await refreshTasks({silent:true});
-        return false;
-      }
-
-      await updateTask(id,{
-        reviewStatus:result.reviewStatus||status,
-        managerNote:result.managerNote!==undefined?result.managerNote:note,
-        __serverVerifiedReview:true
-      });
-
-      showToast(result.message||(status==='reviewed'?'تیکت بررسی شد':'تیکت رد شد'));
-      return true;
-    }catch(error){
-      showToast('ارتباط با Google Sheet برای ثبت وضعیت برقرار نشد');
-      await refreshTasks({silent:true});
-      return false;
-    }
+  const review = async (ticket, note) => {
+    await updateTask(ticket,{reviewStatus:'reviewed',managerNote:note,__fastReview:true});
+    showToast('تیکت بررسی شد');
   };
-
-  const review = async (id, note) => {
-    await persistReviewStatus(id,'reviewed',note);
+  const reject = async (ticket, note) => {
+    await updateTask(ticket,{reviewStatus:'rejected',managerNote:note,__fastReview:true});
+    showToast('تیکت رد شد');
   };
-  const reject = async (id, note) => {
-    await persistReviewStatus(id,'rejected',note);
-  };
-  const edit = async (id, newDraft) => {
-    const original=tasks.find(t=>t.id===id)||{};
+  const edit = async (ticket, newDraft) => {
+    const original=ticket||{};
     const causePatch=newDraft.type==='internal'
       ? {finalCause:newDraft.initialCause||'',finalCauseDetails:newDraft.initialCauseDetails||''}
       : (original.type==='outsourced'&&original.workStatus==='completed'
           ? {finalCause:original.finalCause||'',finalCauseDetails:original.finalCauseDetails||''}
           : {finalCause:'',finalCauseDetails:''});
-    await updateTask(id,{...newDraft,...causePatch,reviewStatus:'reviewed'});
+    await updateTask(ticket,{...newDraft,...causePatch,reviewStatus:'reviewed'});
     showToast('تیکت اصلاح و تأیید شد');
   };
 
   const editCost = async (ticket, cost) => {
-    await updateTask(ticket.id,cost);
+    await updateTask(ticket,cost);
     showToast(cost.costStatus==='no_cost'?'تیکت «بدون هزینه مستقیم» ثبت شد':(cost.costStatus==='pending'?'هزینه در وضعیت انتظار ثبت شد':'هزینه تیکت به‌روزرسانی شد'));
   };
 
@@ -3914,10 +3894,10 @@ function ManagerView({ tasks, updateTask, showToast, refreshTasks, managerLoadin
     ),
     tab==='pending' && (pending.length===0
       ? React.createElement('div',{className:'card'},React.createElement('div',{className:'empty'},managerLoading?'در حال دریافت...':'تیکتی در انتظار بررسی نیست'))
-      : pending.map(t=>React.createElement(TaskItem,{key:t.id,t,onReview:review,onReject:reject,onEdit:edit,onCostEdit:editCost}))),
+      : pending.map(t=>React.createElement(TaskItem,{key:ticketClientKey(t),t,onReview:review,onReject:reject,onEdit:edit,onCostEdit:editCost}))),
     tab==='all' && (filtered.length===0
       ? React.createElement('div',{className:'card'},React.createElement('div',{className:'empty'},managerLoading?'در حال دریافت...':'تیکتی ثبت نشده'))
-      : filtered.map(t=>React.createElement(TaskItem,{key:t.id,t,onReview:review,onReject:reject,onEdit:edit,onCostEdit:editCost}))),
+      : filtered.map(t=>React.createElement(TaskItem,{key:ticketClientKey(t),t,onReview:review,onReject:reject,onEdit:edit,onCostEdit:editCost}))),
     tab==='report' && React.createElement(ReportView,{
       tasks:tasks.filter(t=>!isPreOpeningLocation(t.locationType,t.storeCode)),
       technicianDirectory,
@@ -5542,7 +5522,7 @@ function ExecutiveDashboard({tasks,onRefresh,loading,lastUpdated,currentUser,onL
 
 /* ---------- اپ اصلی ---------- */
 
-/* ---------- Boardroom CEO Dashboard — نسخه 11.5 ---------- */
+/* ---------- Boardroom CEO Dashboard — نسخه 11.6 ---------- */
 function CEODashboard({tasks,onRefresh,loading,lastUpdated,currentUser,onLogout}){
   const h=React.createElement;
   const [range,setRange]=useState('90');
@@ -5834,7 +5814,7 @@ function CEODashboard({tasks,onRefresh,loading,lastUpdated,currentUser,onLogout}
         )
       ),
 
-      h('footer',{className:'c8-footer'},h('span',null,'نسخه 11.5 · دسترسی فقط خواندنی مدیرعامل'),h('span',null,'ریسک فروشگاه‌های فعال و فعالیت‌های پیش‌افتتاح به‌صورت جداگانه تحلیل می‌شوند.'))
+      h('footer',{className:'c8-footer'},h('span',null,'نسخه 11.6 · دسترسی فقط خواندنی مدیرعامل'),h('span',null,'ریسک فروشگاه‌های فعال و فعالیت‌های پیش‌افتتاح به‌صورت جداگانه تحلیل می‌شوند.'))
     ),
 
     modal
@@ -6253,7 +6233,7 @@ function RegionalDashboard({tasks,onRefresh,loading,lastUpdated,currentUser,onLo
       ),
 
       h('footer',{className:'rm-footer'},
-        h('span',null,'نسخه 11.5 · دسترسی مدیر منطقه · فقط خواندنی'),
+        h('span',null,'نسخه 11.6 · دسترسی مدیر منطقه · فقط خواندنی'),
         h('span',null,'فیلتر دسترسی در سرور انجام می‌شود و فقط اطلاعات مناطق تخصیص‌یافته به این حساب ارسال می‌شود.')
       )
     ),
@@ -6274,7 +6254,7 @@ function LoginView({ onLogin }){
   useEffect(()=>{
     // هیچ تلاش ناموفقی در مرورگر ذخیره یا قفل نمی‌شود.
     // ورود قبلیِ ناقص نیز پاک می‌شود تا کاربران فعلی بتوانند دوباره تلاش کنند.
-    try{ sessionStorage.removeItem('ticketing-user-v115'); }catch(e){}
+    try{ sessionStorage.removeItem('ticketing-user-v116'); }catch(e){}
   },[]);
 
   const clearError = () => {
@@ -6287,7 +6267,7 @@ function LoginView({ onLogin }){
     setError('');
     setUsername('');
     setPassword('');
-    try{ sessionStorage.removeItem('ticketing-user-v115'); }catch(e){}
+    try{ sessionStorage.removeItem('ticketing-user-v116'); }catch(e){}
     setTimeout(()=>usernameRef.current && usernameRef.current.focus(),30);
   };
 
@@ -6324,7 +6304,7 @@ function LoginView({ onLogin }){
 
       if(result && result.success){
         // هیچ خطای قبلی یا نشست ناقصی به ورود درست منتقل نمی‌شود.
-        try{ sessionStorage.removeItem('ticketing-user-v115'); }catch(e){}
+        try{ sessionStorage.removeItem('ticketing-user-v116'); }catch(e){}
         onLogin({
           username: String(result.username || cleanUsername).trim(),
           name: String(result.name || '').trim(),
@@ -6425,7 +6405,7 @@ function LoginView({ onLogin }){
 
 /* ---------- اپ اصلی ---------- */
 function App(){
-  const [currentUser,setCurrentUser]=useState(()=>{try{const raw=sessionStorage.getItem('ticketing-user-v115');return raw?JSON.parse(raw):null;}catch(e){return null;}});
+  const [currentUser,setCurrentUser]=useState(()=>{try{const raw=sessionStorage.getItem('ticketing-user-v116');return raw?JSON.parse(raw):null;}catch(e){return null;}});
   const [tasks,setTasks]=useState([]);
   const [technicianDirectory,setTechnicianDirectory]=useState([]);
   const [activeStoreDirectory,setActiveStoreDirectory]=useState([]);
@@ -6450,14 +6430,14 @@ function App(){
   const showToast=m=>{setToastMsg(m);clearTimeout(toastTimer.current);toastTimer.current=setTimeout(()=>setToastMsg(''),2600);};
 
   const handleLogin=user=>{
-    sessionStorage.setItem('ticketing-user-v115',JSON.stringify(user));
+    sessionStorage.setItem('ticketing-user-v116',JSON.stringify(user));
     dataRevisionRef.current='';
     lastFullSyncRef.current=0;
     setCurrentUser(user);
     setLoaded(false);
   };
   const logout=()=>{
-    sessionStorage.removeItem('ticketing-user-v115');
+    sessionStorage.removeItem('ticketing-user-v116');
     dataRevisionRef.current='';
     lastFullSyncRef.current=0;
     setCurrentUser(null);
@@ -6503,6 +6483,7 @@ function App(){
           if(currentUser.role==='manager'){
             setTechnicianDirectory(Array.isArray(result.technicians)?result.technicians:[]);
             setActiveStoreDirectory(Array.isArray(result.activeStores)?result.activeStores:[]);
+            window.__ticketingDiagnostics=result.diagnostics||{};
           }
           dataRevisionRef.current=String(result.revision||dataRevisionRef.current||'0');
           lastFullSyncRef.current=Date.now();
@@ -6594,8 +6575,8 @@ function App(){
     // به جای دانلود کامل تمام Tickets هر 15/30 ثانیه،
     // فقط یک Revision چندبایتی بررسی می‌شود.
     const intervalMs=(currentUser.role==='manager'||currentUser.role==='admin'||currentUser.role==='regional_manager'||currentUser.role==='executive_manager')
-      ?20000
-      :12000;
+      ?30000
+      :15000;
 
     const iv=setInterval(checkForUpdates,intervalMs);
     return()=>clearInterval(iv);
@@ -6611,35 +6592,46 @@ function App(){
     return next;
   };
 
-  const updateManagerTask=async(id,patch)=>{
-    const original=tasks.find(t=>t.id===id);if(!original)return;
+  const updateManagerTask=async(ticketRef,patch)=>{
+    const original=typeof ticketRef==='object'
+      ?ticketRef
+      :tasks.find(t=>String(t.id||'')===String(ticketRef||''));
+    if(!original)return;
 
-    const serverVerified=!!patch.__serverVerifiedReview;
+    const fastReview=!!patch.__fastReview;
     const cleanPatch={...patch};
-    delete cleanPatch.__serverVerifiedReview;
+    delete cleanPatch.__fastReview;
 
     const updated={
       ...original,
       ...cleanPatch,
       managerNote:cleanPatch.managerNote!==undefined
-        ?(cleanPatch.managerNote||original.managerNote)
+        ?cleanPatch.managerNote
         :original.managerNote
     };
 
-    setTasks(list=>list.map(t=>t.id===id?updated:t));
-
-    if(serverVerified){
-      // Review/Reject has already been written and read-back verified by Apps Script.
-      setTimeout(()=>loadTasks({silent:true}),500);
-      return;
-    }
+    // Match by physical Sheet row first. Duplicate historical IDs can no longer
+    // update two cards or target the wrong ticket.
+    setTasks(list=>list.map(t=>sameTicket(t,original)?updated:t));
 
     try{
+      if(fastReview){
+        await sendManagerReviewFast(
+          original,
+          currentUser.token,
+          cleanPatch.reviewStatus,
+          cleanPatch.managerNote||''
+        );
+        // Do not trigger a heavy full reload here.
+        // The lightweight revision watcher will reconcile server state.
+        return;
+      }
+
       await sendManagerUpdate(updated,currentUser.token,cleanPatch);
       setTimeout(()=>loadTasks({silent:true}),850);
     }catch(e){
       showToast('ارسال تغییرات انجام نشد');
-      setTimeout(()=>loadTasks({silent:true}),400);
+      setTimeout(()=>loadTasks({silent:true}),500);
     }
   };
 
@@ -6663,7 +6655,7 @@ function App(){
 
   return React.createElement('div',{className:'wrap'},
     React.createElement('div',{className:'top'},
-      React.createElement('div',{className:'brand'},React.createElement('span',{className:'dot'}),React.createElement('div',null,React.createElement('h1',null,'پشتیبانی فنی فروشگاه‌ها'),React.createElement('span',null,(role==='tech'?'محیط نیروی فنی':'مرکز کنترل مدیریت فنی')+' • نسخه 11.5'))),
+      React.createElement('div',{className:'brand'},React.createElement('span',{className:'dot'}),React.createElement('div',null,React.createElement('h1',null,'پشتیبانی فنی فروشگاه‌ها'),React.createElement('span',null,(role==='tech'?'محیط نیروی فنی':'مرکز کنترل مدیریت فنی')+' • نسخه 11.6'))),
       React.createElement('div',{className:'user-bar'},React.createElement('div',{className:'user-info'},React.createElement('b',null,currentUser.name),React.createElement('span',null,role==='manager'?'مدیر فنی':'کد پرسنلی: '+currentUser.username)),React.createElement('button',{className:'logout-btn',onClick:logout},'خروج'))
     ),
     !loaded?React.createElement('div',{className:'empty'},'در حال بارگذاری اطلاعات...'):(role==='tech'?React.createElement(TechView,{tasks,saveTasks,showToast,currentUser,refreshTasks:loadTasks}):React.createElement(ManagerView,{tasks,updateTask:updateManagerTask,showToast,refreshTasks:loadTasks,managerLoading,lastUpdated,currentUser,technicianDirectory,activeStoreDirectory})),
