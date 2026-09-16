@@ -2723,6 +2723,332 @@
   }
 }
 
+
+/* ========================================================
+   Decision Intelligence Layer — 11.10
+   ======================================================== */
+.analysis-period-section,
+.analysis-priority-section{
+  margin:12px 0;
+  padding:15px;
+  border:1px solid #dfe6e2;
+  border-radius:15px;
+  background:#fff;
+  box-shadow:var(--shadow);
+}
+.analysis-subsection-head{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:14px;
+  margin-bottom:11px;
+}
+.analysis-subsection-kicker{
+  display:inline-flex;
+  padding:4px 7px;
+  border-radius:999px;
+  background:#eef3f8;
+  color:#315f89;
+  font-size:6.5px;
+  font-weight:950;
+  letter-spacing:.7px;
+  direction:ltr;
+}
+.analysis-subsection-head h2{
+  margin:6px 0 3px;
+  font-size:13px;
+}
+.analysis-subsection-head p{
+  margin:0;
+  color:#74807b;
+  font-size:7.3px;
+  line-height:1.75;
+}
+.analysis-period-labels{
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+  min-width:250px;
+  padding:9px 10px;
+  border:1px solid #e5e9e7;
+  border-radius:10px;
+  background:#fafcfb;
+  color:#71807a;
+  font-size:6.9px;
+}
+.analysis-period-labels b{
+  color:#344a42;
+}
+.analysis-period-grid{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:9px;
+}
+.analysis-period-card{
+  padding:12px;
+  border:1px solid #e3e8e5;
+  border-radius:12px;
+  background:#fcfdfc;
+}
+.analysis-period-card.good{
+  border-color:#d5e7df;
+  background:linear-gradient(180deg,#fbfefc,#f3faf6);
+}
+.analysis-period-card.bad{
+  border-color:#ecdcd2;
+  background:linear-gradient(180deg,#fffdfb,#fff8f3);
+}
+.analysis-period-card-top{
+  display:flex;
+  justify-content:space-between;
+  gap:8px;
+  align-items:center;
+}
+.analysis-period-card-top>span{
+  color:#596660;
+  font-size:7.8px;
+  font-weight:900;
+}
+.analysis-delta{
+  font-size:8.2px;
+}
+.analysis-period-card.good .analysis-delta{color:#26705b}
+.analysis-period-card.bad .analysis-delta{color:#a15b34}
+.analysis-period-values{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:7px;
+  margin-top:10px;
+}
+.analysis-period-values>div{
+  padding:8px;
+  border-radius:9px;
+  background:rgba(255,255,255,.82);
+}
+.analysis-period-values span{
+  display:block;
+  color:#87918d;
+  font-size:6.6px;
+}
+.analysis-period-values b{
+  display:block;
+  margin-top:3px;
+  color:#263c35;
+  font-size:11px;
+}
+.analysis-period-card small{
+  display:block;
+  margin-top:8px;
+  color:#76817c;
+  font-size:6.7px;
+}
+
+.priority-legend{
+  display:flex;
+  align-items:baseline;
+  gap:5px;
+  padding:7px 9px;
+  border-radius:9px;
+  background:#f4f6f5;
+  color:#6c7772;
+  font-size:7px;
+}
+.priority-legend b{
+  color:#273e36;
+  font-size:10px;
+}
+.priority-list{
+  display:flex;
+  flex-direction:column;
+  gap:7px;
+}
+.priority-row{
+  width:100%;
+  display:grid;
+  grid-template-columns:34px minmax(0,1fr) 150px 105px 72px 66px;
+  gap:10px;
+  align-items:center;
+  padding:10px;
+  border:1px solid #e3e8e5;
+  border-radius:11px;
+  background:#fff;
+  text-align:right;
+  font-family:inherit;
+  cursor:pointer;
+  transition:.15s ease;
+}
+.priority-row:hover{
+  transform:translateY(-1px);
+  box-shadow:0 7px 18px rgba(30,48,41,.06);
+}
+.priority-row.repeat{border-right:4px solid #a35b32}
+.priority-row.internal{border-right:4px solid #315f89}
+.priority-row.outlier{border-right:4px solid #7d5c8d}
+.priority-rank{
+  width:28px;
+  height:28px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:50%;
+  background:#f1f4f2;
+  color:#31453d;
+  font-size:10px;
+  font-weight:950;
+}
+.priority-main{min-width:0}
+.priority-title-line{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  min-width:0;
+}
+.priority-title-line b{
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  color:#283d36;
+  font-size:8.5px;
+}
+.priority-type{
+  flex:0 0 auto;
+  padding:3px 5px;
+  border-radius:999px;
+  background:#f3f5f4;
+  color:#6f7b76;
+  font-size:6.2px;
+  font-weight:900;
+}
+.priority-scope{
+  display:block;
+  margin:3px 0 2px;
+  color:#7b8681;
+  font-size:6.8px;
+}
+.priority-main small{
+  display:block;
+  color:#62706a;
+  font-size:6.8px;
+  line-height:1.5;
+}
+.priority-money span{
+  display:block;
+  color:#87918d;
+  font-size:6.3px;
+}
+.priority-money b{
+  display:block;
+  margin-top:2px;
+  color:#263d35;
+  font-size:9px;
+}
+.priority-score{
+  display:flex;
+  align-items:baseline;
+  justify-content:center;
+  gap:2px;
+  padding:7px 5px;
+  border-radius:9px;
+  background:#f5f7f6;
+}
+.priority-score b{
+  color:#243d34;
+  font-size:13px;
+}
+.priority-score span{
+  color:#87918d;
+  font-size:6px;
+}
+.priority-open{
+  color:#315f89;
+  font-size:6.8px;
+  font-weight:900;
+  white-space:nowrap;
+}
+
+.analysis-confidence-badge{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  padding:4px 7px;
+  border-radius:999px;
+  font-size:6.5px;
+  font-weight:950;
+  white-space:nowrap;
+}
+.analysis-confidence-badge.high{
+  background:#e9f6f0;
+  color:#27705a;
+}
+.analysis-confidence-badge.medium{
+  background:#fff4df;
+  color:#98651d;
+}
+.analysis-confidence-badge.low{
+  background:#f3f0f0;
+  color:#7c6666;
+}
+.analysis-confidence-explain{
+  display:flex;
+  align-items:flex-start;
+  gap:8px;
+  margin:10px 18px 0;
+  padding:9px 10px;
+  border:1px solid #e5e9e7;
+  border-radius:10px;
+  background:#fafcfb;
+}
+.analysis-confidence-explain>span:last-child{
+  color:#65716c;
+  font-size:7.3px;
+  line-height:1.7;
+}
+
+@media(max-width:1100px){
+  .priority-row{
+    grid-template-columns:34px minmax(0,1fr) 135px 100px 68px;
+  }
+  .priority-open{display:none}
+}
+@media(max-width:900px){
+  .analysis-period-grid{
+    grid-template-columns:1fr;
+  }
+  .analysis-subsection-head{
+    flex-direction:column;
+  }
+  .analysis-period-labels{
+    width:100%;
+    min-width:0;
+    box-sizing:border-box;
+  }
+  .priority-row{
+    grid-template-columns:30px minmax(0,1fr) 78px;
+  }
+  .priority-money,
+  .priority-confidence{
+    grid-column:2;
+  }
+  .priority-score{
+    grid-column:3;
+    grid-row:1 / span 3;
+  }
+}
+@media(max-width:560px){
+  .priority-row{
+    grid-template-columns:30px minmax(0,1fr);
+  }
+  .priority-score{
+    grid-column:1/-1;
+    grid-row:auto;
+    justify-content:flex-start;
+  }
+  .priority-money,
+  .priority-confidence{
+    grid-column:2;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -5239,18 +5565,431 @@ function DataAnalysisView({tasks,onRefresh,loading,lastUpdated,showToast}){
       }
     }
 
+    const confidenceWeight=level=>level==='high'?1:(level==='medium'?.75:.5);
+
+    const repeatRowsEnhanced=repeatRows.map(r=>{
+      let confidenceLevel='low';
+      if(r.repeatEvents>=2&&r.events>=3&&r.lastGapDays<=14)confidenceLevel='high';
+      else if(r.events>=3||r.lastGapDays<=14)confidenceLevel='medium';
+
+      const confidenceLabel=confidenceLevel==='high'?'اطمینان بالا'
+        :confidenceLevel==='medium'?'اطمینان متوسط'
+        :'اطمینان پایین';
+
+      const confidenceReason=confidenceLevel==='high'
+        ?'تعداد تکرار و فاصله زمانی کوتاه، سیگنال تکرار را تقویت می‌کند؛ با این حال چون Asset ID نداریم، یکسان بودن تجهیز باید تأیید شود.'
+        :confidenceLevel==='medium'
+          ?'الگوی تکرار قابل توجه است، اما تعداد رخداد یا فاصله زمانی هنوز برای قطعیت بیشتر محدود است.'
+          :'فقط حداقل شرط تکرار برقرار است؛ قبل از اقدام حتماً یکسان بودن تجهیز و Root Cause بررسی شود.';
+
+      return{...r,confidenceLevel,confidenceLabel,confidenceReason};
+    });
+
+    const internalRowsEnhanced=internalRows.map(r=>{
+      let confidenceLevel='low';
+      if(r.nationalTotal>=20&&r.nationalInternalRate>=.85)confidenceLevel='high';
+      else if(r.nationalTotal>=12&&r.nationalInternalRate>=.80)confidenceLevel='medium';
+
+      const confidenceLabel=confidenceLevel==='high'?'اطمینان بالا'
+        :confidenceLevel==='medium'?'اطمینان متوسط'
+        :'اطمینان پایین';
+
+      const confidenceReason=confidenceLevel==='high'
+        ?'نمونه کشوری زیاد و نرخ حل داخلی بسیار بالا است؛ Benchmark شبکه برای این خرابی قابل اتکاتر است.'
+        :confidenceLevel==='medium'
+          ?'Benchmark شبکه قابل استفاده است، اما حجم نمونه یا نرخ حل داخلی هنوز به سطح اطمینان بالا نرسیده است.'
+          :'شرط حداقلی تحلیل برقرار است، اما حجم نمونه محدود است؛ نتیجه باید با نظر فنی بررسی شود.';
+
+      return{...r,confidenceLevel,confidenceLabel,confidenceReason};
+    });
+
+    const outlierRowsEnhanced=outlierRows.map(r=>{
+      let confidenceLevel='low';
+      if(r.samples>=15&&r.ratio>=2)confidenceLevel='high';
+      else if(r.samples>=8&&r.ratio>=1.75)confidenceLevel='medium';
+
+      const confidenceLabel=confidenceLevel==='high'?'اطمینان بالا'
+        :confidenceLevel==='medium'?'اطمینان متوسط'
+        :'اطمینان پایین';
+
+      const confidenceReason=confidenceLevel==='high'
+        ?'تعداد نمونه مقایسه بالا است و هزینه واقعی حداقل دو برابر Median است.'
+        :confidenceLevel==='medium'
+          ?'اختلاف با Median معنادار است و نمونه مقایسه قابل قبول است.'
+          :'پرچم Outlier برقرار است، اما تعداد نمونه یا شدت اختلاف محدودتر است؛ Quantity و Scope باید دقیق کنترل شود.';
+
+      return{...r,confidenceLevel,confidenceLabel,confidenceReason};
+    });
+
+    const maxOrOne=values=>Math.max(1,...values.map(Number).filter(Number.isFinite));
+
+    const maxRepeatCost=maxOrOne(repeatRowsEnhanced.map(r=>r.repeatCost));
+    const maxRepeatCount=maxOrOne(repeatRowsEnhanced.map(r=>r.repeatEvents));
+    const maxInternalCost=maxOrOne(internalRowsEnhanced.map(r=>r.serviceCost));
+    const maxInternalCandidates=maxOrOne(internalRowsEnhanced.map(r=>r.candidates));
+    const maxOutlierVariance=maxOrOne(outlierRowsEnhanced.map(r=>r.variance));
+
+    const priorityRows=[
+      ...repeatRowsEnhanced.map(r=>{
+        const moneyScore=r.repeatCost/maxRepeatCost;
+        const countScore=r.repeatEvents/maxRepeatCount;
+        const shortGapScore=1-Math.min(30,Number(r.lastGapDays||30))/30;
+        const confidenceScore=confidenceWeight(r.confidenceLevel);
+        const priorityScore=Math.round(
+          45*moneyScore+
+          25*countScore+
+          15*shortGapScore+
+          15*confidenceScore
+        );
+        return{
+          type:'repeat',
+          tone:'repeat',
+          title:r.storeCode+' · '+r.issue,
+          scope:r.storeName+' · '+r.region,
+          amount:r.repeatCost,
+          amountLabel:'Repeat Cost Exposure',
+          priorityScore,
+          confidenceLevel:r.confidenceLevel,
+          confidenceLabel:r.confidenceLabel,
+          reason:r.repeatEvents.toLocaleString('fa-IR')+' رخداد تکراری، آخرین فاصله '+r.lastGapDays.toLocaleString('fa-IR')+' روز، '+r.confidenceLabel,
+          data:r
+        };
+      }),
+      ...internalRowsEnhanced.map(r=>{
+        const moneyScore=r.serviceCost/maxInternalCost;
+        const candidateScore=r.candidates/maxInternalCandidates;
+        const gapScore=Math.min(1,r.rateGap/.50);
+        const confidenceScore=confidenceWeight(r.confidenceLevel);
+        const priorityScore=Math.round(
+          40*moneyScore+
+          25*candidateScore+
+          20*gapScore+
+          15*confidenceScore
+        );
+        return{
+          type:'internal',
+          tone:'internal',
+          title:r.region+' · '+r.issue,
+          scope:'علت غالب: '+r.dominantReason,
+          amount:r.serviceCost,
+          amountLabel:'Service Cost',
+          priorityScore,
+          confidenceLevel:r.confidenceLevel,
+          confidenceLabel:r.confidenceLabel,
+          reason:'کشور '+Math.round(r.nationalInternalRate*100).toLocaleString('fa-IR')+'٪ داخلی در برابر منطقه '+Math.round(r.regionInternalRate*100).toLocaleString('fa-IR')+'٪، '+r.candidates.toLocaleString('fa-IR')+' کاندید',
+          data:r
+        };
+      }),
+      ...outlierRowsEnhanced.map(r=>{
+        const moneyScore=r.variance/maxOutlierVariance;
+        const ratioScore=Math.min(1,Math.max(0,(r.ratio-1.5)/1.5));
+        const sampleScore=Math.min(1,r.samples/20);
+        const confidenceScore=confidenceWeight(r.confidenceLevel);
+        const priorityScore=Math.round(
+          45*moneyScore+
+          25*ratioScore+
+          15*sampleScore+
+          15*confidenceScore
+        );
+        return{
+          type:'outlier',
+          tone:'outlier',
+          title:(r.ticketNumber||'تیکت')+' · '+r.storeCode,
+          scope:r.issue+' · '+r.region,
+          amount:r.variance,
+          amountLabel:'Cost Variance',
+          priorityScore,
+          confidenceLevel:r.confidenceLevel,
+          confidenceLabel:r.confidenceLabel,
+          reason:Number(r.ratio||0).toLocaleString('fa-IR',{maximumFractionDigits:2})+'× Median با '+r.samples.toLocaleString('fa-IR')+' نمونه مقایسه',
+          data:r
+        };
+      })
+    ].sort((a,b)=>b.priorityScore-a.priorityScore||b.amount-a.amount).slice(0,5);
+
     return{
-      repeatRows,
+      repeatRows:repeatRowsEnhanced,
       repeatExposure,
       repeatEventCount,
-      internalRows,
+      internalRows:internalRowsEnhanced,
       internalizableCount,
       internalizableServiceCost,
-      outlierRows,
+      outlierRows:outlierRowsEnhanced,
       outlierVariance,
+      priorityRows,
       trendBuckets,
       targetCount:target.length,
       referenceCount:reference.length
+    };
+  },[tasks,range,tech,region,store]);
+
+
+  const periodComparison=React.useMemo(()=>{
+    const DAY=86400000;
+
+    const cleanText=value=>String(value||'')
+      .replace(/\u200c/g,' ')
+      .replace(/\s+/g,' ')
+      .trim();
+
+    const median=values=>{
+      const nums=values.map(Number).filter(Number.isFinite).sort((a,b)=>a-b);
+      if(!nums.length)return 0;
+      const mid=Math.floor(nums.length/2);
+      return nums.length%2?nums[mid]:(nums[mid-1]+nums[mid])/2;
+    };
+
+    const timeMs=t=>{
+      const parsed=Date.parse(t.createdAt||'');
+      return Number.isFinite(parsed)?parsed:NaN;
+    };
+
+    const issueInfo=t=>{
+      const level1=cleanText(t.level1);
+      let subs=Array.isArray(t.level2)
+        ?t.level2.map(cleanText).filter(Boolean)
+        :cleanText(t.level2).split(/[،,]/).map(cleanText).filter(Boolean);
+
+      subs=[...new Set(subs)].sort((a,b)=>a.localeCompare(b,'fa'));
+      let detail=subs.join(' + ');
+      if(!detail)detail=cleanText(t.finalCause)||cleanText(t.initialCause);
+
+      if(!level1||!detail||['سایر موارد','رفع نقص'].includes(level1)||['سایر','علت نامشخص','بدون زیرگروه'].includes(detail)){
+        return null;
+      }
+
+      return{key:level1+'|'+detail,label:level1+' / '+detail};
+    };
+
+    const reasonClass=value=>{
+      const s=cleanText(value);
+      if(/توانا|مهارت|تخصص|آموزش/.test(s))return true;
+      if(/ابزار/.test(s))return true;
+      if(/نقدینگی|تنخواه/.test(s))return true;
+      return false;
+    };
+
+    const allDates=[...new Set(tasks.map(ticketDate).filter(Boolean))].sort(compareTicketDateLabels);
+    const localToday=normalizeTicketDateLabel(new Date().toLocaleDateString('fa-IR'));
+
+    let span=30;
+    if(range==='7')span=7;
+    if(range==='today')span=1;
+
+    let currentDates=[];
+    let previousDates=[];
+
+    if(range==='today'){
+      currentDates=[localToday];
+      const prior=allDates.filter(d=>compareTicketDateLabels(d,localToday)<0).slice(-1);
+      previousDates=prior;
+    }else{
+      const effectiveSpan=range==='all'?30:span;
+      currentDates=allDates.slice(-effectiveSpan);
+      previousDates=allDates.slice(-(effectiveSpan*2),-effectiveSpan);
+      span=effectiveSpan;
+    }
+
+    const currentSet=new Set(currentDates);
+    const previousSet=new Set(previousDates);
+
+    const reviewedAll=tasks.filter(t=>
+      (t.reviewStatus||'')==='reviewed'&&
+      (t.reviewStatus||'')!=='cancelled'&&
+      t.workStatus!=='cancelled'
+    );
+
+    const targetFilter=t=>{
+      if(tech!=='all'&&t.technician!==tech)return false;
+      if(region!=='all'&&t.region!==region)return false;
+      if(store!=='all'&&String(t.storeCode||'')!==String(store))return false;
+      return true;
+    };
+
+    const compute=dateSet=>{
+      if(!dateSet||!dateSet.size){
+        return{
+          reviewedCount:0,
+          repeatPer100:0,
+          internalizableRate:0,
+          varianceRate:0,
+          repeatCost:0,
+          internalizableCount:0,
+          varianceSpend:0
+        };
+      }
+
+      const reference=reviewedAll.filter(t=>dateSet.has(ticketDate(t)));
+      const target=reference.filter(targetFilter);
+
+      const nationalStats={};
+      reference.forEach(t=>{
+        const issue=issueInfo(t);
+        if(!issue)return;
+        if(!nationalStats[issue.key])nationalStats[issue.key]={total:0,internal:0};
+        nationalStats[issue.key].total++;
+        if(t.type==='internal')nationalStats[issue.key].internal++;
+      });
+      Object.values(nationalStats).forEach(s=>{
+        s.rate=s.total?s.internal/s.total:0;
+        s.eligible=s.total>=8&&s.rate>=.70;
+      });
+
+      const candidateRows=new Set();
+      target.forEach(t=>{
+        if(t.type!=='outsourced'||!reasonClass(t.outsourceReason))return;
+        const issue=issueInfo(t);
+        if(!issue)return;
+        const stat=nationalStats[issue.key];
+        if(stat&&stat.eligible)candidateRows.add(Number(t.rowNumber||0));
+      });
+
+      const eligibleScope=target.filter(t=>{
+        const issue=issueInfo(t);
+        const stat=issue?nationalStats[issue.key]:null;
+        return !!(stat&&stat.eligible);
+      });
+
+      const internalizableRate=eligibleScope.length
+        ?Math.round(candidateRows.size/eligibleScope.length*1000)/10
+        :0;
+
+      const benchmarkMap={};
+      reference.forEach(t=>{
+        if(t.costStatus!=='final')return;
+        const issue=issueInfo(t);
+        const total=Number(t.totalCost||0);
+        if(!issue||total<=0)return;
+        const key=issue.key+'|'+String(t.type||'');
+        if(!benchmarkMap[key])benchmarkMap[key]=[];
+        benchmarkMap[key].push(total);
+      });
+
+      const benchmarks={};
+      Object.entries(benchmarkMap).forEach(([key,values])=>{
+        const med=median(values);
+        benchmarks[key]={median:med,count:values.length,eligible:values.length>=5&&med>0};
+      });
+
+      let comparableSpend=0;
+      let varianceSpend=0;
+
+      target.forEach(t=>{
+        if(t.costStatus!=='final')return;
+        const issue=issueInfo(t);
+        const total=Number(t.totalCost||0);
+        if(!issue||total<=0)return;
+        const bench=benchmarks[issue.key+'|'+String(t.type||'')];
+        if(!bench||!bench.eligible)return;
+
+        comparableSpend+=total;
+        const variance=total-bench.median;
+        if(total>=bench.median*1.5&&variance>=500000){
+          varianceSpend+=variance;
+        }
+      });
+
+      const varianceRate=comparableSpend
+        ?Math.round(varianceSpend/comparableSpend*1000)/10
+        :0;
+
+      // Repeat uses full historical target as lookback, but counts only repeat events
+      // whose second event belongs to the selected comparison period.
+      const targetHistory=reviewedAll.filter(targetFilter);
+      const repeatGroups={};
+
+      targetHistory.forEach(t=>{
+        const issue=issueInfo(t);
+        const ts=timeMs(t);
+        if(!issue||!Number.isFinite(ts)||!t.storeCode)return;
+        const key=String(t.storeCode)+'|'+issue.key;
+        if(!repeatGroups[key])repeatGroups[key]=[];
+        repeatGroups[key].push(t);
+      });
+
+      let repeatCost=0;
+
+      Object.values(repeatGroups).forEach(list=>{
+        const sorted=list.slice().sort((a,b)=>timeMs(a)-timeMs(b)||Number(a.rowNumber||0)-Number(b.rowNumber||0));
+        let prevTs=NaN;
+        sorted.forEach(t=>{
+          const ts=timeMs(t);
+          if(Number.isFinite(prevTs)&&Number.isFinite(ts)&&dateSet.has(ticketDate(t))){
+            const gap=(ts-prevTs)/DAY;
+            if(gap>=0&&gap<=30&&t.costStatus==='final'){
+              repeatCost+=Number(t.totalCost||0);
+            }
+          }
+          if(Number.isFinite(ts))prevTs=ts;
+        });
+      });
+
+      const repeatPer100=target.length
+        ?Math.round(repeatCost/target.length*100)
+        :0;
+
+      return{
+        reviewedCount:target.length,
+        repeatPer100,
+        internalizableRate,
+        varianceRate,
+        repeatCost,
+        internalizableCount:candidateRows.size,
+        varianceSpend
+      };
+    };
+
+    const current=compute(currentSet);
+    const previous=compute(previousSet);
+
+    const delta=(a,b)=>Number(a||0)-Number(b||0);
+    const relative=(a,b)=>Number(b||0)
+      ?Math.round((Number(a||0)-Number(b||0))/Number(b||0)*1000)/10
+      :null;
+
+    return{
+      current,
+      previous,
+      span,
+      currentLabel:currentDates.length
+        ?(currentDates.length===1?currentDates[0]:currentDates[0]+' تا '+currentDates[currentDates.length-1])
+        :'بدون داده',
+      previousLabel:previousDates.length
+        ?(previousDates.length===1?previousDates[0]:previousDates[0]+' تا '+previousDates[previousDates.length-1])
+        :'بدون دوره قبل',
+      defaultAllRange:range==='all',
+      metrics:[
+        {
+          key:'repeat',
+          title:'Repeat Cost / 100 Ticket',
+          unit:'money',
+          current:current.repeatPer100,
+          previous:previous.repeatPer100,
+          delta:delta(current.repeatPer100,previous.repeatPer100),
+          relative:relative(current.repeatPer100,previous.repeatPer100),
+          better:current.repeatPer100<=previous.repeatPer100
+        },
+        {
+          key:'internal',
+          title:'Internalizable Outsource Rate',
+          unit:'percent',
+          current:current.internalizableRate,
+          previous:previous.internalizableRate,
+          delta:delta(current.internalizableRate,previous.internalizableRate),
+          relative:relative(current.internalizableRate,previous.internalizableRate),
+          better:current.internalizableRate<=previous.internalizableRate
+        },
+        {
+          key:'variance',
+          title:'Cost Variance Exposure',
+          unit:'percent',
+          current:current.varianceRate,
+          previous:previous.varianceRate,
+          delta:delta(current.varianceRate,previous.varianceRate),
+          relative:relative(current.varianceRate,previous.varianceRate),
+          better:current.varianceRate<=previous.varianceRate
+        }
+      ]
     };
   },[tasks,range,tech,region,store]);
 
@@ -5315,6 +6054,11 @@ function DataAnalysisView({tasks,onRefresh,loading,lastUpdated,showToast}){
   // Improvement Opportunities UI
   // ======================================================
   const improvementMoney=v=>moneyCompact(v)+' تومان';
+  const analysisPct=v=>Number(v||0).toLocaleString('fa-IR',{maximumFractionDigits:1})+'٪';
+
+  const confidenceBadge=row=>h('span',{
+    className:'analysis-confidence-badge '+(row.confidenceLevel||'low')
+  },row.confidenceLabel||'اطمینان پایین');
 
   const improvementCardData=[
     {
@@ -5382,6 +6126,7 @@ function DataAnalysisView({tasks,onRefresh,loading,lastUpdated,showToast}){
       h('td',null,r.lastGapDays.toLocaleString('fa-IR')+' روز'),
       h('td',null,h('strong',{className:'improve-money danger'},improvementMoney(r.repeatCost))),
       h('td',null,r.lastDate||'—'),
+      h('td',null,confidenceBadge(r)),
       h('td',null,h('button',{className:'improve-detail-btn',onClick:e=>{e.stopPropagation();setSelectedInsight({type:'repeat',data:r});}},'جزئیات'))
     )
   );
@@ -5396,6 +6141,7 @@ function DataAnalysisView({tasks,onRefresh,loading,lastUpdated,showToast}){
       h('td',null,h('strong',null,r.candidates.toLocaleString('fa-IR'))),
       h('td',null,r.dominantReason),
       h('td',null,h('strong',{className:'improve-money info'},improvementMoney(r.serviceCost))),
+      h('td',null,confidenceBadge(r)),
       h('td',null,h('button',{className:'improve-detail-btn',onClick:e=>{e.stopPropagation();setSelectedInsight({type:'internal',data:r});}},'جزئیات'))
     )
   );
@@ -5412,6 +6158,7 @@ function DataAnalysisView({tasks,onRefresh,loading,lastUpdated,showToast}){
       h('td',null,h('strong',{className:'improve-money danger'},'+'+improvementMoney(r.variance))),
       h('td',null,r.samples.toLocaleString('fa-IR')),
       h('td',{className:'improve-parts-cell'},r.parts||'—'),
+      h('td',null,confidenceBadge(r)),
       h('td',null,h('button',{className:'improve-detail-btn',onClick:e=>{e.stopPropagation();setSelectedInsight({type:'outlier',data:r});}},'جزئیات'))
     )
   );
@@ -5440,6 +6187,7 @@ function DataAnalysisView({tasks,onRefresh,loading,lastUpdated,showToast}){
               h('th',null,'آخرین فاصله'),
               h('th',null,'هزینه تکرار'),
               h('th',null,'آخرین رخداد'),
+              h('th',null,'اطمینان'),
               h('th',null,'')
             )),
             h('tbody',null,...repeatTableRows)
@@ -5470,6 +6218,7 @@ function DataAnalysisView({tasks,onRefresh,loading,lastUpdated,showToast}){
               h('th',null,'کاندید برون‌سپاری'),
               h('th',null,'علت غالب'),
               h('th',null,'Service Cost'),
+              h('th',null,'اطمینان'),
               h('th',null,'')
             )),
             h('tbody',null,...internalTableRows)
@@ -5502,6 +6251,7 @@ function DataAnalysisView({tasks,onRefresh,loading,lastUpdated,showToast}){
               h('th',null,'Variance'),
               h('th',null,'نمونه'),
               h('th',null,'قطعات ثبت‌شده'),
+              h('th',null,'اطمینان'),
               h('th',null,'')
             )),
             h('tbody',null,...outlierTableRows)
@@ -5558,7 +6308,13 @@ function DataAnalysisView({tasks,onRefresh,loading,lastUpdated,showToast}){
         {'عنوان':'کاندید برون‌سپاری قابل Internalize','مقدار':improvement.internalizableCount},
         {'عنوان':'Service Cost کاندیدها (تومان)','مقدار':improvement.internalizableServiceCost},
         {'عنوان':'Cost Outlier','مقدار':improvement.outlierRows.length},
-        {'عنوان':'Cost Variance تحت بررسی (تومان)','مقدار':improvement.outlierVariance}
+        {'عنوان':'Cost Variance تحت بررسی (تومان)','مقدار':improvement.outlierVariance},
+        {'عنوان':'Repeat Cost / 100 Ticket - این دوره','مقدار':periodComparison.current.repeatPer100},
+        {'عنوان':'Repeat Cost / 100 Ticket - دوره قبل','مقدار':periodComparison.previous.repeatPer100},
+        {'عنوان':'Internalizable Outsource Rate - این دوره (%)','مقدار':periodComparison.current.internalizableRate},
+        {'عنوان':'Internalizable Outsource Rate - دوره قبل (%)','مقدار':periodComparison.previous.internalizableRate},
+        {'عنوان':'Cost Variance Exposure - این دوره (%)','مقدار':periodComparison.current.varianceRate},
+        {'عنوان':'Cost Variance Exposure - دوره قبل (%)','مقدار':periodComparison.previous.varianceRate}
       ];
       appendSheet(wb,'خلاصه',summaryRows,[34,34]);
 
@@ -5575,6 +6331,8 @@ function DataAnalysisView({tasks,onRefresh,loading,lastUpdated,showToast}){
         'آخرین فاصله (روز)':r.lastGapDays,
         'کل هزینه نهایی (تومان)':r.totalCost,
         'Repeat Cost Exposure (تومان)':r.repeatCost,
+        'Confidence':r.confidenceLabel,
+        'دلیل Confidence':r.confidenceReason,
         'علت انتخاب':'همان فروشگاه + همان خرابی؛ حداقل یک رخداد بعدی در فاصله حداکثر ۳۰ روز'
       }));
       appendSheet(wb,'خرابی تکراری',repeatAggregate,[7,14,24,18,36,12,17,14,14,18,22,24,65]);
@@ -5622,6 +6380,8 @@ function DataAnalysisView({tasks,onRefresh,loading,lastUpdated,showToast}){
         'تعداد کاندید':r.candidates,
         'علت غالب':r.dominantReason,
         'Service Cost کاندیدها (تومان)':r.serviceCost,
+        'Confidence':r.confidenceLabel,
+        'دلیل Confidence':r.confidenceReason,
         'علت انتخاب':'Skill/Tool/Cash + حداقل ۸ نمونه کشوری + نرخ حل داخلی کشور حداقل ۷۰٪'
       }));
       appendSheet(wb,'برون سپاری قابل کاهش',internalAggregate,[7,18,36,13,15,18,21,13,15,18,21,21,15,26,26,70]);
@@ -5674,9 +6434,38 @@ function DataAnalysisView({tasks,onRefresh,loading,lastUpdated,showToast}){
         'هزینه خدمات (تومان)':r.serviceCost,
         'سایر هزینه (تومان)':r.otherCost,
         'قطعات ثبت‌شده':r.parts,
+        'Confidence':r.confidenceLabel,
+        'دلیل Confidence':r.confidenceReason,
         'علت انتخاب':'Actual >= 1.5 × Median و Variance >= 500,000 تومان؛ حداقل ۵ نمونه مشابه'
       }));
       appendSheet(wb,'هزینه غیرعادی',outlierRows,[7,16,14,14,24,18,22,36,14,22,24,22,20,19,22,22,22,20,20,20,42,72]);
+
+
+      const priorityRows=improvement.priorityRows.map((p,i)=>({
+        'اولویت':i+1,
+        'نوع':p.type==='repeat'?'خرابی تکراری':p.type==='internal'?'برون‌سپاری قابل کاهش':'هزینه غیرعادی',
+        'عنوان':p.title,
+        'دامنه':p.scope,
+        'Priority Score':p.priorityScore,
+        'Confidence':p.confidenceLabel,
+        'مبلغ تحت بررسی (تومان)':p.amount,
+        'نوع مبلغ':p.amountLabel,
+        'دلیل اولویت':p.reason,
+        'توضیح':'Priority Score برای ترتیب بررسی است و به معنی Saving یا اتلاف قطعی نیست.'
+      }));
+      appendSheet(wb,'اولویت بررسی',priorityRows,[10,24,42,32,16,18,24,22,60,68]);
+
+      const periodRows=periodComparison.metrics.map(m=>({
+        'شاخص':m.title,
+        'این دوره':m.current,
+        'دوره قبل':m.previous,
+        'تغییر مطلق':m.delta,
+        'تغییر نسبی (%)':m.relative==null?'':m.relative,
+        'جهت تغییر':m.better?'مطلوب':'نیازمند توجه',
+        'بازه این دوره':periodComparison.currentLabel,
+        'بازه دوره قبل':periodComparison.previousLabel
+      }));
+      appendSheet(wb,'مقایسه دوره',periodRows,[34,20,20,20,20,20,28,28]);
 
       const trendRows=improvement.trendBuckets.map((r,i)=>({
         'بازه':i+1,
@@ -5692,7 +6481,12 @@ function DataAnalysisView({tasks,onRefresh,loading,lastUpdated,showToast}){
         {'موتور':'خرابی تکراری','قاعده':'همان فروشگاه + همان خرابی؛ رخداد بعدی حداکثر ۳۰ روز بعد از رخداد قبلی','مبلغ':'Repeat Cost Exposure فقط هزینه Final رخدادهای تکراری است','تفسیر':'Saving نیست؛ نیازمند بررسی Root Cause است.'},
         {'موتور':'برون‌سپاری قابل کاهش','قاعده':'علت Skill / Tool / Cash + حداقل ۸ نمونه شبکه + نرخ حل داخلی شبکه حداقل ۷۰٪','مبلغ':'Service Cost تیکت‌های کاندید','تفسیر':'کاندید Internalization است؛ قطعه Saving محسوب نمی‌شود.'},
         {'موتور':'هزینه غیرعادی','قاعده':'همان خرابی + همان روش انجام؛ حداقل ۵ Final Cost؛ Actual >= 1.5×Median و Variance >= 500,000','مبلغ':'Actual - Median','تفسیر':'پرچم بررسی است؛ Quantity، Scope، Part Specification و شرایط تعمیر باید کنترل شود.'},
-        {'موتور':'Benchmark','قاعده':'Benchmark کشوری از همان بازه زمانی و تمام Reviewedهای شبکه ساخته می‌شود','مبلغ':'—','تفسیر':'فیلتر منطقه/فروشگاه/کارشناس فقط Scope هدف را محدود می‌کند و Benchmark کشور را تغییر نمی‌دهد.'}
+        {'موتور':'Benchmark','قاعده':'Benchmark کشوری از همان بازه زمانی و تمام Reviewedهای شبکه ساخته می‌شود','مبلغ':'—','تفسیر':'فیلتر منطقه/فروشگاه/کارشناس فقط Scope هدف را محدود می‌کند و Benchmark کشور را تغییر نمی‌دهد.'},
+        {'موتور':'Confidence - Repeat','قاعده':'High: حداقل ۲ تکرار + حداقل ۳ رخداد + آخرین فاصله <= ۱۴ روز؛ Medium: رخداد بیشتر یا فاصله کوتاه','مبلغ':'—','تفسیر':'نبود Asset ID باعث می‌شود حتی Confidence بالا نیز نیازمند تأیید یکسان بودن تجهیز باشد.'},
+        {'موتور':'Confidence - Internalization','قاعده':'High: حداقل ۲۰ نمونه و نرخ داخلی >= ۸۵٪؛ Medium: حداقل ۱۲ نمونه و نرخ داخلی >= ۸۰٪','مبلغ':'—','تفسیر':'Confidence میزان اتکاپذیری Benchmark شبکه را نشان می‌دهد.'},
+        {'موتور':'Confidence - Outlier','قاعده':'High: حداقل ۱۵ نمونه و Actual >= ۲×Median؛ Medium: حداقل ۸ نمونه و Actual >= ۱.۷۵×Median','مبلغ':'—','تفسیر':'Confidence شدت شواهد آماری را نشان می‌دهد؛ نه اثبات اتلاف.'},
+        {'موتور':'Priority Radar','قاعده':'امتیاز ۰ تا ۱۰۰ بر اساس شدت مالی + شدت عملیاتی/Gap + Confidence','مبلغ':'—','تفسیر':'فقط ترتیب بررسی را مشخص می‌کند و به معنی Saving نیست.'},
+        {'موتور':'Period Comparison','قاعده':'دوره انتخاب‌شده با دوره بلافاصله قبل و هم‌اندازه مقایسه می‌شود؛ در حالت کل داده، ۳۰ تاریخ اخیر در برابر ۳۰ تاریخ قبل','مبلغ':'—','تفسیر':'برای هر سه شاخص، کمتر بهتر است.'}
       ];
       appendSheet(wb,'روش تحلیل',methodology,[26,86,52,68]);
 
@@ -5745,6 +6539,10 @@ function DataAnalysisView({tasks,onRefresh,loading,lastUpdated,showToast}){
               h('span',null,'Rule'),
               h('code',null,'Same Store + Same Failure + Gap ≤ 30 Days')
             )
+          ),
+          h('div',{className:'analysis-confidence-explain'},
+            confidenceBadge(d),
+            h('span',null,d.confidenceReason||'')
           ),
           h('div',{className:'analysis-detail-kpis'},
             h('div',null,h('span',null,'کل رخداد'),h('b',null,d.events.toLocaleString('fa-IR'))),
@@ -5801,6 +6599,10 @@ function DataAnalysisView({tasks,onRefresh,loading,lastUpdated,showToast}){
               h('span',null,'Rule'),
               h('code',null,'Reason ∈ Skill/Tool/Cash + Network Sample ≥ 8 + Internal Rate ≥ 70%')
             )
+          ),
+          h('div',{className:'analysis-confidence-explain'},
+            confidenceBadge(d),
+            h('span',null,d.confidenceReason||'')
           ),
           h('div',{className:'analysis-detail-kpis'},
             h('div',null,h('span',null,'نمونه کشوری'),h('b',null,d.nationalTotal.toLocaleString('fa-IR'))),
@@ -5861,6 +6663,10 @@ function DataAnalysisView({tasks,onRefresh,loading,lastUpdated,showToast}){
             h('span',null,'Rule'),
             h('code',null,'Comparable Samples ≥ 5 + Actual ≥ 1.5×Median + Variance ≥ 500,000')
           )
+        ),
+        h('div',{className:'analysis-confidence-explain'},
+          confidenceBadge(d),
+          h('span',null,d.confidenceReason||'')
         ),
         h('div',{className:'analysis-detail-kpis'},
           h('div',null,h('span',null,'هزینه واقعی'),h('b',null,improvementMoney(d.actual))),
@@ -6008,6 +6814,106 @@ function DataAnalysisView({tasks,onRefresh,loading,lastUpdated,showToast}){
     )
     :null;
 
+
+  const comparisonFormat=(metric,value)=>{
+    if(metric.unit==='money')return improvementMoney(value);
+    return analysisPct(value);
+  };
+
+  const comparisonDeltaText=metric=>{
+    if(metric.unit==='money'){
+      if(metric.relative===null)return metric.delta===0?'بدون تغییر':'دوره قبل صفر بوده';
+      const arrow=metric.delta<0?'↓':metric.delta>0?'↑':'→';
+      return arrow+' '+Math.abs(metric.relative).toLocaleString('fa-IR',{maximumFractionDigits:1})+'٪';
+    }
+    const arrow=metric.delta<0?'↓':metric.delta>0?'↑':'→';
+    return arrow+' '+Math.abs(metric.delta).toLocaleString('fa-IR',{maximumFractionDigits:1})+' واحد درصد';
+  };
+
+  const periodComparisonSection=h('section',{className:'analysis-period-section'},
+    h('div',{className:'analysis-subsection-head'},
+      h('div',null,
+        h('span',{className:'analysis-subsection-kicker'},'PERIOD OVER PERIOD'),
+        h('h2',null,'این دوره نسبت به دوره قبل'),
+        h('p',null,
+          periodComparison.defaultAllRange
+            ?'در حالت «کل داده»، برای مقایسه مدیریتی ۳۰ تاریخ اخیر با ۳۰ تاریخ قبل مقایسه می‌شود.'
+            :'مقایسه با دوره بلافاصله قبل و با همان طول زمانی.'
+        )
+      ),
+      h('div',{className:'analysis-period-labels'},
+        h('span',null,'این دوره: ',h('b',null,periodComparison.currentLabel)),
+        h('span',null,'دوره قبل: ',h('b',null,periodComparison.previousLabel))
+      )
+    ),
+    h('div',{className:'analysis-period-grid'},
+      ...periodComparison.metrics.map(metric=>
+        h('div',{key:metric.key,className:'analysis-period-card '+(metric.better?'good':'bad')},
+          h('div',{className:'analysis-period-card-top'},
+            h('span',null,metric.title),
+            h('b',{className:'analysis-delta'},comparisonDeltaText(metric))
+          ),
+          h('div',{className:'analysis-period-values'},
+            h('div',null,
+              h('span',null,'این دوره'),
+              h('b',null,comparisonFormat(metric,metric.current))
+            ),
+            h('div',null,
+              h('span',null,'دوره قبل'),
+              h('b',null,comparisonFormat(metric,metric.previous))
+            )
+          ),
+          h('small',null,metric.better?'جهت تغییر مطلوب است':'نیاز به توجه؛ شاخص نسبت به دوره قبل بدتر شده است')
+        )
+      )
+    )
+  );
+
+  const priorityRadar=h('section',{className:'analysis-priority-section'},
+    h('div',{className:'analysis-subsection-head'},
+      h('div',null,
+        h('span',{className:'analysis-subsection-kicker'},'PRIORITY RADAR'),
+        h('h2',null,'۵ موردی که اول باید بررسی شوند'),
+        h('p',null,'امتیاز اولویت شفاف است و از شدت مالی، تعداد/Gap، شدت اختلاف و Confidence ساخته می‌شود؛ امتیاز به معنی Saving نیست.')
+      ),
+      h('div',{className:'priority-legend'},
+        h('span',null,'Score'),
+        h('b',null,'0 — 100')
+      )
+    ),
+    improvement.priorityRows.length
+      ?h('div',{className:'priority-list'},
+        ...improvement.priorityRows.map((item,i)=>
+          h('button',{
+            key:item.type+'-'+i+'-'+item.title,
+            className:'priority-row '+item.tone,
+            onClick:()=>setSelectedInsight({type:item.type,data:item.data})
+          },
+            h('div',{className:'priority-rank'},(i+1).toLocaleString('fa-IR')),
+            h('div',{className:'priority-main'},
+              h('div',{className:'priority-title-line'},
+                h('b',null,item.title),
+                h('span',{className:'priority-type'},item.type==='repeat'?'تکرار':item.type==='internal'?'Internalize':'Cost Outlier')
+              ),
+              h('span',{className:'priority-scope'},item.scope),
+              h('small',null,item.reason)
+            ),
+            h('div',{className:'priority-money'},
+              h('span',null,item.amountLabel),
+              h('b',null,improvementMoney(item.amount))
+            ),
+            h('div',{className:'priority-confidence'},confidenceBadge(item)),
+            h('div',{className:'priority-score'},
+              h('b',null,item.priorityScore.toLocaleString('fa-IR')),
+              h('span',null,'/ 100')
+            ),
+            h('div',{className:'priority-open'},'جزئیات ←')
+          )
+        )
+      )
+      :h('div',{className:'improve-empty'},'در Scope فعلی موردی برای اولویت‌بندی پیدا نشد.')
+  );
+
   const improvementSection=h('section',{className:'improve-section'},
     h('div',{className:'improve-section-head'},
       h('div',null,
@@ -6029,6 +6935,8 @@ function DataAnalysisView({tasks,onRefresh,loading,lastUpdated,showToast}){
   return h(React.Fragment,null,
     analysisHeader,
     analysisFilters,
+    periodComparisonSection,
+    priorityRadar,
     improvementSection,
     detailModal
   );
@@ -7721,7 +8629,7 @@ function ExecutiveDashboard({tasks,onRefresh,loading,lastUpdated,currentUser,onL
 
 /* ---------- اپ اصلی ---------- */
 
-/* ---------- Boardroom CEO Dashboard — نسخه 11.9 ---------- */
+/* ---------- Boardroom CEO Dashboard — نسخه 11.10 ---------- */
 function CEODashboard({tasks,onRefresh,loading,lastUpdated,currentUser,onLogout}){
   const h=React.createElement;
   const [range,setRange]=useState('90');
@@ -8013,7 +8921,7 @@ function CEODashboard({tasks,onRefresh,loading,lastUpdated,currentUser,onLogout}
         )
       ),
 
-      h('footer',{className:'c8-footer'},h('span',null,'نسخه 11.9 · دسترسی فقط خواندنی مدیرعامل'),h('span',null,'ریسک فروشگاه‌های فعال و فعالیت‌های پیش‌افتتاح به‌صورت جداگانه تحلیل می‌شوند.'))
+      h('footer',{className:'c8-footer'},h('span',null,'نسخه 11.10 · دسترسی فقط خواندنی مدیرعامل'),h('span',null,'ریسک فروشگاه‌های فعال و فعالیت‌های پیش‌افتتاح به‌صورت جداگانه تحلیل می‌شوند.'))
     ),
 
     modal
@@ -8432,7 +9340,7 @@ function RegionalDashboard({tasks,onRefresh,loading,lastUpdated,currentUser,onLo
       ),
 
       h('footer',{className:'rm-footer'},
-        h('span',null,'نسخه 11.9 · دسترسی مدیر منطقه · فقط خواندنی'),
+        h('span',null,'نسخه 11.10 · دسترسی مدیر منطقه · فقط خواندنی'),
         h('span',null,'فیلتر دسترسی در سرور انجام می‌شود و فقط اطلاعات مناطق تخصیص‌یافته به این حساب ارسال می‌شود.')
       )
     ),
@@ -8453,7 +9361,7 @@ function LoginView({ onLogin }){
   useEffect(()=>{
     // هیچ تلاش ناموفقی در مرورگر ذخیره یا قفل نمی‌شود.
     // ورود قبلیِ ناقص نیز پاک می‌شود تا کاربران فعلی بتوانند دوباره تلاش کنند.
-    try{ sessionStorage.removeItem('ticketing-user-v119'); }catch(e){}
+    try{ sessionStorage.removeItem('ticketing-user-v1110'); }catch(e){}
   },[]);
 
   const clearError = () => {
@@ -8466,7 +9374,7 @@ function LoginView({ onLogin }){
     setError('');
     setUsername('');
     setPassword('');
-    try{ sessionStorage.removeItem('ticketing-user-v119'); }catch(e){}
+    try{ sessionStorage.removeItem('ticketing-user-v1110'); }catch(e){}
     setTimeout(()=>usernameRef.current && usernameRef.current.focus(),30);
   };
 
@@ -8503,7 +9411,7 @@ function LoginView({ onLogin }){
 
       if(result && result.success){
         // هیچ خطای قبلی یا نشست ناقصی به ورود درست منتقل نمی‌شود.
-        try{ sessionStorage.removeItem('ticketing-user-v119'); }catch(e){}
+        try{ sessionStorage.removeItem('ticketing-user-v1110'); }catch(e){}
         onLogin({
           username: String(result.username || cleanUsername).trim(),
           name: String(result.name || '').trim(),
@@ -8604,7 +9512,7 @@ function LoginView({ onLogin }){
 
 /* ---------- اپ اصلی ---------- */
 function App(){
-  const [currentUser,setCurrentUser]=useState(()=>{try{const raw=sessionStorage.getItem('ticketing-user-v119');return raw?JSON.parse(raw):null;}catch(e){return null;}});
+  const [currentUser,setCurrentUser]=useState(()=>{try{const raw=sessionStorage.getItem('ticketing-user-v1110');return raw?JSON.parse(raw):null;}catch(e){return null;}});
   const [tasks,setTasks]=useState([]);
   const [technicianDirectory,setTechnicianDirectory]=useState([]);
   const [activeStoreDirectory,setActiveStoreDirectory]=useState([]);
@@ -8629,14 +9537,14 @@ function App(){
   const showToast=m=>{setToastMsg(m);clearTimeout(toastTimer.current);toastTimer.current=setTimeout(()=>setToastMsg(''),2600);};
 
   const handleLogin=user=>{
-    sessionStorage.setItem('ticketing-user-v119',JSON.stringify(user));
+    sessionStorage.setItem('ticketing-user-v1110',JSON.stringify(user));
     dataRevisionRef.current='';
     lastFullSyncRef.current=0;
     setCurrentUser(user);
     setLoaded(false);
   };
   const logout=()=>{
-    sessionStorage.removeItem('ticketing-user-v119');
+    sessionStorage.removeItem('ticketing-user-v1110');
     dataRevisionRef.current='';
     lastFullSyncRef.current=0;
     setCurrentUser(null);
@@ -8854,7 +9762,7 @@ function App(){
 
   return React.createElement('div',{className:'wrap'},
     React.createElement('div',{className:'top'},
-      React.createElement('div',{className:'brand'},React.createElement('span',{className:'dot'}),React.createElement('div',null,React.createElement('h1',null,'پشتیبانی فنی فروشگاه‌ها'),React.createElement('span',null,(role==='tech'?'محیط نیروی فنی':'مرکز کنترل مدیریت فنی')+' • نسخه 11.9'))),
+      React.createElement('div',{className:'brand'},React.createElement('span',{className:'dot'}),React.createElement('div',null,React.createElement('h1',null,'پشتیبانی فنی فروشگاه‌ها'),React.createElement('span',null,(role==='tech'?'محیط نیروی فنی':'مرکز کنترل مدیریت فنی')+' • نسخه 11.10'))),
       React.createElement('div',{className:'user-bar'},React.createElement('div',{className:'user-info'},React.createElement('b',null,currentUser.name),React.createElement('span',null,role==='manager'?'مدیر فنی':'کد پرسنلی: '+currentUser.username)),React.createElement('button',{className:'logout-btn',onClick:logout},'خروج'))
     ),
     !loaded?React.createElement('div',{className:'empty'},'در حال بارگذاری اطلاعات...'):(role==='tech'?React.createElement(TechView,{tasks,saveTasks,showToast,currentUser,refreshTasks:loadTasks}):React.createElement(ManagerView,{tasks,updateTask:updateManagerTask,showToast,refreshTasks:loadTasks,managerLoading,lastUpdated,currentUser,technicianDirectory,activeStoreDirectory})),
