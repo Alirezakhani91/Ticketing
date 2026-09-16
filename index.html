@@ -2266,6 +2266,169 @@
   }
 }
 
+
+/* ========================================================
+   Separate Data Analysis workspace — 11.8
+   ======================================================== */
+.manager-main-tabs .analysis-main-tab{
+  position:relative;
+}
+.manager-main-tabs .analysis-main-tab:after{
+  content:'NEW';
+  margin-right:6px;
+  padding:2px 5px;
+  border-radius:999px;
+  background:#eef3fb;
+  color:#315f89;
+  font-size:5.8px;
+  font-weight:950;
+  letter-spacing:.4px;
+  direction:ltr;
+}
+.manager-main-tabs .analysis-main-tab.active:after{
+  background:rgba(255,255,255,.16);
+  color:inherit;
+}
+
+.analysis-page-head{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) minmax(290px,390px);
+  gap:14px;
+  align-items:stretch;
+  margin-bottom:12px;
+  padding:18px;
+  border:1px solid #dbe5e1;
+  border-radius:16px;
+  background:
+    radial-gradient(circle at 8% 0,rgba(49,95,137,.11),transparent 30%),
+    linear-gradient(135deg,#fbfdfc,#f5f8fb 58%,#fff);
+  box-shadow:var(--shadow);
+}
+.analysis-page-kicker{
+  display:inline-flex;
+  padding:4px 7px;
+  border-radius:999px;
+  background:#eaf0f8;
+  color:#315f89;
+  font-size:6.8px;
+  font-weight:950;
+  letter-spacing:.8px;
+  direction:ltr;
+}
+.analysis-page-copy h1{
+  margin:8px 0 4px;
+  font-size:20px;
+}
+.analysis-page-copy p{
+  margin:0;
+  max-width:820px;
+  color:var(--ink-soft);
+  font-size:8.2px;
+  line-height:1.85;
+}
+.analysis-page-meta{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:7px;
+  padding:10px;
+  border:1px solid #e1e7e4;
+  border-radius:12px;
+  background:rgba(255,255,255,.72);
+}
+.analysis-page-meta>div{
+  padding:8px;
+  border-radius:9px;
+  background:#f8faf9;
+}
+.analysis-page-meta span{
+  display:block;
+  color:#7c8782;
+  font-size:6.8px;
+}
+.analysis-page-meta b{
+  display:block;
+  margin-top:3px;
+  color:#253d35;
+  font-size:10px;
+}
+.analysis-page-meta .refresh-btn{
+  grid-column:1/-1;
+  width:100%;
+}
+
+.analysis-filter-bar{
+  margin-bottom:12px;
+  padding:12px 13px;
+  border:1px solid #dfe6e2;
+  border-radius:13px;
+  background:#fff;
+  box-shadow:0 5px 15px rgba(26,45,38,.035);
+}
+.analysis-filter-title{
+  display:flex;
+  align-items:baseline;
+  gap:7px;
+  margin-bottom:9px;
+}
+.analysis-filter-title b{
+  font-size:9px;
+}
+.analysis-filter-title span{
+  color:#7b8581;
+  font-size:7px;
+}
+.analysis-filter-grid{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:8px;
+}
+.analysis-filter-grid label>span{
+  display:block;
+  margin-bottom:4px;
+  color:#67726d;
+  font-size:7px;
+  font-weight:850;
+}
+.analysis-filter-grid select{
+  width:100%;
+  padding:7px 8px;
+  border:1px solid var(--line);
+  border-radius:8px;
+  background:#fff;
+  font-family:inherit;
+  font-size:7.8px;
+  outline:none;
+}
+
+/* On the dedicated page this is the main body, so remove duplicate outer shadow feeling */
+.analysis-filter-bar + .improve-section{
+  margin-top:0;
+}
+
+@media(max-width:980px){
+  .analysis-page-head{
+    grid-template-columns:1fr;
+  }
+  .analysis-filter-grid{
+    grid-template-columns:repeat(2,minmax(0,1fr));
+  }
+}
+@media(max-width:620px){
+  .analysis-filter-grid{
+    grid-template-columns:1fr;
+  }
+  .analysis-filter-title{
+    align-items:flex-start;
+    flex-direction:column;
+  }
+  .analysis-page-meta{
+    grid-template-columns:1fr;
+  }
+  .analysis-page-meta .refresh-btn{
+    grid-column:auto;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -4205,196 +4368,33 @@ function PreOpeningManagerDashboard({tasks,onRefresh,loading,lastUpdated,current
 }
 
 
-function ManagerView({ tasks, updateTask, showToast, refreshTasks, managerLoading, lastUpdated, currentUser, technicianDirectory, activeStoreDirectory }){
-  const [tab, setTab] = useState('report');
-  const [storeFilter, setStoreFilter] = useState('');
-  const preOpeningTasks=tasks.filter(t=>isPreOpeningLocation(t.locationType,t.storeCode));
-  const preOpeningProjects=new Set(preOpeningTasks.map(t=>String(t.storeCode||'')).filter(Boolean)).size;
 
-  const review = async (ticket, note) => {
-    await updateTask(ticket,{reviewStatus:'reviewed',managerNote:note,__fastReview:true});
-    showToast('تیکت بررسی شد');
-  };
-  const reject = async (ticket, note) => {
-    await updateTask(ticket,{reviewStatus:'rejected',managerNote:note,__fastReview:true});
-    showToast('تیکت رد شد');
-  };
-  const edit = async (ticket, newDraft) => {
-    const original=ticket||{};
-    const causePatch=newDraft.type==='internal'
-      ? {finalCause:newDraft.initialCause||'',finalCauseDetails:newDraft.initialCauseDetails||''}
-      : (original.type==='outsourced'&&original.workStatus==='completed'
-          ? {finalCause:original.finalCause||'',finalCauseDetails:original.finalCauseDetails||''}
-          : {finalCause:'',finalCauseDetails:''});
-    await updateTask(ticket,{...newDraft,...causePatch,reviewStatus:'reviewed'});
-    showToast('تیکت اصلاح و تأیید شد');
-  };
-
-  const editCost = async (ticket, cost) => {
-    await updateTask(ticket,cost);
-    showToast(cost.costStatus==='no_cost'?'تیکت «بدون هزینه مستقیم» ثبت شد':(cost.costStatus==='pending'?'هزینه در وضعیت انتظار ثبت شد':'هزینه تیکت به‌روزرسانی شد'));
-  };
-
-  const filtered = tasks.filter(t => {const q=storeFilter.trim().toLowerCase();return !q||String(t.storeCode||'').toLowerCase().includes(q)||String(t.storeName||'').toLowerCase().includes(q)||String(t.region||'').toLowerCase().includes(q)||String(t.ticketNumber||'').toLowerCase().includes(q);});
-  const pending = filtered.filter(t => !t.reviewStatus || t.reviewStatus==='pending');
-
-  return React.createElement(React.Fragment,null,
-    React.createElement('div',{className:'tabs manager-main-tabs'},
-      React.createElement('button',{className:tab==='report'?'active':'',onClick:()=>setTab('report')},'فروشگاه‌های فعال'),
-      React.createElement('button',{className:tab==='preopening'?'active':'',onClick:()=>setTab('preopening')},'پیش‌افتتاح'+(preOpeningProjects?' ('+preOpeningProjects+')':'')),
-      React.createElement('button',{className:tab==='pending'?'active':'',onClick:()=>setTab('pending')},'در انتظار ('+pending.length+')'),
-      React.createElement('button',{className:tab==='all'?'active':'',onClick:()=>setTab('all')},'همه تیکت‌ها')
-    ),
-    !['report','preopening'].includes(tab) && React.createElement('div',{className:'filter-row'},
-      React.createElement('input',{placeholder:'جست‌وجوی شماره تیکت، کد، نام فروشگاه یا منطقه...',value:storeFilter,onChange:e=>setStoreFilter(e.target.value)}),
-      React.createElement('button',{className:'refresh-btn',onClick:refreshTasks,disabled:managerLoading},managerLoading?'در حال دریافت...':'↻ تازه‌سازی')
-    ),
-    tab==='pending' && (pending.length===0
-      ? React.createElement('div',{className:'card'},React.createElement('div',{className:'empty'},managerLoading?'در حال دریافت...':'تیکتی در انتظار بررسی نیست'))
-      : pending.map(t=>React.createElement(TaskItem,{key:ticketClientKey(t),t,onReview:review,onReject:reject,onEdit:edit,onCostEdit:editCost}))),
-    tab==='all' && (filtered.length===0
-      ? React.createElement('div',{className:'card'},React.createElement('div',{className:'empty'},managerLoading?'در حال دریافت...':'تیکتی ثبت نشده'))
-      : filtered.map(t=>React.createElement(TaskItem,{key:ticketClientKey(t),t,onReview:review,onReject:reject,onEdit:edit,onCostEdit:editCost}))),
-    tab==='report' && React.createElement(ReportView,{
-      tasks:tasks.filter(t=>!isPreOpeningLocation(t.locationType,t.storeCode)),
-      technicianDirectory,
-      activeStoreDirectory,
-      onRefresh:refreshTasks,
-      loading:managerLoading,
-      lastUpdated
-    }),
-    tab==='preopening' && React.createElement(PreOpeningManagerDashboard,{
-      tasks,
-      onRefresh:refreshTasks,
-      loading:managerLoading,
-      lastUpdated,
-      currentUser
-    })
-  );
-}
-
-function normalizeFaDigits(v){
-  return String(v||'')
-    .replace(/[۰-۹]/g,d=>'۰۱۲۳۴۵۶۷۸۹'.indexOf(d))
-    .replace(/[٠-٩]/g,d=>'٠١٢٣٤٥٦٧٨٩'.indexOf(d));
-}
-function normalizeTicketDateLabel(value){
-  const clean=normalizeFaDigits(value)
-    .replace(/[\u200c\u200e\u200f\u202a-\u202e]/g,'')
-    .replace(/[.\-]/g,'/')
-    .replace(/\s+/g,'')
-    .replace(/\/+/g,'/')
-    .trim();
-  const parts=clean.match(/\d+/g);
-  if(!parts||parts.length<3)return clean;
-  return [Number(parts[0]),Number(parts[1]),Number(parts[2])].join('/');
-}
-function ticketDate(t){
-  return normalizeTicketDateLabel(t.dateText || (t.createdAt?dateKey(t.createdAt):''));
-}
-function ticketDateSortValue(value){
-  const parts=normalizeTicketDateLabel(value).match(/\d+/g);
-  if(!parts||parts.length<3)return Number.MAX_SAFE_INTEGER;
-  const year=Number(parts[0])||0;
-  const month=Number(parts[1])||0;
-  const day=Number(parts[2])||0;
-  return year*10000+month*100+day;
-}
-function compareTicketDateLabels(a,b){
-  const diff=ticketDateSortValue(a)-ticketDateSortValue(b);
-  if(Number.isFinite(diff)&&diff!==0)return diff;
-  return String(a||'').localeCompare(String(b||''),'fa',{numeric:true});
-}
-function reviewLabel(v){return v==='reviewed'?'بررسی‌شده':v==='rejected'?'ردشده':v==='cancelled'?'لغوشده':'در انتظار';}
-function pct(n,d){return d?Math.round(n/d*100):0;}
-function countBy(list,keyFn){const out={};list.forEach(x=>{const k=keyFn(x);if(k)out[k]=(out[k]||0)+1;});return out;}
-function sortedEntries(obj,limit){return Object.entries(obj).sort((a,b)=>b[1]-a[1]).slice(0,limit||999);}
-
-function ChartBox({type,data,options,small}){
-  const canvasRef=useRef(null); const chartRef=useRef(null);
-  useEffect(()=>{
-    if(!window.Chart||!canvasRef.current)return;
-    if(chartRef.current)chartRef.current.destroy();
-    window.Chart.defaults.font.family='Vazirmatn';
-    window.Chart.defaults.color='#5b645f';
-    chartRef.current=new window.Chart(canvasRef.current,{type,data,options});
-    return()=>{if(chartRef.current)chartRef.current.destroy();};
-  },[type,JSON.stringify(data),JSON.stringify(options)]);
-  return React.createElement('div',{className:'chart-wrap'+(small?' small':'')},React.createElement('canvas',{ref:canvasRef}));
-}
-
-function Kpi({label,value,note,icon,tone}){
-  return React.createElement('div',{className:'kpi '+(tone||'')},
-    React.createElement('div',{className:'kpi-top'},React.createElement('span',{className:'kpi-label'},label),React.createElement('span',{className:'kpi-icon'},icon)),
-    React.createElement('b',{className:'kpi-value'},value),React.createElement('span',{className:'kpi-note'},note||'')
-  );
-}
-
-function ReportView({tasks,technicianDirectory=[],activeStoreDirectory=[],onRefresh,loading,lastUpdated}){
+function DataAnalysisView({tasks,onRefresh,loading,lastUpdated}){
   const h=React.createElement;
   const [range,setRange]=useState('all');
-  const [heavyVisualsReady,setHeavyVisualsReady]=useState(false);
   const [tech,setTech]=useState('all');
   const [region,setRegion]=useState('all');
   const [store,setStore]=useState('all');
-  const [type,setType]=useState('all');
-  const [status,setStatus]=useState('all');
-  const [work,setWork]=useState('all');
-  const [expandedStore,setExpandedStore]=useState('');
-  const [leaderPage,setLeaderPage]=useState(0);
-  const [technicianCostView,setTechnicianCostView]=useState('chart');
-  const [regionCostView,setRegionCostView]=useState('chart');
   const [improvementPanel,setImprovementPanel]=useState('repeat');
+  const [heavyVisualsReady,setHeavyVisualsReady]=useState(false);
 
-  const allDates=[...new Set(tasks.map(ticketDate).filter(Boolean))].sort(compareTicketDateLabels);
-  const today=normalizeTicketDateLabel(new Date().toLocaleDateString('fa-IR'));
-  const allowedDates=range==='7'?new Set(allDates.slice(-7)):range==='30'?new Set(allDates.slice(-30)):null;
-  const technicians=[...new Set([
-    ...technicianDirectory.map(x=>String((x&&x.name)||'').trim()).filter(Boolean),
-    ...tasks.map(t=>t.technician).filter(Boolean)
-  ])].sort((a,b)=>a.localeCompare(b,'fa'));
-  const regions=[...new Set(tasks.map(t=>t.region).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'fa'));
-  const storeLookup={};
-  activeStoreDirectory.forEach(s=>{
-    const code=String((s&&s.code)||'').trim();
-    if(code)storeLookup[code]={code,name:s.name||('فروشگاه '+code),region:s.region||'',city:s.city||''};
-  });
-  tasks.forEach(t=>{
-    const code=String(t.storeCode||'');
-    if(code&&!storeLookup[code])storeLookup[code]={code,name:t.storeName||('فروشگاه '+code),region:t.region||'',city:''};
-  });
-  const stores=Object.values(storeLookup).sort((a,b)=>a.code.localeCompare(b.code,'fa',{numeric:true}));
+  const technicians=[...new Set(tasks.map(t=>t.technician).filter(Boolean))]
+    .sort((a,b)=>a.localeCompare(b,'fa'));
+  const regions=[...new Set(tasks.map(t=>t.region).filter(Boolean))]
+    .sort((a,b)=>a.localeCompare(b,'fa'));
 
-  useEffect(()=>{
-    setHeavyVisualsReady(false);
-    const timer=setTimeout(()=>setHeavyVisualsReady(true),90);
-    return()=>clearTimeout(timer);
-  },[tasks,range,tech,region,store,type,status,work]);
-
-  useEffect(()=>{
-    setLeaderPage(0);
-  },[range,tech,region,store,type,status,work]);
-
-  const relevant=tasks.filter(t=>{
-    const d=ticketDate(t);
-    if(range==='today'&&d!==today)return false;
-    if(allowedDates&&!allowedDates.has(d))return false;
-    if(tech!=='all'&&t.technician!==tech)return false;
-    if(region!=='all'&&t.region!==region)return false;
-    if(store!=='all'&&String(t.storeCode)!==store)return false;
-    if(type!=='all'&&t.type!==type)return false;
-    if(status!=='all'&&(t.reviewStatus||'pending')!==status)return false;
-    if(work!=='all'&&(t.workStatus||(t.type==='outsourced'?'open':'completed'))!==work)return false;
-    return true;
-  });
-
-  const isCompletedForCost=t=>{
-    if((t.reviewStatus||'')==='cancelled'||t.workStatus==='cancelled')return false;
-    return t.type==='internal'||t.workStatus==='completed';
-  };
-  const isFinalCost=t=>isCompletedForCost(t)&&t.costStatus==='final';
-  const isNoCost=t=>isCompletedForCost(t)&&t.costStatus==='no_cost';
-  const isPendingCost=t=>isCompletedForCost(t)&&t.costStatus==='pending';
+  const stores=[...new Map(
+    tasks
+      .filter(t=>t.storeCode)
+      .map(t=>[
+        String(t.storeCode),
+        {
+          code:String(t.storeCode),
+          name:t.storeName||('فروشگاه '+t.storeCode),
+          region:t.region||''
+        }
+      ])
+  ).values()].sort((a,b)=>a.code.localeCompare(b.code,'fa',{numeric:true}));
 
   const moneyCompact=v=>{
     const n=Number(v||0);
@@ -4404,6 +4404,11 @@ function ReportView({tasks,technicianDirectory=[],activeStoreDirectory=[],onRefr
     return n.toLocaleString('fa-IR');
   };
 
+  useEffect(()=>{
+    setHeavyVisualsReady(false);
+    const timer=setTimeout(()=>setHeavyVisualsReady(true),70);
+    return()=>clearTimeout(timer);
+  },[tasks,range,tech,region,store]);
 
   // ======================================================
   // Financial Productivity Engine
@@ -4877,6 +4882,595 @@ function ReportView({tasks,technicianDirectory=[],activeStoreDirectory=[],onRefr
       referenceCount:reference.length
     };
   },[tasks,range,tech,region,store]);
+
+  const analysisHeader=h('div',{className:'analysis-page-head'},
+    h('div',{className:'analysis-page-copy'},
+      h('span',{className:'analysis-page-kicker'},'DATA ANALYSIS'),
+      h('h1',null,'تحلیل دیتا'),
+      h('p',null,'این بخش فقط روی داده‌های ثبت‌شده سامانه تحلیل انجام می‌دهد و نقاط قابل اقدام را از دل دیتای واقعی شبکه بیرون می‌کشد؛ بدون فرم، Workflow یا ثبت اطلاعات اضافه.')
+    ),
+    h('div',{className:'analysis-page-meta'},
+      h('div',null,h('span',null,'تعداد تیکت در دیتابیس'),h('b',null,tasks.length.toLocaleString('fa-IR'))),
+      h('div',null,h('span',null,'آخرین بروزرسانی'),h('b',null,lastUpdated?new Date(lastUpdated).toLocaleTimeString('fa-IR',{hour:'2-digit',minute:'2-digit'}):'—')),
+      h('button',{className:'refresh-btn',onClick:onRefresh,disabled:loading},loading?'در حال دریافت...':'↻ تازه‌سازی دیتا')
+    )
+  );
+
+  const analysisFilters=h('div',{className:'analysis-filter-bar'},
+    h('div',{className:'analysis-filter-title'},
+      h('b',null,'محدوده تحلیل'),
+      h('span',null,'Benchmark کشوری ثابت می‌ماند؛ این فیلترها فقط Scope مورد بررسی را تغییر می‌دهند.')
+    ),
+    h('div',{className:'analysis-filter-grid'},
+      h('label',null,
+        h('span',null,'بازه زمانی'),
+        h('select',{value:range,onChange:e=>setRange(e.target.value)},
+          h('option',{value:'all'},'کل داده'),
+          h('option',{value:'30'},'۳۰ تاریخ اخیر'),
+          h('option',{value:'7'},'۷ تاریخ اخیر'),
+          h('option',{value:'today'},'امروز')
+        )
+      ),
+      h('label',null,
+        h('span',null,'منطقه'),
+        h('select',{value:region,onChange:e=>{setRegion(e.target.value);setStore('all');}},
+          h('option',{value:'all'},'همه مناطق'),
+          ...regions.map(r=>h('option',{key:r,value:r},r))
+        )
+      ),
+      h('label',null,
+        h('span',null,'کارشناس'),
+        h('select',{value:tech,onChange:e=>setTech(e.target.value)},
+          h('option',{value:'all'},'همه کارشناسان'),
+          ...technicians.map(t=>h('option',{key:t,value:t},t))
+        )
+      ),
+      h('label',null,
+        h('span',null,'فروشگاه'),
+        h('select',{value:store,onChange:e=>setStore(e.target.value)},
+          h('option',{value:'all'},'همه فروشگاه‌ها'),
+          ...stores
+            .filter(s=>region==='all'||s.region===region)
+            .map(s=>h('option',{key:s.code,value:s.code},s.code+' — '+s.name))
+        )
+      )
+    )
+  );
+
+  // ======================================================
+  // Improvement Opportunities UI
+  // ======================================================
+  const improvementMoney=v=>moneyCompact(v)+' تومان';
+
+  const improvementCardData=[
+    {
+      key:'repeat',
+      number:improvement.repeatRows.length.toLocaleString('fa-IR'),
+      label:'الگوی خرابی تکراری',
+      money:improvementMoney(improvement.repeatExposure),
+      moneyLabel:'Repeat Cost Exposure',
+      note:improvement.repeatEventCount.toLocaleString('fa-IR')+' رخداد تکراری در فاصله حداکثر ۳۰ روز',
+      action:'تمرکز روی Root Cause و حذف مراجعه مجدد',
+      tone:'repeat'
+    },
+    {
+      key:'internal',
+      number:improvement.internalizableCount.toLocaleString('fa-IR'),
+      label:'برون‌سپاری قابل بررسی برای Internalize',
+      money:improvementMoney(improvement.internalizableServiceCost),
+      moneyLabel:'Service Cost ثبت‌شده',
+      note:'فقط Skill / Tool / Cash و فقط خرابی‌هایی که ≥۷۰٪ شبکه داخلی حل می‌کند',
+      action:'آموزش هدفمند، Tool Kit یا اصلاح تنخواه',
+      tone:'internal'
+    },
+    {
+      key:'outlier',
+      number:improvement.outlierRows.length.toLocaleString('fa-IR'),
+      label:'هزینه غیرعادی بالاتر از Benchmark',
+      money:improvementMoney(improvement.outlierVariance),
+      moneyLabel:'Cost Variance تحت بررسی',
+      note:'Median حداقل ۵ نمونه مشابه · آستانه ۵۰٪ و حداقل ۵۰۰ هزار تومان',
+      action:'بررسی Scope، Quantity، قطعه، پیمانکار و خطای ثبت',
+      tone:'outlier'
+    }
+  ];
+
+  const improvementCards=h('div',{className:'improve-card-grid'},
+    ...improvementCardData.map(card=>
+      h('button',{
+        key:card.key,
+        className:'improve-card '+card.tone+(improvementPanel===card.key?' active':''),
+        onClick:()=>setImprovementPanel(card.key)
+      },
+        h('div',{className:'improve-card-top'},
+          h('span',{className:'improve-card-label'},card.label),
+          h('span',{className:'improve-card-arrow'},'←')
+        ),
+        h('div',{className:'improve-card-number'},card.number),
+        h('div',{className:'improve-card-money'},
+          h('b',null,card.money),
+          h('span',null,card.moneyLabel)
+        ),
+        h('p',null,card.note),
+        h('div',{className:'improve-card-action'},card.action)
+      )
+    )
+  );
+
+  const repeatTableRows=improvement.repeatRows.slice(0,20).map((r,i)=>
+    h('tr',{key:r.key},
+      h('td',null,(i+1).toLocaleString('fa-IR')),
+      h('td',null,h('b',null,r.storeCode),h('small',null,r.storeName)),
+      h('td',null,r.region),
+      h('td',{className:'improve-issue-cell'},r.issue),
+      h('td',null,r.events.toLocaleString('fa-IR')),
+      h('td',null,h('strong',null,r.repeatEvents.toLocaleString('fa-IR'))),
+      h('td',null,r.lastGapDays.toLocaleString('fa-IR')+' روز'),
+      h('td',null,h('strong',{className:'improve-money danger'},improvementMoney(r.repeatCost))),
+      h('td',null,r.lastDate||'—')
+    )
+  );
+
+  const internalTableRows=improvement.internalRows.slice(0,20).map((r,i)=>
+    h('tr',{key:r.key},
+      h('td',null,(i+1).toLocaleString('fa-IR')),
+      h('td',null,r.region),
+      h('td',{className:'improve-issue-cell'},r.issue),
+      h('td',null,(r.nationalInternalRate*100).toLocaleString('fa-IR',{maximumFractionDigits:0})+'٪'),
+      h('td',null,(r.regionInternalRate*100).toLocaleString('fa-IR',{maximumFractionDigits:0})+'٪'),
+      h('td',null,h('strong',null,r.candidates.toLocaleString('fa-IR'))),
+      h('td',null,r.dominantReason),
+      h('td',null,h('strong',{className:'improve-money info'},improvementMoney(r.serviceCost)))
+    )
+  );
+
+  const outlierTableRows=improvement.outlierRows.slice(0,20).map((r,i)=>
+    h('tr',{key:'out-'+r.rowNumber},
+      h('td',null,(i+1).toLocaleString('fa-IR')),
+      h('td',null,h('b',null,r.ticketNumber||'—'),h('small',null,r.storeCode+' · '+r.storeName)),
+      h('td',null,r.region),
+      h('td',{className:'improve-issue-cell'},r.issue),
+      h('td',null,r.type==='outsourced'?'برون‌سپاری':'درون‌سپاری'),
+      h('td',null,h('strong',null,improvementMoney(r.actual))),
+      h('td',null,improvementMoney(r.benchmark)),
+      h('td',null,h('strong',{className:'improve-money danger'},'+'+improvementMoney(r.variance))),
+      h('td',null,r.samples.toLocaleString('fa-IR')),
+      h('td',{className:'improve-parts-cell'},r.parts||'—')
+    )
+  );
+
+  let improvementDrilldown=null;
+
+  if(improvementPanel==='repeat'){
+    improvementDrilldown=h('div',{className:'improve-drill'},
+      h('div',{className:'improve-drill-head'},
+        h('div',null,
+          h('h3',null,'خرابی تکراری · ۲۰ مورد مهم'),
+          h('p',null,'تعریف: همان فروشگاه + همان خرابی، با رخداد بعدی در فاصله حداکثر ۳۰ روز. مبلغ فقط هزینه نهایی رخدادهای بعد از اولین رخداد است.')
+        ),
+        h('span',{className:'improve-rule-badge'},'Saving نیست · Exposure است')
+      ),
+      improvement.repeatRows.length
+        ?h('div',{className:'improve-table-wrap'},
+          h('table',{className:'improve-table'},
+            h('thead',null,h('tr',null,
+              h('th',null,'#'),
+              h('th',null,'فروشگاه'),
+              h('th',null,'منطقه'),
+              h('th',null,'خرابی'),
+              h('th',null,'کل رخداد'),
+              h('th',null,'تکرار'),
+              h('th',null,'آخرین فاصله'),
+              h('th',null,'هزینه تکرار'),
+              h('th',null,'آخرین رخداد')
+            )),
+            h('tbody',null,...repeatTableRows)
+          )
+        )
+        :h('div',{className:'improve-empty'},'در محدوده فعلی خرابی تکراری واجد شرایط پیدا نشد.')
+    );
+  }
+
+  if(improvementPanel==='internal'){
+    improvementDrilldown=h('div',{className:'improve-drill'},
+      h('div',{className:'improve-drill-head'},
+        h('div',null,
+          h('h3',null,'برون‌سپاری قابل کاهش · ۲۰ الگوی مهم'),
+          h('p',null,'کاندید فقط وقتی ساخته می‌شود که علت Skill / Tool / Cash باشد و حداقل ۷۰٪ نمونه‌های همان خرابی در شبکه به‌صورت داخلی حل شده باشند.')
+        ),
+        h('span',{className:'improve-rule-badge blue'},'Benchmark = تجربه خود شبکه')
+      ),
+      improvement.internalRows.length
+        ?h('div',{className:'improve-table-wrap'},
+          h('table',{className:'improve-table'},
+            h('thead',null,h('tr',null,
+              h('th',null,'#'),
+              h('th',null,'منطقه'),
+              h('th',null,'خرابی'),
+              h('th',null,'حل داخلی کشور'),
+              h('th',null,'حل داخلی منطقه'),
+              h('th',null,'کاندید برون‌سپاری'),
+              h('th',null,'علت غالب'),
+              h('th',null,'Service Cost')
+            )),
+            h('tbody',null,...internalTableRows)
+          )
+        )
+        :h('div',{className:'improve-empty'},'در محدوده فعلی برون‌سپاری قابل Internalize با معیارهای تعیین‌شده پیدا نشد.')
+    );
+  }
+
+  if(improvementPanel==='outlier'){
+    improvementDrilldown=h('div',{className:'improve-drill'},
+      h('div',{className:'improve-drill-head'},
+        h('div',null,
+          h('h3',null,'هزینه غیرعادی · ۲۰ تیکت مهم'),
+          h('p',null,'مقایسه با Median خرابی مشابه و همان روش انجام کار. Quantity، Scope و نوع قطعه باید قبل از هر تصمیم مالی کنترل شود.')
+        ),
+        h('span',{className:'improve-rule-badge red'},'پرچم بررسی · نه اتلاف قطعی')
+      ),
+      improvement.outlierRows.length
+        ?h('div',{className:'improve-table-wrap'},
+          h('table',{className:'improve-table wide'},
+            h('thead',null,h('tr',null,
+              h('th',null,'#'),
+              h('th',null,'تیکت / فروشگاه'),
+              h('th',null,'منطقه'),
+              h('th',null,'خرابی'),
+              h('th',null,'روش'),
+              h('th',null,'هزینه واقعی'),
+              h('th',null,'Benchmark'),
+              h('th',null,'Variance'),
+              h('th',null,'نمونه'),
+              h('th',null,'قطعات ثبت‌شده')
+            )),
+            h('tbody',null,...outlierTableRows)
+          )
+        )
+        :h('div',{className:'improve-empty'},'در محدوده فعلی Cost Outlier واجد شرایط پیدا نشد.')
+    );
+  }
+
+  const improvementTrendLabels=improvement.trendBuckets.map(x=>x.label);
+
+  const repeatTrendData={
+    labels:improvementTrendLabels,
+    datasets:[{
+      label:'Repeat Cost / 100 Ticket',
+      data:improvement.trendBuckets.map(x=>x.repeatPer100),
+      borderColor:'#a35b32',
+      backgroundColor:'rgba(163,91,50,.10)',
+      fill:true,
+      tension:.35,
+      pointRadius:3,
+      borderWidth:2
+    }]
+  };
+
+  const internalTrendData={
+    labels:improvementTrendLabels,
+    datasets:[{
+      label:'Internalizable Outsource Rate',
+      data:improvement.trendBuckets.map(x=>x.internalizableRate),
+      borderColor:'#315f89',
+      backgroundColor:'rgba(49,95,137,.10)',
+      fill:true,
+      tension:.35,
+      pointRadius:3,
+      borderWidth:2
+    }]
+  };
+
+  const varianceTrendData={
+    labels:improvementTrendLabels,
+    datasets:[{
+      label:'Cost Variance Exposure',
+      data:improvement.trendBuckets.map(x=>x.varianceRate),
+      borderColor:'#7d5c8d',
+      backgroundColor:'rgba(125,92,141,.10)',
+      fill:true,
+      tension:.35,
+      pointRadius:3,
+      borderWidth:2
+    }]
+  };
+
+  const trendMoneyOptions={
+    responsive:true,
+    maintainAspectRatio:false,
+    plugins:{
+      legend:{display:false},
+      tooltip:{callbacks:{label:ctx=>'Repeat Cost / 100 Ticket: '+moneyCompact(ctx.raw)+' تومان'}}
+    },
+    scales:{
+      x:{grid:{display:false},ticks:{font:{size:7},maxRotation:0,autoSkip:true,maxTicksLimit:6}},
+      y:{beginAtZero:true,ticks:{font:{size:7},callback:v=>moneyCompact(v)},grid:{color:'rgba(0,0,0,.045)'}}
+    }
+  };
+
+  const trendPercentOptions={
+    responsive:true,
+    maintainAspectRatio:false,
+    plugins:{
+      legend:{display:false},
+      tooltip:{callbacks:{label:ctx=>Number(ctx.raw||0).toLocaleString('fa-IR',{maximumFractionDigits:1})+'٪'}}
+    },
+    scales:{
+      x:{grid:{display:false},ticks:{font:{size:7},maxRotation:0,autoSkip:true,maxTicksLimit:6}},
+      y:{beginAtZero:true,ticks:{font:{size:7},callback:v=>v+'٪'},grid:{color:'rgba(0,0,0,.045)'}}
+    }
+  };
+
+  const improvementTrend=improvement.trendBuckets.length
+    ?h('div',{className:'improve-trend-block'},
+      h('div',{className:'improve-trend-head'},
+        h('div',null,
+          h('h3',null,'آیا داریم بهتر می‌شویم؟'),
+          h('p',null,'سه شاخص Normalize شده در ۶ بازه هفت‌روزه؛ افزایش حجم تیکت به‌تنهایی عملکرد را بدتر نشان نمی‌دهد.')
+        ),
+        h('span',{className:'improve-scope-note'},
+          improvement.targetCount.toLocaleString('fa-IR')+' Reviewed در محدوده تحلیل'
+        )
+      ),
+      h('div',{className:'improve-trend-grid'},
+        h('div',{className:'improve-mini-chart'},
+          h('div',{className:'improve-mini-title'},
+            h('b',null,'Repeat Cost / 100 Ticket'),
+            h('span',null,'کمتر بهتر است')
+          ),
+          h('div',{className:'improve-chart-box'},h(ChartBox,{type:'line',data:repeatTrendData,options:trendMoneyOptions}))
+        ),
+        h('div',{className:'improve-mini-chart'},
+          h('div',{className:'improve-mini-title'},
+            h('b',null,'Internalizable Outsource Rate'),
+            h('span',null,'کمتر بهتر است')
+          ),
+          h('div',{className:'improve-chart-box'},h(ChartBox,{type:'line',data:internalTrendData,options:trendPercentOptions}))
+        ),
+        h('div',{className:'improve-mini-chart'},
+          h('div',{className:'improve-mini-title'},
+            h('b',null,'Cost Variance Exposure'),
+            h('span',null,'کمتر بهتر است')
+          ),
+          h('div',{className:'improve-chart-box'},h(ChartBox,{type:'line',data:varianceTrendData,options:trendPercentOptions}))
+        )
+      )
+    )
+    :null;
+
+  const improvementSection=h('section',{className:'improve-section'},
+    h('div',{className:'improve-section-head'},
+      h('div',null,
+        h('span',{className:'improve-kicker'},'ACTIONABLE INSIGHTS'),
+        h('h2',null,'فرصت‌های بهبود در دیتای فعلی'),
+        h('p',null,'این بخش Saving اعلام نمی‌کند؛ فقط جاهایی را نشان می‌دهد که مدیر باید بررسی و اقدام کند. Benchmarkها از داده Reviewed خود شبکه ساخته می‌شوند.')
+      ),
+      h('div',{className:'improve-method'},
+        h('b',null,'مبنای تحلیل'),
+        h('span',null,'Reviewed + بازه زمانی انتخاب‌شده'),
+        h('small',null,'فیلتر منطقه / فروشگاه / کارشناس روی Opportunity اعمال می‌شود؛ Benchmark کشوری مستقل باقی می‌ماند.')
+      )
+    ),
+    improvementCards,
+    improvementDrilldown,
+    heavyVisualsReady?improvementTrend:null
+  );
+
+  return h(React.Fragment,null,
+    analysisHeader,
+    analysisFilters,
+    improvementSection
+  );
+}
+
+
+
+
+function ManagerView({ tasks, updateTask, showToast, refreshTasks, managerLoading, lastUpdated, currentUser, technicianDirectory, activeStoreDirectory }){
+  const [tab, setTab] = useState('report');
+  const [storeFilter, setStoreFilter] = useState('');
+  const preOpeningTasks=tasks.filter(t=>isPreOpeningLocation(t.locationType,t.storeCode));
+  const preOpeningProjects=new Set(preOpeningTasks.map(t=>String(t.storeCode||'')).filter(Boolean)).size;
+
+  const review = async (ticket, note) => {
+    await updateTask(ticket,{reviewStatus:'reviewed',managerNote:note,__fastReview:true});
+    showToast('تیکت بررسی شد');
+  };
+  const reject = async (ticket, note) => {
+    await updateTask(ticket,{reviewStatus:'rejected',managerNote:note,__fastReview:true});
+    showToast('تیکت رد شد');
+  };
+  const edit = async (ticket, newDraft) => {
+    const original=ticket||{};
+    const causePatch=newDraft.type==='internal'
+      ? {finalCause:newDraft.initialCause||'',finalCauseDetails:newDraft.initialCauseDetails||''}
+      : (original.type==='outsourced'&&original.workStatus==='completed'
+          ? {finalCause:original.finalCause||'',finalCauseDetails:original.finalCauseDetails||''}
+          : {finalCause:'',finalCauseDetails:''});
+    await updateTask(ticket,{...newDraft,...causePatch,reviewStatus:'reviewed'});
+    showToast('تیکت اصلاح و تأیید شد');
+  };
+
+  const editCost = async (ticket, cost) => {
+    await updateTask(ticket,cost);
+    showToast(cost.costStatus==='no_cost'?'تیکت «بدون هزینه مستقیم» ثبت شد':(cost.costStatus==='pending'?'هزینه در وضعیت انتظار ثبت شد':'هزینه تیکت به‌روزرسانی شد'));
+  };
+
+  const filtered = tasks.filter(t => {const q=storeFilter.trim().toLowerCase();return !q||String(t.storeCode||'').toLowerCase().includes(q)||String(t.storeName||'').toLowerCase().includes(q)||String(t.region||'').toLowerCase().includes(q)||String(t.ticketNumber||'').toLowerCase().includes(q);});
+  const pending = filtered.filter(t => !t.reviewStatus || t.reviewStatus==='pending');
+
+  return React.createElement(React.Fragment,null,
+    React.createElement('div',{className:'tabs manager-main-tabs'},
+      React.createElement('button',{className:tab==='report'?'active':'',onClick:()=>setTab('report')},'فروشگاه‌های فعال'),
+      React.createElement('button',{className:tab==='analysis'?'active analysis-main-tab':'analysis-main-tab',onClick:()=>setTab('analysis')},'تحلیل دیتا'),
+      React.createElement('button',{className:tab==='preopening'?'active':'',onClick:()=>setTab('preopening')},'پیش‌افتتاح'+(preOpeningProjects?' ('+preOpeningProjects+')':'')),
+      React.createElement('button',{className:tab==='pending'?'active':'',onClick:()=>setTab('pending')},'در انتظار ('+pending.length+')'),
+      React.createElement('button',{className:tab==='all'?'active':'',onClick:()=>setTab('all')},'همه تیکت‌ها')
+    ),
+    !['report','preopening','analysis'].includes(tab) && React.createElement('div',{className:'filter-row'},
+      React.createElement('input',{placeholder:'جست‌وجوی شماره تیکت، کد، نام فروشگاه یا منطقه...',value:storeFilter,onChange:e=>setStoreFilter(e.target.value)}),
+      React.createElement('button',{className:'refresh-btn',onClick:refreshTasks,disabled:managerLoading},managerLoading?'در حال دریافت...':'↻ تازه‌سازی')
+    ),
+    tab==='pending' && (pending.length===0
+      ? React.createElement('div',{className:'card'},React.createElement('div',{className:'empty'},managerLoading?'در حال دریافت...':'تیکتی در انتظار بررسی نیست'))
+      : pending.map(t=>React.createElement(TaskItem,{key:ticketClientKey(t),t,onReview:review,onReject:reject,onEdit:edit,onCostEdit:editCost}))),
+    tab==='all' && (filtered.length===0
+      ? React.createElement('div',{className:'card'},React.createElement('div',{className:'empty'},managerLoading?'در حال دریافت...':'تیکتی ثبت نشده'))
+      : filtered.map(t=>React.createElement(TaskItem,{key:ticketClientKey(t),t,onReview:review,onReject:reject,onEdit:edit,onCostEdit:editCost}))),
+    tab==='report' && React.createElement(ReportView,{
+      tasks:tasks.filter(t=>!isPreOpeningLocation(t.locationType,t.storeCode)),
+      technicianDirectory,
+      activeStoreDirectory,
+      onRefresh:refreshTasks,
+      loading:managerLoading,
+      lastUpdated
+    }),
+    tab==='analysis' && React.createElement(DataAnalysisView,{
+      tasks:tasks.filter(t=>!isPreOpeningLocation(t.locationType,t.storeCode)),
+      onRefresh:refreshTasks,
+      loading:managerLoading,
+      lastUpdated
+    }),
+    tab==='preopening' && React.createElement(PreOpeningManagerDashboard,{
+      tasks,
+      onRefresh:refreshTasks,
+      loading:managerLoading,
+      lastUpdated,
+      currentUser
+    })
+  );
+}
+
+function normalizeFaDigits(v){
+  return String(v||'')
+    .replace(/[۰-۹]/g,d=>'۰۱۲۳۴۵۶۷۸۹'.indexOf(d))
+    .replace(/[٠-٩]/g,d=>'٠١٢٣٤٥٦٧٨٩'.indexOf(d));
+}
+function normalizeTicketDateLabel(value){
+  const clean=normalizeFaDigits(value)
+    .replace(/[\u200c\u200e\u200f\u202a-\u202e]/g,'')
+    .replace(/[.\-]/g,'/')
+    .replace(/\s+/g,'')
+    .replace(/\/+/g,'/')
+    .trim();
+  const parts=clean.match(/\d+/g);
+  if(!parts||parts.length<3)return clean;
+  return [Number(parts[0]),Number(parts[1]),Number(parts[2])].join('/');
+}
+function ticketDate(t){
+  return normalizeTicketDateLabel(t.dateText || (t.createdAt?dateKey(t.createdAt):''));
+}
+function ticketDateSortValue(value){
+  const parts=normalizeTicketDateLabel(value).match(/\d+/g);
+  if(!parts||parts.length<3)return Number.MAX_SAFE_INTEGER;
+  const year=Number(parts[0])||0;
+  const month=Number(parts[1])||0;
+  const day=Number(parts[2])||0;
+  return year*10000+month*100+day;
+}
+function compareTicketDateLabels(a,b){
+  const diff=ticketDateSortValue(a)-ticketDateSortValue(b);
+  if(Number.isFinite(diff)&&diff!==0)return diff;
+  return String(a||'').localeCompare(String(b||''),'fa',{numeric:true});
+}
+function reviewLabel(v){return v==='reviewed'?'بررسی‌شده':v==='rejected'?'ردشده':v==='cancelled'?'لغوشده':'در انتظار';}
+function pct(n,d){return d?Math.round(n/d*100):0;}
+function countBy(list,keyFn){const out={};list.forEach(x=>{const k=keyFn(x);if(k)out[k]=(out[k]||0)+1;});return out;}
+function sortedEntries(obj,limit){return Object.entries(obj).sort((a,b)=>b[1]-a[1]).slice(0,limit||999);}
+
+function ChartBox({type,data,options,small}){
+  const canvasRef=useRef(null); const chartRef=useRef(null);
+  useEffect(()=>{
+    if(!window.Chart||!canvasRef.current)return;
+    if(chartRef.current)chartRef.current.destroy();
+    window.Chart.defaults.font.family='Vazirmatn';
+    window.Chart.defaults.color='#5b645f';
+    chartRef.current=new window.Chart(canvasRef.current,{type,data,options});
+    return()=>{if(chartRef.current)chartRef.current.destroy();};
+  },[type,JSON.stringify(data),JSON.stringify(options)]);
+  return React.createElement('div',{className:'chart-wrap'+(small?' small':'')},React.createElement('canvas',{ref:canvasRef}));
+}
+
+function Kpi({label,value,note,icon,tone}){
+  return React.createElement('div',{className:'kpi '+(tone||'')},
+    React.createElement('div',{className:'kpi-top'},React.createElement('span',{className:'kpi-label'},label),React.createElement('span',{className:'kpi-icon'},icon)),
+    React.createElement('b',{className:'kpi-value'},value),React.createElement('span',{className:'kpi-note'},note||'')
+  );
+}
+
+function ReportView({tasks,technicianDirectory=[],activeStoreDirectory=[],onRefresh,loading,lastUpdated}){
+  const h=React.createElement;
+  const [range,setRange]=useState('all');
+  const [heavyVisualsReady,setHeavyVisualsReady]=useState(false);
+  const [tech,setTech]=useState('all');
+  const [region,setRegion]=useState('all');
+  const [store,setStore]=useState('all');
+  const [type,setType]=useState('all');
+  const [status,setStatus]=useState('all');
+  const [work,setWork]=useState('all');
+  const [expandedStore,setExpandedStore]=useState('');
+  const [leaderPage,setLeaderPage]=useState(0);
+  const [technicianCostView,setTechnicianCostView]=useState('chart');
+  const [regionCostView,setRegionCostView]=useState('chart');
+
+  const allDates=[...new Set(tasks.map(ticketDate).filter(Boolean))].sort(compareTicketDateLabels);
+  const today=normalizeTicketDateLabel(new Date().toLocaleDateString('fa-IR'));
+  const allowedDates=range==='7'?new Set(allDates.slice(-7)):range==='30'?new Set(allDates.slice(-30)):null;
+  const technicians=[...new Set([
+    ...technicianDirectory.map(x=>String((x&&x.name)||'').trim()).filter(Boolean),
+    ...tasks.map(t=>t.technician).filter(Boolean)
+  ])].sort((a,b)=>a.localeCompare(b,'fa'));
+  const regions=[...new Set(tasks.map(t=>t.region).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'fa'));
+  const storeLookup={};
+  activeStoreDirectory.forEach(s=>{
+    const code=String((s&&s.code)||'').trim();
+    if(code)storeLookup[code]={code,name:s.name||('فروشگاه '+code),region:s.region||'',city:s.city||''};
+  });
+  tasks.forEach(t=>{
+    const code=String(t.storeCode||'');
+    if(code&&!storeLookup[code])storeLookup[code]={code,name:t.storeName||('فروشگاه '+code),region:t.region||'',city:''};
+  });
+  const stores=Object.values(storeLookup).sort((a,b)=>a.code.localeCompare(b.code,'fa',{numeric:true}));
+
+  useEffect(()=>{
+    setHeavyVisualsReady(false);
+    const timer=setTimeout(()=>setHeavyVisualsReady(true),90);
+    return()=>clearTimeout(timer);
+  },[tasks,range,tech,region,store,type,status,work]);
+
+  useEffect(()=>{
+    setLeaderPage(0);
+  },[range,tech,region,store,type,status,work]);
+
+  const relevant=tasks.filter(t=>{
+    const d=ticketDate(t);
+    if(range==='today'&&d!==today)return false;
+    if(allowedDates&&!allowedDates.has(d))return false;
+    if(tech!=='all'&&t.technician!==tech)return false;
+    if(region!=='all'&&t.region!==region)return false;
+    if(store!=='all'&&String(t.storeCode)!==store)return false;
+    if(type!=='all'&&t.type!==type)return false;
+    if(status!=='all'&&(t.reviewStatus||'pending')!==status)return false;
+    if(work!=='all'&&(t.workStatus||(t.type==='outsourced'?'open':'completed'))!==work)return false;
+    return true;
+  });
+
+  const isCompletedForCost=t=>{
+    if((t.reviewStatus||'')==='cancelled'||t.workStatus==='cancelled')return false;
+    return t.type==='internal'||t.workStatus==='completed';
+  };
+  const isFinalCost=t=>isCompletedForCost(t)&&t.costStatus==='final';
+  const isNoCost=t=>isCompletedForCost(t)&&t.costStatus==='no_cost';
+  const isPendingCost=t=>isCompletedForCost(t)&&t.costStatus==='pending';
+
+  const moneyCompact=v=>{
+    const n=Number(v||0);
+    if(n>=1e9)return (n/1e9).toLocaleString('fa-IR',{maximumFractionDigits:1})+' میلیارد';
+    if(n>=1e6)return (n/1e6).toLocaleString('fa-IR',{maximumFractionDigits:1})+' میلیون';
+    if(n>=1e3)return (n/1e3).toLocaleString('fa-IR',{maximumFractionDigits:0})+' هزار';
+    return n.toLocaleString('fa-IR');
+  };
+
 
   const currentCostTickets=relevant.filter(isFinalCost);
   const currentNoCost=relevant.filter(isNoCost);
@@ -5905,325 +6499,6 @@ function ReportView({tasks,technicianDirectory=[],activeStoreDirectory=[],onRefr
   );
 
 
-  // ======================================================
-  // Improvement Opportunities UI
-  // ======================================================
-  const improvementMoney=v=>moneyCompact(v)+' تومان';
-
-  const improvementCardData=[
-    {
-      key:'repeat',
-      number:improvement.repeatRows.length.toLocaleString('fa-IR'),
-      label:'الگوی خرابی تکراری',
-      money:improvementMoney(improvement.repeatExposure),
-      moneyLabel:'Repeat Cost Exposure',
-      note:improvement.repeatEventCount.toLocaleString('fa-IR')+' رخداد تکراری در فاصله حداکثر ۳۰ روز',
-      action:'تمرکز روی Root Cause و حذف مراجعه مجدد',
-      tone:'repeat'
-    },
-    {
-      key:'internal',
-      number:improvement.internalizableCount.toLocaleString('fa-IR'),
-      label:'برون‌سپاری قابل بررسی برای Internalize',
-      money:improvementMoney(improvement.internalizableServiceCost),
-      moneyLabel:'Service Cost ثبت‌شده',
-      note:'فقط Skill / Tool / Cash و فقط خرابی‌هایی که ≥۷۰٪ شبکه داخلی حل می‌کند',
-      action:'آموزش هدفمند، Tool Kit یا اصلاح تنخواه',
-      tone:'internal'
-    },
-    {
-      key:'outlier',
-      number:improvement.outlierRows.length.toLocaleString('fa-IR'),
-      label:'هزینه غیرعادی بالاتر از Benchmark',
-      money:improvementMoney(improvement.outlierVariance),
-      moneyLabel:'Cost Variance تحت بررسی',
-      note:'Median حداقل ۵ نمونه مشابه · آستانه ۵۰٪ و حداقل ۵۰۰ هزار تومان',
-      action:'بررسی Scope، Quantity، قطعه، پیمانکار و خطای ثبت',
-      tone:'outlier'
-    }
-  ];
-
-  const improvementCards=h('div',{className:'improve-card-grid'},
-    ...improvementCardData.map(card=>
-      h('button',{
-        key:card.key,
-        className:'improve-card '+card.tone+(improvementPanel===card.key?' active':''),
-        onClick:()=>setImprovementPanel(card.key)
-      },
-        h('div',{className:'improve-card-top'},
-          h('span',{className:'improve-card-label'},card.label),
-          h('span',{className:'improve-card-arrow'},'←')
-        ),
-        h('div',{className:'improve-card-number'},card.number),
-        h('div',{className:'improve-card-money'},
-          h('b',null,card.money),
-          h('span',null,card.moneyLabel)
-        ),
-        h('p',null,card.note),
-        h('div',{className:'improve-card-action'},card.action)
-      )
-    )
-  );
-
-  const repeatTableRows=improvement.repeatRows.slice(0,20).map((r,i)=>
-    h('tr',{key:r.key},
-      h('td',null,(i+1).toLocaleString('fa-IR')),
-      h('td',null,h('b',null,r.storeCode),h('small',null,r.storeName)),
-      h('td',null,r.region),
-      h('td',{className:'improve-issue-cell'},r.issue),
-      h('td',null,r.events.toLocaleString('fa-IR')),
-      h('td',null,h('strong',null,r.repeatEvents.toLocaleString('fa-IR'))),
-      h('td',null,r.lastGapDays.toLocaleString('fa-IR')+' روز'),
-      h('td',null,h('strong',{className:'improve-money danger'},improvementMoney(r.repeatCost))),
-      h('td',null,r.lastDate||'—')
-    )
-  );
-
-  const internalTableRows=improvement.internalRows.slice(0,20).map((r,i)=>
-    h('tr',{key:r.key},
-      h('td',null,(i+1).toLocaleString('fa-IR')),
-      h('td',null,r.region),
-      h('td',{className:'improve-issue-cell'},r.issue),
-      h('td',null,(r.nationalInternalRate*100).toLocaleString('fa-IR',{maximumFractionDigits:0})+'٪'),
-      h('td',null,(r.regionInternalRate*100).toLocaleString('fa-IR',{maximumFractionDigits:0})+'٪'),
-      h('td',null,h('strong',null,r.candidates.toLocaleString('fa-IR'))),
-      h('td',null,r.dominantReason),
-      h('td',null,h('strong',{className:'improve-money info'},improvementMoney(r.serviceCost)))
-    )
-  );
-
-  const outlierTableRows=improvement.outlierRows.slice(0,20).map((r,i)=>
-    h('tr',{key:'out-'+r.rowNumber},
-      h('td',null,(i+1).toLocaleString('fa-IR')),
-      h('td',null,h('b',null,r.ticketNumber||'—'),h('small',null,r.storeCode+' · '+r.storeName)),
-      h('td',null,r.region),
-      h('td',{className:'improve-issue-cell'},r.issue),
-      h('td',null,r.type==='outsourced'?'برون‌سپاری':'درون‌سپاری'),
-      h('td',null,h('strong',null,improvementMoney(r.actual))),
-      h('td',null,improvementMoney(r.benchmark)),
-      h('td',null,h('strong',{className:'improve-money danger'},'+'+improvementMoney(r.variance))),
-      h('td',null,r.samples.toLocaleString('fa-IR')),
-      h('td',{className:'improve-parts-cell'},r.parts||'—')
-    )
-  );
-
-  let improvementDrilldown=null;
-
-  if(improvementPanel==='repeat'){
-    improvementDrilldown=h('div',{className:'improve-drill'},
-      h('div',{className:'improve-drill-head'},
-        h('div',null,
-          h('h3',null,'خرابی تکراری · ۲۰ مورد مهم'),
-          h('p',null,'تعریف: همان فروشگاه + همان خرابی، با رخداد بعدی در فاصله حداکثر ۳۰ روز. مبلغ فقط هزینه نهایی رخدادهای بعد از اولین رخداد است.')
-        ),
-        h('span',{className:'improve-rule-badge'},'Saving نیست · Exposure است')
-      ),
-      improvement.repeatRows.length
-        ?h('div',{className:'improve-table-wrap'},
-          h('table',{className:'improve-table'},
-            h('thead',null,h('tr',null,
-              h('th',null,'#'),
-              h('th',null,'فروشگاه'),
-              h('th',null,'منطقه'),
-              h('th',null,'خرابی'),
-              h('th',null,'کل رخداد'),
-              h('th',null,'تکرار'),
-              h('th',null,'آخرین فاصله'),
-              h('th',null,'هزینه تکرار'),
-              h('th',null,'آخرین رخداد')
-            )),
-            h('tbody',null,...repeatTableRows)
-          )
-        )
-        :h('div',{className:'improve-empty'},'در محدوده فعلی خرابی تکراری واجد شرایط پیدا نشد.')
-    );
-  }
-
-  if(improvementPanel==='internal'){
-    improvementDrilldown=h('div',{className:'improve-drill'},
-      h('div',{className:'improve-drill-head'},
-        h('div',null,
-          h('h3',null,'برون‌سپاری قابل کاهش · ۲۰ الگوی مهم'),
-          h('p',null,'کاندید فقط وقتی ساخته می‌شود که علت Skill / Tool / Cash باشد و حداقل ۷۰٪ نمونه‌های همان خرابی در شبکه به‌صورت داخلی حل شده باشند.')
-        ),
-        h('span',{className:'improve-rule-badge blue'},'Benchmark = تجربه خود شبکه')
-      ),
-      improvement.internalRows.length
-        ?h('div',{className:'improve-table-wrap'},
-          h('table',{className:'improve-table'},
-            h('thead',null,h('tr',null,
-              h('th',null,'#'),
-              h('th',null,'منطقه'),
-              h('th',null,'خرابی'),
-              h('th',null,'حل داخلی کشور'),
-              h('th',null,'حل داخلی منطقه'),
-              h('th',null,'کاندید برون‌سپاری'),
-              h('th',null,'علت غالب'),
-              h('th',null,'Service Cost')
-            )),
-            h('tbody',null,...internalTableRows)
-          )
-        )
-        :h('div',{className:'improve-empty'},'در محدوده فعلی برون‌سپاری قابل Internalize با معیارهای تعیین‌شده پیدا نشد.')
-    );
-  }
-
-  if(improvementPanel==='outlier'){
-    improvementDrilldown=h('div',{className:'improve-drill'},
-      h('div',{className:'improve-drill-head'},
-        h('div',null,
-          h('h3',null,'هزینه غیرعادی · ۲۰ تیکت مهم'),
-          h('p',null,'مقایسه با Median خرابی مشابه و همان روش انجام کار. Quantity، Scope و نوع قطعه باید قبل از هر تصمیم مالی کنترل شود.')
-        ),
-        h('span',{className:'improve-rule-badge red'},'پرچم بررسی · نه اتلاف قطعی')
-      ),
-      improvement.outlierRows.length
-        ?h('div',{className:'improve-table-wrap'},
-          h('table',{className:'improve-table wide'},
-            h('thead',null,h('tr',null,
-              h('th',null,'#'),
-              h('th',null,'تیکت / فروشگاه'),
-              h('th',null,'منطقه'),
-              h('th',null,'خرابی'),
-              h('th',null,'روش'),
-              h('th',null,'هزینه واقعی'),
-              h('th',null,'Benchmark'),
-              h('th',null,'Variance'),
-              h('th',null,'نمونه'),
-              h('th',null,'قطعات ثبت‌شده')
-            )),
-            h('tbody',null,...outlierTableRows)
-          )
-        )
-        :h('div',{className:'improve-empty'},'در محدوده فعلی Cost Outlier واجد شرایط پیدا نشد.')
-    );
-  }
-
-  const improvementTrendLabels=improvement.trendBuckets.map(x=>x.label);
-
-  const repeatTrendData={
-    labels:improvementTrendLabels,
-    datasets:[{
-      label:'Repeat Cost / 100 Ticket',
-      data:improvement.trendBuckets.map(x=>x.repeatPer100),
-      borderColor:'#a35b32',
-      backgroundColor:'rgba(163,91,50,.10)',
-      fill:true,
-      tension:.35,
-      pointRadius:3,
-      borderWidth:2
-    }]
-  };
-
-  const internalTrendData={
-    labels:improvementTrendLabels,
-    datasets:[{
-      label:'Internalizable Outsource Rate',
-      data:improvement.trendBuckets.map(x=>x.internalizableRate),
-      borderColor:'#315f89',
-      backgroundColor:'rgba(49,95,137,.10)',
-      fill:true,
-      tension:.35,
-      pointRadius:3,
-      borderWidth:2
-    }]
-  };
-
-  const varianceTrendData={
-    labels:improvementTrendLabels,
-    datasets:[{
-      label:'Cost Variance Exposure',
-      data:improvement.trendBuckets.map(x=>x.varianceRate),
-      borderColor:'#7d5c8d',
-      backgroundColor:'rgba(125,92,141,.10)',
-      fill:true,
-      tension:.35,
-      pointRadius:3,
-      borderWidth:2
-    }]
-  };
-
-  const trendMoneyOptions={
-    responsive:true,
-    maintainAspectRatio:false,
-    plugins:{
-      legend:{display:false},
-      tooltip:{callbacks:{label:ctx=>'Repeat Cost / 100 Ticket: '+moneyCompact(ctx.raw)+' تومان'}}
-    },
-    scales:{
-      x:{grid:{display:false},ticks:{font:{size:7},maxRotation:0,autoSkip:true,maxTicksLimit:6}},
-      y:{beginAtZero:true,ticks:{font:{size:7},callback:v=>moneyCompact(v)},grid:{color:'rgba(0,0,0,.045)'}}
-    }
-  };
-
-  const trendPercentOptions={
-    responsive:true,
-    maintainAspectRatio:false,
-    plugins:{
-      legend:{display:false},
-      tooltip:{callbacks:{label:ctx=>Number(ctx.raw||0).toLocaleString('fa-IR',{maximumFractionDigits:1})+'٪'}}
-    },
-    scales:{
-      x:{grid:{display:false},ticks:{font:{size:7},maxRotation:0,autoSkip:true,maxTicksLimit:6}},
-      y:{beginAtZero:true,ticks:{font:{size:7},callback:v=>v+'٪'},grid:{color:'rgba(0,0,0,.045)'}}
-    }
-  };
-
-  const improvementTrend=improvement.trendBuckets.length
-    ?h('div',{className:'improve-trend-block'},
-      h('div',{className:'improve-trend-head'},
-        h('div',null,
-          h('h3',null,'آیا داریم بهتر می‌شویم؟'),
-          h('p',null,'سه شاخص Normalize شده در ۶ بازه هفت‌روزه؛ افزایش حجم تیکت به‌تنهایی عملکرد را بدتر نشان نمی‌دهد.')
-        ),
-        h('span',{className:'improve-scope-note'},
-          improvement.targetCount.toLocaleString('fa-IR')+' Reviewed در محدوده تحلیل'
-        )
-      ),
-      h('div',{className:'improve-trend-grid'},
-        h('div',{className:'improve-mini-chart'},
-          h('div',{className:'improve-mini-title'},
-            h('b',null,'Repeat Cost / 100 Ticket'),
-            h('span',null,'کمتر بهتر است')
-          ),
-          h('div',{className:'improve-chart-box'},h(ChartBox,{type:'line',data:repeatTrendData,options:trendMoneyOptions}))
-        ),
-        h('div',{className:'improve-mini-chart'},
-          h('div',{className:'improve-mini-title'},
-            h('b',null,'Internalizable Outsource Rate'),
-            h('span',null,'کمتر بهتر است')
-          ),
-          h('div',{className:'improve-chart-box'},h(ChartBox,{type:'line',data:internalTrendData,options:trendPercentOptions}))
-        ),
-        h('div',{className:'improve-mini-chart'},
-          h('div',{className:'improve-mini-title'},
-            h('b',null,'Cost Variance Exposure'),
-            h('span',null,'کمتر بهتر است')
-          ),
-          h('div',{className:'improve-chart-box'},h(ChartBox,{type:'line',data:varianceTrendData,options:trendPercentOptions}))
-        )
-      )
-    )
-    :null;
-
-  const improvementSection=h('section',{className:'improve-section'},
-    h('div',{className:'improve-section-head'},
-      h('div',null,
-        h('span',{className:'improve-kicker'},'ACTIONABLE INSIGHTS'),
-        h('h2',null,'فرصت‌های بهبود در دیتای فعلی'),
-        h('p',null,'این بخش Saving اعلام نمی‌کند؛ فقط جاهایی را نشان می‌دهد که مدیر باید بررسی و اقدام کند. Benchmarkها از داده Reviewed خود شبکه ساخته می‌شوند.')
-      ),
-      h('div',{className:'improve-method'},
-        h('b',null,'مبنای تحلیل'),
-        h('span',null,'Reviewed + بازه زمانی انتخاب‌شده'),
-        h('small',null,'فیلتر منطقه / فروشگاه / کارشناس روی Opportunity اعمال می‌شود؛ Benchmark کشوری مستقل باقی می‌ماند.')
-      )
-    ),
-    improvementCards,
-    improvementDrilldown,
-    heavyVisualsReady?improvementTrend:null
-  );
-
   const detailStatus=(t)=>{
     const s=t.reviewStatus||'pending';
     if(s==='reviewed')return {label:'بررسی‌شده',cls:'status-good'};
@@ -6314,7 +6589,6 @@ function ReportView({tasks,technicianDirectory=[],activeStoreDirectory=[],onRefr
     filters,
     kpis,
     costKpis,
-    improvementSection,
     heavyVisualsReady?overview:h('div',{className:'dash-card dashboard-defer-card'},h('div',{className:'dash-loading-line'},'در حال آماده‌سازی نمودارهای عملیاتی...')),
     people,
     regionsSection,
@@ -6675,7 +6949,7 @@ function ExecutiveDashboard({tasks,onRefresh,loading,lastUpdated,currentUser,onL
 
 /* ---------- اپ اصلی ---------- */
 
-/* ---------- Boardroom CEO Dashboard — نسخه 11.7 ---------- */
+/* ---------- Boardroom CEO Dashboard — نسخه 11.8 ---------- */
 function CEODashboard({tasks,onRefresh,loading,lastUpdated,currentUser,onLogout}){
   const h=React.createElement;
   const [range,setRange]=useState('90');
@@ -6967,7 +7241,7 @@ function CEODashboard({tasks,onRefresh,loading,lastUpdated,currentUser,onLogout}
         )
       ),
 
-      h('footer',{className:'c8-footer'},h('span',null,'نسخه 11.7 · دسترسی فقط خواندنی مدیرعامل'),h('span',null,'ریسک فروشگاه‌های فعال و فعالیت‌های پیش‌افتتاح به‌صورت جداگانه تحلیل می‌شوند.'))
+      h('footer',{className:'c8-footer'},h('span',null,'نسخه 11.8 · دسترسی فقط خواندنی مدیرعامل'),h('span',null,'ریسک فروشگاه‌های فعال و فعالیت‌های پیش‌افتتاح به‌صورت جداگانه تحلیل می‌شوند.'))
     ),
 
     modal
@@ -7386,7 +7660,7 @@ function RegionalDashboard({tasks,onRefresh,loading,lastUpdated,currentUser,onLo
       ),
 
       h('footer',{className:'rm-footer'},
-        h('span',null,'نسخه 11.7 · دسترسی مدیر منطقه · فقط خواندنی'),
+        h('span',null,'نسخه 11.8 · دسترسی مدیر منطقه · فقط خواندنی'),
         h('span',null,'فیلتر دسترسی در سرور انجام می‌شود و فقط اطلاعات مناطق تخصیص‌یافته به این حساب ارسال می‌شود.')
       )
     ),
@@ -7407,7 +7681,7 @@ function LoginView({ onLogin }){
   useEffect(()=>{
     // هیچ تلاش ناموفقی در مرورگر ذخیره یا قفل نمی‌شود.
     // ورود قبلیِ ناقص نیز پاک می‌شود تا کاربران فعلی بتوانند دوباره تلاش کنند.
-    try{ sessionStorage.removeItem('ticketing-user-v117'); }catch(e){}
+    try{ sessionStorage.removeItem('ticketing-user-v118'); }catch(e){}
   },[]);
 
   const clearError = () => {
@@ -7420,7 +7694,7 @@ function LoginView({ onLogin }){
     setError('');
     setUsername('');
     setPassword('');
-    try{ sessionStorage.removeItem('ticketing-user-v117'); }catch(e){}
+    try{ sessionStorage.removeItem('ticketing-user-v118'); }catch(e){}
     setTimeout(()=>usernameRef.current && usernameRef.current.focus(),30);
   };
 
@@ -7457,7 +7731,7 @@ function LoginView({ onLogin }){
 
       if(result && result.success){
         // هیچ خطای قبلی یا نشست ناقصی به ورود درست منتقل نمی‌شود.
-        try{ sessionStorage.removeItem('ticketing-user-v117'); }catch(e){}
+        try{ sessionStorage.removeItem('ticketing-user-v118'); }catch(e){}
         onLogin({
           username: String(result.username || cleanUsername).trim(),
           name: String(result.name || '').trim(),
@@ -7558,7 +7832,7 @@ function LoginView({ onLogin }){
 
 /* ---------- اپ اصلی ---------- */
 function App(){
-  const [currentUser,setCurrentUser]=useState(()=>{try{const raw=sessionStorage.getItem('ticketing-user-v117');return raw?JSON.parse(raw):null;}catch(e){return null;}});
+  const [currentUser,setCurrentUser]=useState(()=>{try{const raw=sessionStorage.getItem('ticketing-user-v118');return raw?JSON.parse(raw):null;}catch(e){return null;}});
   const [tasks,setTasks]=useState([]);
   const [technicianDirectory,setTechnicianDirectory]=useState([]);
   const [activeStoreDirectory,setActiveStoreDirectory]=useState([]);
@@ -7583,14 +7857,14 @@ function App(){
   const showToast=m=>{setToastMsg(m);clearTimeout(toastTimer.current);toastTimer.current=setTimeout(()=>setToastMsg(''),2600);};
 
   const handleLogin=user=>{
-    sessionStorage.setItem('ticketing-user-v117',JSON.stringify(user));
+    sessionStorage.setItem('ticketing-user-v118',JSON.stringify(user));
     dataRevisionRef.current='';
     lastFullSyncRef.current=0;
     setCurrentUser(user);
     setLoaded(false);
   };
   const logout=()=>{
-    sessionStorage.removeItem('ticketing-user-v117');
+    sessionStorage.removeItem('ticketing-user-v118');
     dataRevisionRef.current='';
     lastFullSyncRef.current=0;
     setCurrentUser(null);
@@ -7808,7 +8082,7 @@ function App(){
 
   return React.createElement('div',{className:'wrap'},
     React.createElement('div',{className:'top'},
-      React.createElement('div',{className:'brand'},React.createElement('span',{className:'dot'}),React.createElement('div',null,React.createElement('h1',null,'پشتیبانی فنی فروشگاه‌ها'),React.createElement('span',null,(role==='tech'?'محیط نیروی فنی':'مرکز کنترل مدیریت فنی')+' • نسخه 11.7'))),
+      React.createElement('div',{className:'brand'},React.createElement('span',{className:'dot'}),React.createElement('div',null,React.createElement('h1',null,'پشتیبانی فنی فروشگاه‌ها'),React.createElement('span',null,(role==='tech'?'محیط نیروی فنی':'مرکز کنترل مدیریت فنی')+' • نسخه 11.8'))),
       React.createElement('div',{className:'user-bar'},React.createElement('div',{className:'user-info'},React.createElement('b',null,currentUser.name),React.createElement('span',null,role==='manager'?'مدیر فنی':'کد پرسنلی: '+currentUser.username)),React.createElement('button',{className:'logout-btn',onClick:logout},'خروج'))
     ),
     !loaded?React.createElement('div',{className:'empty'},'در حال بارگذاری اطلاعات...'):(role==='tech'?React.createElement(TechView,{tasks,saveTasks,showToast,currentUser,refreshTasks:loadTasks}):React.createElement(ManagerView,{tasks,updateTask:updateManagerTask,showToast,refreshTasks:loadTasks,managerLoading,lastUpdated,currentUser,technicianDirectory,activeStoreDirectory})),
