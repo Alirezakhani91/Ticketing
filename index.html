@@ -1909,504 +1909,6 @@
   }
 }
 
-
-/* ========================================================
-   Value Realization Center 12.0
-   ======================================================== */
-.manager-main-tabs .value-tab-btn{
-  position:relative;
-}
-.manager-main-tabs .value-tab-btn:after{
-  content:'VALUE';
-  margin-right:6px;
-  padding:2px 5px;
-  border-radius:999px;
-  background:#eef6f2;
-  color:#2f6f5e;
-  font-size:6px;
-  font-weight:900;
-  letter-spacing:.4px;
-  direction:ltr;
-}
-.manager-main-tabs .value-tab-btn.active:after{
-  background:rgba(255,255,255,.18);
-  color:inherit;
-}
-
-.vr-hero{
-  display:grid;
-  grid-template-columns:minmax(0,1fr) 260px;
-  gap:18px;
-  align-items:stretch;
-  margin-bottom:16px;
-  padding:22px;
-  border:1px solid #d9e5df;
-  border-radius:18px;
-  background:
-    radial-gradient(circle at 10% 8%,rgba(47,111,94,.12),transparent 28%),
-    linear-gradient(135deg,#fbfdfc,#f2f8f5 62%,#fff8ed);
-  box-shadow:var(--shadow);
-}
-.vr-kicker{
-  display:inline-flex;
-  padding:5px 9px;
-  border-radius:999px;
-  background:#e4f2ec;
-  color:#2e6657;
-  font-size:7.5px;
-  font-weight:900;
-  letter-spacing:.8px;
-  direction:ltr;
-}
-.vr-hero h2{
-  margin:9px 0 4px;
-  font-size:21px;
-}
-.vr-hero p{
-  margin:0;
-  max-width:820px;
-  color:var(--ink-soft);
-  font-size:9px;
-  line-height:1.9;
-}
-.vr-rule{
-  display:flex;
-  flex-direction:column;
-  justify-content:center;
-  padding:15px;
-  border:1px solid #e3d5b8;
-  border-radius:14px;
-  background:#fffaf0;
-}
-.vr-rule b{
-  font-size:8px;
-  color:#8a5b14;
-}
-.vr-rule span{
-  margin:5px 0;
-  color:#754a0c;
-  font-size:16px;
-  font-weight:950;
-  direction:ltr;
-}
-.vr-rule small{
-  color:#866c42;
-  font-size:7.5px;
-  line-height:1.7;
-}
-
-.vr-kpi-grid{
-  display:grid;
-  grid-template-columns:repeat(4,1fr);
-  gap:10px;
-  margin-bottom:16px;
-}
-.vr-kpi{
-  padding:14px;
-  border:1px solid var(--line);
-  border-radius:13px;
-  background:#fff;
-  box-shadow:0 5px 16px rgba(20,42,34,.05);
-}
-.vr-kpi.realized{
-  border-color:#c8dfd5;
-  background:linear-gradient(135deg,#f2faf6,#fff);
-}
-.vr-kpi span{
-  display:block;
-  color:var(--ink-soft);
-  font-size:8px;
-}
-.vr-kpi b{
-  display:block;
-  margin:7px 0 4px;
-  color:#203f37;
-  font-size:17px;
-}
-.vr-kpi.realized b{
-  color:#1e6a56;
-}
-.vr-kpi small{
-  color:#75817c;
-  font-size:7.3px;
-}
-
-.vr-section{
-  margin-top:16px;
-  padding:16px;
-  border:1px solid var(--line);
-  border-radius:16px;
-  background:#fff;
-  box-shadow:var(--shadow);
-}
-.vr-section-head{
-  display:flex;
-  align-items:flex-start;
-  justify-content:space-between;
-  gap:12px;
-  margin-bottom:13px;
-}
-.vr-section-head h2{
-  margin:0 0 3px;
-  font-size:14px;
-}
-.vr-section-head p{
-  margin:0;
-  color:var(--ink-soft);
-  font-size:8px;
-  line-height:1.7;
-}
-.vr-count{
-  padding:5px 8px;
-  border-radius:999px;
-  background:#f1f4f2;
-  color:#65716b;
-  font-size:8px;
-  white-space:nowrap;
-}
-.vr-controls{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:10px;
-  margin-bottom:13px;
-}
-.vr-filter-tabs{
-  display:flex;
-  gap:5px;
-  flex-wrap:wrap;
-}
-.vr-filter-tabs button,
-.vr-refresh{
-  border:1px solid var(--line);
-  border-radius:9px;
-  background:#f8faf9;
-  color:#5d6964;
-  padding:7px 10px;
-  font-family:inherit;
-  font-size:8px;
-  font-weight:800;
-  cursor:pointer;
-}
-.vr-filter-tabs button.active{
-  border-color:#2f6f5e;
-  background:#edf7f2;
-  color:#24594d;
-}
-.vr-controls select{
-  min-width:170px;
-  padding:7px 9px;
-  border:1px solid var(--line);
-  border-radius:9px;
-  background:#fff;
-  font-family:inherit;
-  font-size:8px;
-}
-
-.vr-opportunity-grid{
-  display:grid;
-  grid-template-columns:repeat(3,minmax(0,1fr));
-  gap:10px;
-}
-.vr-opportunity{
-  min-width:0;
-  padding:13px;
-  border:1px solid #e1e7e4;
-  border-radius:13px;
-  background:linear-gradient(180deg,#fff,#fbfcfb);
-}
-.vr-opportunity-top{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  gap:8px;
-}
-.vr-type,
-.vr-status{
-  display:inline-flex;
-  align-items:center;
-  padding:4px 7px;
-  border-radius:999px;
-  font-size:7px;
-  font-weight:900;
-  white-space:nowrap;
-}
-.vr-type-repeat{background:#fff1e7;color:#9b5a21}
-.vr-type-outsource{background:#eef3fb;color:#315f89}
-.vr-type-parts{background:#edf7f2;color:#2f6f5e}
-.vr-new{font-size:7px;color:#87918c}
-.vr-linked{
-  padding:3px 6px;
-  border-radius:999px;
-  background:#eef6f2;
-  color:#2f6f5e;
-  font-size:7px;
-  font-weight:800;
-}
-.vr-opportunity h3{
-  margin:10px 0 4px;
-  font-size:10px;
-  line-height:1.7;
-}
-.vr-scope{
-  margin:0 0 9px;
-  color:#7b8581;
-  font-size:7.5px;
-}
-.vr-evidence{
-  min-height:42px;
-  padding:8px 9px;
-  border-radius:9px;
-  background:#f6f8f7;
-  color:#54615b;
-  font-size:7.8px;
-  line-height:1.7;
-}
-.vr-finance{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  gap:8px;
-  margin-top:8px;
-  padding-top:8px;
-  border-top:1px dashed #dce3df;
-}
-.vr-finance span{font-size:7.5px;color:#7b8581}
-.vr-finance b{font-size:10px;color:#233f37}
-.vr-suggested{
-  min-height:62px;
-  margin:9px 0;
-  color:#59645f;
-  font-size:7.6px;
-  line-height:1.8;
-}
-.vr-case-btn{
-  width:100%;
-  border:0;
-  border-radius:9px;
-  background:#244e43;
-  color:#fff;
-  padding:8px 10px;
-  font-family:inherit;
-  font-size:8px;
-  font-weight:900;
-  cursor:pointer;
-}
-.vr-case-btn.linked{
-  background:#eef6f2;
-  color:#285e50;
-  border:1px solid #cfe2da;
-}
-
-.vr-table-wrap{
-  width:100%;
-  overflow:auto;
-  border:1px solid var(--line);
-  border-radius:11px;
-}
-.vr-table{
-  width:100%;
-  min-width:1180px;
-  border-collapse:collapse;
-}
-.vr-table th,
-.vr-table td{
-  padding:9px 10px;
-  border-bottom:1px solid #edf0ee;
-  text-align:right;
-  font-size:8px;
-  vertical-align:middle;
-  white-space:nowrap;
-}
-.vr-table th{
-  background:#f6f8f7;
-  color:#65716b;
-  font-weight:900;
-}
-.vr-table td:nth-child(3){
-  white-space:normal;
-  min-width:210px;
-}
-.vr-table td:nth-child(3) small{
-  display:block;
-  margin-top:3px;
-  color:#7c8782;
-  font-size:7px;
-}
-.vr-status-open{background:#f1f3f2;color:#68736e}
-.vr-status-progress{background:#eef3fb;color:#315f89}
-.vr-status-verify{background:#fff4df;color:#9a6418}
-.vr-status-realized{background:#e9f7f0;color:#24705b}
-.vr-status-closed{background:#f5eeee;color:#8a5656}
-.vr-realized-money{color:#1f6b56}
-.vr-table-action,
-.vr-refresh{
-  cursor:pointer;
-}
-.vr-table-action{
-  border:1px solid #d2dfd9;
-  border-radius:8px;
-  background:#f7faf8;
-  color:#285e50;
-  padding:5px 8px;
-  font-family:inherit;
-  font-size:7.5px;
-  font-weight:800;
-}
-.vr-empty{
-  padding:24px;
-  text-align:center;
-  color:#7d8782;
-  font-size:8.5px;
-  background:#fafbfa;
-  border-radius:10px;
-}
-
-.vr-modal-backdrop{
-  position:fixed;
-  inset:0;
-  z-index:9999;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  padding:20px;
-  background:rgba(18,31,27,.52);
-  backdrop-filter:blur(3px);
-}
-.vr-modal{
-  width:min(940px,96vw);
-  max-height:92vh;
-  overflow:auto;
-  border-radius:18px;
-  background:#fff;
-  box-shadow:0 22px 70px rgba(0,0,0,.26);
-}
-.vr-modal-head{
-  position:sticky;
-  top:0;
-  z-index:2;
-  display:flex;
-  align-items:flex-start;
-  justify-content:space-between;
-  gap:12px;
-  padding:16px 18px;
-  border-bottom:1px solid var(--line);
-  background:rgba(255,255,255,.96);
-  backdrop-filter:blur(8px);
-}
-.vr-modal-head span{
-  color:#6e7974;
-  font-size:7.5px;
-  font-weight:900;
-  direction:ltr;
-}
-.vr-modal-head h2{
-  margin:4px 0 0;
-  font-size:14px;
-}
-.vr-close{
-  width:32px;
-  height:32px;
-  border:0;
-  border-radius:9px;
-  background:#f1f3f2;
-  font-size:20px;
-  cursor:pointer;
-}
-.vr-form{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:11px;
-  padding:17px 18px;
-}
-.vr-form label{
-  display:block;
-  margin:0;
-}
-.vr-form label>span{
-  display:block;
-  margin-bottom:5px;
-  color:#5f6b65;
-  font-size:8px;
-  font-weight:800;
-}
-.vr-form input,
-.vr-form textarea,
-.vr-form select{
-  width:100%;
-  box-sizing:border-box;
-  border:1px solid var(--line);
-  border-radius:9px;
-  background:#fff;
-  padding:9px 10px;
-  font-family:inherit;
-  font-size:8.5px;
-  outline:none;
-}
-.vr-form textarea{
-  resize:vertical;
-  line-height:1.8;
-}
-.vr-form input:focus,
-.vr-form textarea:focus,
-.vr-form select:focus{
-  border-color:#5c8b7e;
-  box-shadow:0 0 0 2px rgba(47,111,94,.08);
-}
-.vr-span-2{grid-column:1/-1}
-.vr-modal-foot{
-  position:sticky;
-  bottom:0;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:12px;
-  padding:13px 18px;
-  border-top:1px solid var(--line);
-  background:rgba(255,255,255,.97);
-}
-.vr-saving-rule{
-  color:#8a6a38;
-  font-size:7.5px;
-}
-.vr-modal-actions{
-  display:flex;
-  gap:7px;
-}
-.vr-cancel,
-.vr-save{
-  border:0;
-  border-radius:9px;
-  padding:8px 13px;
-  font-family:inherit;
-  font-size:8px;
-  font-weight:900;
-  cursor:pointer;
-}
-.vr-cancel{background:#f1f3f2;color:#5f6a65}
-.vr-save{background:#24584b;color:#fff}
-.vr-save:disabled,
-.vr-cancel:disabled{opacity:.55;cursor:not-allowed}
-
-@media(max-width:1100px){
-  .vr-opportunity-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
-  .vr-kpi-grid{grid-template-columns:repeat(2,1fr)}
-}
-@media(max-width:760px){
-  .vr-hero{grid-template-columns:1fr}
-  .vr-opportunity-grid{grid-template-columns:1fr}
-  .vr-controls{align-items:stretch;flex-direction:column}
-  .vr-controls select{width:100%}
-  .vr-form{grid-template-columns:1fr}
-  .vr-span-2{grid-column:auto}
-  .vr-modal-foot{align-items:stretch;flex-direction:column}
-  .vr-modal-actions{width:100%}
-  .vr-modal-actions button{flex:1}
-}
-@media(max-width:520px){
-  .vr-kpi-grid{grid-template-columns:1fr}
-}
-
 </style>
 </head>
 <body>
@@ -2504,33 +2006,6 @@ function fetchTechnicianTickets(token){
 
 function fetchDataRevision(token){
   return jsonpRequest({action:'revision', token:String(token||'')}, 10000);
-}
-
-function fetchValueCases(token){
-  return jsonpRequest({action:'valuecases', token:String(token||'')}, 20000);
-}
-
-function saveValueCaseApi(token, data){
-  return jsonpRequest({
-    action:'savevaluecase',
-    token:String(token||''),
-    caseId:data.caseId||'',
-    opportunityKey:data.opportunityKey||'',
-    type:data.type||'',
-    title:data.title||'',
-    scope:data.scope||'',
-    baselineMetric:data.baselineMetric||'',
-    baselineValue:String(data.baselineValue||0),
-    baselineCount:String(data.baselineCount||0),
-    actionPlan:data.actionPlan||'',
-    owner:data.owner||'',
-    dueDate:data.dueDate||'',
-    expectedValue:String(data.expectedValue||0),
-    verificationDate:data.verificationDate||'',
-    status:data.status||'open',
-    realizedValue:String(data.realizedValue||0),
-    resultNote:data.resultNote||''
-  }, 30000);
 }
 
 function lookupStoreWithSheet(code, token){
@@ -4373,466 +3848,6 @@ function PreOpeningManagerDashboard({tasks,onRefresh,loading,lastUpdated,current
 }
 
 
-
-function ValueRealizationView({tasks,currentUser,showToast,technicianDirectory=[]}){
-  const h=React.createElement;
-  const [cases,setCases]=useState([]);
-  const [loadingCases,setLoadingCases]=useState(true);
-  const [saving,setSaving]=useState(false);
-  const [typeFilter,setTypeFilter]=useState('all');
-  const [range,setRange]=useState('all');
-  const [editorOpen,setEditorOpen]=useState(false);
-  const [draft,setDraft]=useState(null);
-
-  const statusMeta={
-    open:{label:'شناسایی شده',cls:'vr-status-open'},
-    in_progress:{label:'اقدام در حال اجرا',cls:'vr-status-progress'},
-    verification:{label:'در انتظار سنجش',cls:'vr-status-verify'},
-    realized:{label:'صرفه‌جویی تأییدشده',cls:'vr-status-realized'},
-    closed_no_value:{label:'بسته بدون ارزش مالی',cls:'vr-status-closed'}
-  };
-
-  const typeMeta={
-    repeat:{label:'خرابی تکراری',cls:'vr-type-repeat'},
-    outsource:{label:'کاهش برون‌سپاری',cls:'vr-type-outsource'},
-    parts:{label:'کنترل هزینه قطعه',cls:'vr-type-parts'}
-  };
-
-  const loadCases=useCallback(async()=>{
-    if(!currentUser||!currentUser.token)return;
-    setLoadingCases(true);
-    try{
-      const result=await fetchValueCases(currentUser.token);
-      if(result&&result.success){
-        setCases(Array.isArray(result.cases)?result.cases:[]);
-      }else if(result&&result.sessionExpired){
-        showToast(result.message||'نشست مدیر منقضی شده است');
-      }else{
-        showToast((result&&result.message)||'دریافت پرونده‌های ارزش‌آفرینی انجام نشد');
-      }
-    }catch(e){
-      showToast('ارتباط با پرونده‌های ارزش‌آفرینی برقرار نشد');
-    }finally{
-      setLoadingCases(false);
-    }
-  },[currentUser&&currentUser.token]);
-
-  useEffect(()=>{loadCases();},[loadCases]);
-
-  const isActiveTicket=t=>!isPreOpeningLocation(t.locationType,t.storeCode);
-  const isReviewed=t=>String(t.reviewStatus||'')==='reviewed';
-  const ticketMs=t=>{
-    const direct=Date.parse(t.createdAt||'');
-    return Number.isFinite(direct)?direct:0;
-  };
-  const now=Date.now();
-  const rangeDays=range==='30'?30:(range==='60'?60:(range==='90'?90:0));
-
-  const source=tasks.filter(t=>{
-    if(!isActiveTicket(t)||!isReviewed(t))return false;
-    if(!rangeDays)return true;
-    const ms=ticketMs(t);
-    return !ms||(now-ms)<=rangeDays*86400000;
-  });
-
-  const finalCost=t=>String(t.costStatus||'')==='final'?Number(t.totalCost||0):0;
-  const serviceCost=t=>String(t.costStatus||'')==='final'?Number(t.serviceCost||0):0;
-  const partsCost=t=>String(t.costStatus||'')==='final'?Number(t.partsCost||0):0;
-
-  // -----------------------------------------------------
-  // Engine 1: Repeat Failure candidates
-  // store + level1 + level2 signature
-  // -----------------------------------------------------
-  const repeatMap={};
-  source.forEach(t=>{
-    const level2=Array.isArray(t.level2)&&t.level2.length
-      ?t.level2.slice().sort().join(' + ')
-      :(t.finalCause||t.initialCause||'بدون زیرگروه');
-    const key=[String(t.storeCode||''),String(t.level1||''),String(level2||'')].join('|');
-    if(!t.storeCode||!t.level1)return;
-    if(!repeatMap[key])repeatMap[key]=[];
-    repeatMap[key].push(t);
-  });
-
-  const repeatOpps=Object.entries(repeatMap).map(([key,list])=>{
-    const sorted=list.slice().sort((a,b)=>Number(a.rowNumber||0)-Number(b.rowNumber||0));
-    if(sorted.length<2)return null;
-    const first=sorted[0];
-    const sub=Array.isArray(first.level2)&&first.level2.length
-      ?first.level2.slice().sort().join(' + ')
-      :(first.finalCause||first.initialCause||'بدون زیرگروه');
-    const repeatEvents=sorted.slice(1);
-    const repeatCost=repeatEvents.reduce((s,t)=>s+finalCost(t),0);
-    const totalCost=sorted.reduce((s,t)=>s+finalCost(t),0);
-    return{
-      key:'repeat:'+key,
-      type:'repeat',
-      title:(first.storeName||('فروشگاه '+first.storeCode))+' · '+first.level1+' / '+sub,
-      scope:'کد '+first.storeCode+(first.region?' · '+first.region:''),
-      metric:sorted.length+' رخداد برای الگوی مشابه · هزینه کل '+formatToman(totalCost),
-      baselineValue:repeatCost,
-      baselineCount:sorted.length,
-      financialLabel:'هزینه تکرار تحت بررسی',
-      suggestedAction:'تأیید کنید رخدادها مربوط به یک تجهیز/ریشه مشترک هستند؛ سپس Root Cause را بررسی و اقدام اصلاحی دائمی تعریف کنید. بعد از اقدام، ۳۰ روز تکرار و هزینه را پایش کنید.',
-      priority:repeatCost*1000+sorted.length
-    };
-  }).filter(Boolean)
-    .sort((a,b)=>b.priority-a.priority)
-    .slice(0,15);
-
-  // -----------------------------------------------------
-  // Engine 2: Controllable outsourcing
-  // -----------------------------------------------------
-  const classifyReason=value=>{
-    const s=String(value||'').replace(/\u200c/g,' ').trim();
-    if(/توانایی|مهارت|تخصص|آموزش/.test(s))return {key:'skill',label:'کمبود توانایی / مهارت'};
-    if(/ابزار|تجهیزات لازم|تجهیز لازم/.test(s))return {key:'tool',label:'کمبود ابزار'};
-    if(/نقدینگی|تنخواه|تأمین قطعه|تامين قطعه|تامین.*قطعه|قطعه.*نقد/.test(s))return {key:'cash',label:'نقدینگی / تأمین قطعه'};
-    return null;
-  };
-
-  const outsourceMap={};
-  source.filter(t=>t.type==='outsourced').forEach(t=>{
-    const reason=classifyReason(t.outsourceReason);
-    if(!reason)return;
-    const key=reason.key+'|'+String(t.level1||'نامشخص');
-    if(!outsourceMap[key])outsourceMap[key]={reason,level1:t.level1||'نامشخص',items:[]};
-    outsourceMap[key].items.push(t);
-  });
-
-  const outsourceOpps=Object.entries(outsourceMap).map(([key,g])=>{
-    const spend=g.items.reduce((s,t)=>s+serviceCost(t),0);
-    const stores=new Set(g.items.map(t=>String(t.storeCode||'')).filter(Boolean)).size;
-    let action='';
-    if(g.reason.key==='skill')action='مشخص کنید کدام Repair Taskها قابل Internalization هستند؛ Skill Gap را به آموزش مشخص تبدیل کنید و نرخ برون‌سپاری قبل/بعد را بسنجید.';
-    if(g.reason.key==='tool')action='ابزارهای مفقود را مشخص و Tool Kit لازم را تأمین کنید؛ سپس کاهش تعداد و هزینه خدمات برون‌سپاری را پایش کنید.';
-    if(g.reason.key==='cash')action='مسیر سریع تأمین قطعه/تنخواه برای این گروه خرابی طراحی کنید و اثر آن را روی تعداد برون‌سپاری و هزینه خدمات اندازه بگیرید.';
-    return{
-      key:'outsource:'+key,
-      type:'outsource',
-      title:g.level1+' · '+g.reason.label,
-      scope:stores+' فروشگاه درگیر',
-      metric:g.items.length+' برون‌سپاری · هزینه خدمات ثبت‌شده '+formatToman(spend),
-      baselineValue:spend,
-      baselineCount:g.items.length,
-      financialLabel:'هزینه خدمات قابل بررسی',
-      suggestedAction:action,
-      priority:spend*1000+g.items.length
-    };
-  }).sort((a,b)=>b.priority-a.priority).slice(0,15);
-
-  // -----------------------------------------------------
-  // Engine 3: Parts spend concentration by failure family
-  // -----------------------------------------------------
-  const partsMap={};
-  source.forEach(t=>{
-    const spend=partsCost(t);
-    if(spend<=0)return;
-    const key=String(t.level1||'نامشخص');
-    if(!partsMap[key])partsMap[key]={items:[],spend:0,stores:new Set()};
-    partsMap[key].items.push(t);
-    partsMap[key].spend+=spend;
-    if(t.storeCode)partsMap[key].stores.add(String(t.storeCode));
-  });
-
-  const partsOpps=Object.entries(partsMap).map(([key,g])=>({
-    key:'parts:'+key,
-    type:'parts',
-    title:'بررسی هزینه قطعات · '+key,
-    scope:g.stores.size+' فروشگاه هزینه‌دار',
-    metric:g.items.length+' تیکت هزینه قطعه · Spend = '+formatToman(g.spend),
-    baselineValue:g.spend,
-    baselineCount:g.items.length,
-    financialLabel:'Spend قطعه تحت بررسی',
-    suggestedAction:'فاکتورهای این گروه را جمع‌آوری کنید؛ Specification، Brand، Supplier، Quantity و Unit Price را مقایسه کنید. فقط اختلاف قیمت تأییدشده برای کالای هم‌مشخصات به Saving تبدیل شود.',
-    priority:g.spend
-  })).sort((a,b)=>b.priority-a.priority).slice(0,12);
-
-  const opportunities=[...repeatOpps,...outsourceOpps,...partsOpps]
-    .filter(o=>typeFilter==='all'||o.type===typeFilter)
-    .sort((a,b)=>b.priority-a.priority);
-
-  const caseByOpportunity={};
-  cases.forEach(c=>{
-    if(c.opportunityKey)caseByOpportunity[c.opportunityKey]=c;
-  });
-
-  const realizedTotal=cases
-    .filter(c=>c.status==='realized')
-    .reduce((s,c)=>s+Number(c.realizedValue||0),0);
-  const expectedOpen=cases
-    .filter(c=>!['realized','closed_no_value'].includes(c.status))
-    .reduce((s,c)=>s+Number(c.expectedValue||0),0);
-  const baselineOpen=cases
-    .filter(c=>!['realized','closed_no_value'].includes(c.status))
-    .reduce((s,c)=>s+Number(c.baselineValue||0),0);
-  const verificationCount=cases.filter(c=>c.status==='verification').length;
-  const openCases=cases.filter(c=>!['realized','closed_no_value'].includes(c.status)).length;
-
-  const emptyDraft=()=>({
-    caseId:'',
-    opportunityKey:'',
-    type:'repeat',
-    title:'',
-    scope:'',
-    baselineMetric:'',
-    baselineValue:'',
-    baselineCount:'',
-    actionPlan:'',
-    owner:'',
-    dueDate:'',
-    expectedValue:'',
-    verificationDate:'',
-    status:'open',
-    realizedValue:'',
-    resultNote:''
-  });
-
-  const openOpportunity=opp=>{
-    const existing=caseByOpportunity[opp.key];
-    if(existing){
-      setDraft({...existing});
-    }else{
-      setDraft({
-        ...emptyDraft(),
-        opportunityKey:opp.key,
-        type:opp.type,
-        title:opp.title,
-        scope:opp.scope,
-        baselineMetric:opp.metric,
-        baselineValue:opp.baselineValue||'',
-        baselineCount:opp.baselineCount||'',
-        actionPlan:opp.suggestedAction
-      });
-    }
-    setEditorOpen(true);
-  };
-
-  const openExisting=caseItem=>{
-    setDraft({...caseItem});
-    setEditorOpen(true);
-  };
-
-  const saveCase=async()=>{
-    if(!draft)return;
-    if(!String(draft.title||'').trim()){showToast('عنوان پرونده را وارد کنید');return;}
-    if(!String(draft.actionPlan||'').trim()){showToast('اقدام اصلاحی را مشخص کنید');return;}
-    if(!String(draft.owner||'').trim()){showToast('مسئول اقدام را مشخص کنید');return;}
-    if(!String(draft.dueDate||'').trim()){showToast('مهلت اقدام را مشخص کنید');return;}
-    if(draft.status==='realized'&&moneyValue(draft.realizedValue)<=0){
-      showToast('مبلغ صرفه‌جویی تحقق‌یافته را وارد کنید');
-      return;
-    }
-    if(draft.status==='realized'&&!String(draft.resultNote||'').trim()){
-      showToast('روش تأیید و نتیجه صرفه‌جویی را توضیح دهید');
-      return;
-    }
-
-    setSaving(true);
-    try{
-      const result=await saveValueCaseApi(currentUser.token,{
-        ...draft,
-        baselineValue:moneyValue(draft.baselineValue),
-        expectedValue:moneyValue(draft.expectedValue),
-        realizedValue:moneyValue(draft.realizedValue)
-      });
-      if(result&&result.success){
-        showToast(result.message||'پرونده ذخیره شد');
-        setEditorOpen(false);
-        setDraft(null);
-        await loadCases();
-      }else{
-        showToast((result&&result.message)||'ذخیره پرونده انجام نشد');
-      }
-    }catch(e){
-      showToast('ارتباط برای ذخیره پرونده برقرار نشد');
-    }finally{
-      setSaving(false);
-    }
-  };
-
-  const setField=(key,value)=>{
-    setDraft(prev=>({...prev,[key]:value}));
-  };
-
-  const formatInput=v=>formatMoneyInput(v||'');
-
-  const head=h('div',{className:'vr-hero'},
-    h('div',{className:'vr-hero-copy'},
-      h('span',{className:'vr-kicker'},'VALUE REALIZATION'),
-      h('h2',null,'مرکز ارزش‌آفرینی تعمیر و نگهداری'),
-      h('p',null,'این صفحه «Saving» را حدس نمی‌زند؛ فرصت را از دیتای تیکت پیدا می‌کند، آن را به اقدام تبدیل می‌کند و فقط نتیجه تأییدشده را صرفه‌جویی می‌شمارد.')
-    ),
-    h('div',{className:'vr-rule'},
-      h('b',null,'قاعده مالی'),
-      h('span',null,'Opportunity ≠ Saving'),
-      h('small',null,'فقط پرونده با وضعیت «صرفه‌جویی تأییدشده» وارد عدد تحقق‌یافته می‌شود.')
-    )
-  );
-
-  const kpis=h('div',{className:'vr-kpi-grid'},
-    h('div',{className:'vr-kpi realized'},h('span',null,'صرفه‌جویی تحقق‌یافته'),h('b',null,formatToman(realizedTotal)),h('small',null,cases.filter(c=>c.status==='realized').length+' پرونده تأییدشده')),
-    h('div',{className:'vr-kpi'},h('span',null,'ارزش مورد انتظار اقدامات باز'),h('b',null,formatToman(expectedOpen)),h('small',null,'هدف ثبت‌شده؛ هنوز Saving نیست')),
-    h('div',{className:'vr-kpi'},h('span',null,'Baseline پرونده‌های باز'),h('b',null,formatToman(baselineOpen)),h('small',null,'حجم هزینه‌ای که تحت اقدام قرار گرفته')),
-    h('div',{className:'vr-kpi'},h('span',null,'پرونده‌های فعال'),h('b',null,openCases.toLocaleString('fa-IR')),h('small',null,verificationCount+' مورد در مرحله سنجش'))
-  );
-
-  const controls=h('div',{className:'vr-controls'},
-    h('div',{className:'vr-filter-tabs'},
-      ...[
-        ['all','همه فرصت‌ها'],
-        ['repeat','خرابی تکراری'],
-        ['outsource','برون‌سپاری'],
-        ['parts','قطعات']
-      ].map(([value,label])=>h('button',{
-        key:value,
-        className:typeFilter===value?'active':'',
-        onClick:()=>setTypeFilter(value)
-      },label))
-    ),
-    h('select',{value:range,onChange:e=>setRange(e.target.value)},
-      h('option',{value:'all'},'کل دیتای Reviewed'),
-      h('option',{value:'30'},'۳۰ روز اخیر'),
-      h('option',{value:'60'},'۶۰ روز اخیر'),
-      h('option',{value:'90'},'۹۰ روز اخیر')
-    )
-  );
-
-  const opportunityCards=opportunities.slice(0,24).map(opp=>{
-    const existing=caseByOpportunity[opp.key];
-    const tm=typeMeta[opp.type]||typeMeta.repeat;
-    return h('div',{className:'vr-opportunity',key:opp.key},
-      h('div',{className:'vr-opportunity-top'},
-        h('span',{className:'vr-type '+tm.cls},tm.label),
-        existing
-          ?h('span',{className:'vr-linked'},'پرونده '+existing.caseId)
-          :h('span',{className:'vr-new'},'فرصت جدید')
-      ),
-      h('h3',null,opp.title),
-      h('p',{className:'vr-scope'},opp.scope),
-      h('div',{className:'vr-evidence'},opp.metric),
-      h('div',{className:'vr-finance'},
-        h('span',null,opp.financialLabel),
-        h('b',null,formatToman(opp.baselineValue||0))
-      ),
-      h('p',{className:'vr-suggested'},opp.suggestedAction),
-      h('button',{
-        className:'vr-case-btn'+(existing?' linked':''),
-        onClick:()=>openOpportunity(opp)
-      },existing?'بازکردن پرونده':'ایجاد پرونده اقدام')
-    );
-  });
-
-  const opportunitiesSection=h('div',{className:'vr-section'},
-    h('div',{className:'vr-section-head'},
-      h('div',null,
-        h('h2',null,'فرصت‌های شناسایی‌شده از دیتای فعلی'),
-        h('p',null,'این‌ها «کاندید اقدام» هستند؛ مبلغ کارت صرفاً Baseline/Spend تحت بررسی است و به معنی Saving نیست.')
-      ),
-      h('span',{className:'vr-count'},opportunities.length.toLocaleString('fa-IR')+' فرصت')
-    ),
-    controls,
-    opportunities.length
-      ?h('div',{className:'vr-opportunity-grid'},...opportunityCards)
-      :h('div',{className:'vr-empty'},'با فیلتر انتخاب‌شده فرصت قابل نمایش پیدا نشد.')
-  );
-
-  const caseRows=cases.map(c=>{
-    const sm=statusMeta[c.status]||statusMeta.open;
-    const tm=typeMeta[c.type]||typeMeta.repeat;
-    return h('tr',{key:c.caseId},
-      h('td',null,h('b',null,c.caseId)),
-      h('td',null,h('span',{className:'vr-type '+tm.cls},tm.label)),
-      h('td',null,h('b',null,c.title),c.scope?h('small',null,c.scope):null),
-      h('td',null,c.owner||'—'),
-      h('td',null,h('span',{className:'vr-status '+sm.cls},sm.label)),
-      h('td',null,formatToman(c.baselineValue||0)),
-      h('td',null,formatToman(c.expectedValue||0)),
-      h('td',null,c.status==='realized'?h('strong',{className:'vr-realized-money'},formatToman(c.realizedValue||0)):'—'),
-      h('td',null,c.dueDate||'—'),
-      h('td',null,h('button',{className:'vr-table-action',onClick:()=>openExisting(c)},'بازکردن'))
-    );
-  });
-
-  const casesSection=h('div',{className:'vr-section vr-cases-section'},
-    h('div',{className:'vr-section-head'},
-      h('div',null,
-        h('h2',null,'پرونده‌های اقدام و تحقق ارزش'),
-        h('p',null,'هر Opportunity باید Owner، Action و Deadline داشته باشد؛ Saving فقط بعد از Verify شدن نتیجه ثبت می‌شود.')
-      ),
-      h('button',{className:'vr-refresh',onClick:loadCases,disabled:loadingCases},loadingCases?'در حال دریافت...':'↻ تازه‌سازی پرونده‌ها')
-    ),
-    cases.length
-      ?h('div',{className:'vr-table-wrap'},
-        h('table',{className:'vr-table'},
-          h('thead',null,h('tr',null,
-            h('th',null,'پرونده'),
-            h('th',null,'نوع'),
-            h('th',null,'عنوان'),
-            h('th',null,'مسئول'),
-            h('th',null,'وضعیت'),
-            h('th',null,'Baseline'),
-            h('th',null,'Expected'),
-            h('th',null,'Realized'),
-            h('th',null,'Deadline'),
-            h('th',null,'')
-          )),
-          h('tbody',null,...caseRows)
-        )
-      )
-      :h('div',{className:'vr-empty'},loadingCases?'در حال دریافت پرونده‌ها...':'هنوز پرونده اقدامی ساخته نشده است. از یکی از فرصت‌های بالا شروع کنید.')
-  );
-
-  const modal=editorOpen&&draft?h('div',{className:'vr-modal-backdrop',onMouseDown:e=>{if(e.target===e.currentTarget&&!saving){setEditorOpen(false);setDraft(null);}}},
-    h('div',{className:'vr-modal'},
-      h('div',{className:'vr-modal-head'},
-        h('div',null,
-          h('span',null,draft.caseId||'پرونده جدید'),
-          h('h2',null,draft.title||'پرونده ارزش‌آفرینی')
-        ),
-        h('button',{className:'vr-close',disabled:saving,onClick:()=>{setEditorOpen(false);setDraft(null);}},'×')
-      ),
-      h('div',{className:'vr-form'},
-        h('label',{className:'vr-span-2'},h('span',null,'عنوان پرونده'),h('input',{value:draft.title||'',onChange:e=>setField('title',e.target.value)})),
-        h('label',null,h('span',null,'نوع فرصت'),h('select',{value:draft.type||'repeat',onChange:e=>setField('type',e.target.value)},
-          h('option',{value:'repeat'},'خرابی تکراری'),
-          h('option',{value:'outsource'},'کاهش برون‌سپاری'),
-          h('option',{value:'parts'},'کنترل هزینه قطعه')
-        )),
-        h('label',null,h('span',null,'دامنه / فروشگاه / منطقه'),h('input',{value:draft.scope||'',onChange:e=>setField('scope',e.target.value)})),
-        h('label',{className:'vr-span-2'},h('span',null,'Baseline شناسایی‌شده'),h('textarea',{rows:2,value:draft.baselineMetric||'',onChange:e=>setField('baselineMetric',e.target.value)})),
-        h('label',null,h('span',null,'ارزش Baseline تحت بررسی'),h('div',{className:'money-input'},h('input',{inputMode:'numeric',value:formatInput(draft.baselineValue),onChange:e=>setField('baselineValue',normalizeMoneyInput(e.target.value)),placeholder:'0'}),h('em',null,'تومان'))),
-        h('label',null,h('span',null,'تعداد رخداد / مورد'),h('input',{inputMode:'numeric',value:draft.baselineCount||'',onChange:e=>setField('baselineCount',normalizeMoneyInput(e.target.value)),placeholder:'0'})),
-        h('label',{className:'vr-span-2'},h('span',null,'اقدام اصلاحی'),h('textarea',{rows:4,value:draft.actionPlan||'',onChange:e=>setField('actionPlan',e.target.value),placeholder:'اقدام دقیق، قابل اجرا و قابل اندازه‌گیری...'})),
-        h('label',null,h('span',null,'مسئول اقدام'),h('input',{list:'vr-owner-list',value:draft.owner||'',onChange:e=>setField('owner',e.target.value),placeholder:'نام مسئول'})),
-        h('datalist',{id:'vr-owner-list'},...technicianDirectory.map(x=>h('option',{key:x.username||x.name,value:x.name||x.username}))),
-        h('label',null,h('span',null,'Deadline'),h('input',{value:draft.dueDate||'',onChange:e=>setField('dueDate',e.target.value),placeholder:'مثلاً 1405/07/15'})),
-        h('label',null,h('span',null,'Expected Value'),h('div',{className:'money-input'},h('input',{inputMode:'numeric',value:formatInput(draft.expectedValue),onChange:e=>setField('expectedValue',normalizeMoneyInput(e.target.value)),placeholder:'اختیاری'}),h('em',null,'تومان'))),
-        h('label',null,h('span',null,'تاریخ سنجش / Verification'),h('input',{value:draft.verificationDate||'',onChange:e=>setField('verificationDate',e.target.value),placeholder:'مثلاً 1405/08/15'})),
-        h('label',null,h('span',null,'وضعیت پرونده'),h('select',{value:draft.status||'open',onChange:e=>setField('status',e.target.value)},
-          h('option',{value:'open'},'شناسایی شده'),
-          h('option',{value:'in_progress'},'اقدام در حال اجرا'),
-          h('option',{value:'verification'},'در انتظار سنجش'),
-          h('option',{value:'realized'},'صرفه‌جویی تأییدشده'),
-          h('option',{value:'closed_no_value'},'بسته بدون ارزش مالی')
-        )),
-        h('label',null,h('span',null,'Realized Value'),h('div',{className:'money-input'},h('input',{inputMode:'numeric',value:formatInput(draft.realizedValue),onChange:e=>setField('realizedValue',normalizeMoneyInput(e.target.value)),placeholder:'فقط بعد از Verify'}),h('em',null,'تومان'))),
-        h('label',{className:'vr-span-2'},h('span',null,'نتیجه / روش تأیید'),h('textarea',{rows:3,value:draft.resultNote||'',onChange:e=>setField('resultNote',e.target.value),placeholder:'مثلاً قیمت قبل/بعد، تعداد رخداد قبل/بعد، فاکتور یا دوره سنجش...'}))
-      ),
-      h('div',{className:'vr-modal-foot'},
-        h('div',{className:'vr-saving-rule'},'Realized Value فقط زمانی ثبت شود که نتیجه با سند یا Before/After قابل دفاع باشد.'),
-        h('div',{className:'vr-modal-actions'},
-          h('button',{className:'vr-cancel',disabled:saving,onClick:()=>{setEditorOpen(false);setDraft(null);}},'انصراف'),
-          h('button',{className:'vr-save',disabled:saving,onClick:saveCase},saving?'در حال ذخیره...':'ذخیره پرونده')
-        )
-      )
-    )
-  ):null;
-
-  return h(React.Fragment,null,head,kpis,opportunitiesSection,casesSection,modal);
-}
-
-
 function ManagerView({ tasks, updateTask, showToast, refreshTasks, managerLoading, lastUpdated, currentUser, technicianDirectory, activeStoreDirectory }){
   const [tab, setTab] = useState('report');
   const [storeFilter, setStoreFilter] = useState('');
@@ -4869,12 +3884,11 @@ function ManagerView({ tasks, updateTask, showToast, refreshTasks, managerLoadin
   return React.createElement(React.Fragment,null,
     React.createElement('div',{className:'tabs manager-main-tabs'},
       React.createElement('button',{className:tab==='report'?'active':'',onClick:()=>setTab('report')},'فروشگاه‌های فعال'),
-      React.createElement('button',{className:tab==='value'?'active value-tab-btn':'value-tab-btn',onClick:()=>setTab('value')},'ارزش‌آفرینی'),
       React.createElement('button',{className:tab==='preopening'?'active':'',onClick:()=>setTab('preopening')},'پیش‌افتتاح'+(preOpeningProjects?' ('+preOpeningProjects+')':'')),
       React.createElement('button',{className:tab==='pending'?'active':'',onClick:()=>setTab('pending')},'در انتظار ('+pending.length+')'),
       React.createElement('button',{className:tab==='all'?'active':'',onClick:()=>setTab('all')},'همه تیکت‌ها')
     ),
-    !['report','preopening','value'].includes(tab) && React.createElement('div',{className:'filter-row'},
+    !['report','preopening'].includes(tab) && React.createElement('div',{className:'filter-row'},
       React.createElement('input',{placeholder:'جست‌وجوی شماره تیکت، کد، نام فروشگاه یا منطقه...',value:storeFilter,onChange:e=>setStoreFilter(e.target.value)}),
       React.createElement('button',{className:'refresh-btn',onClick:refreshTasks,disabled:managerLoading},managerLoading?'در حال دریافت...':'↻ تازه‌سازی')
     ),
@@ -4898,12 +3912,6 @@ function ManagerView({ tasks, updateTask, showToast, refreshTasks, managerLoadin
       loading:managerLoading,
       lastUpdated,
       currentUser
-    }),
-    tab==='value' && React.createElement(ValueRealizationView,{
-      tasks:tasks.filter(t=>!isPreOpeningLocation(t.locationType,t.storeCode)),
-      currentUser,
-      showToast,
-      technicianDirectory
     })
   );
 }
@@ -6514,7 +5522,7 @@ function ExecutiveDashboard({tasks,onRefresh,loading,lastUpdated,currentUser,onL
 
 /* ---------- اپ اصلی ---------- */
 
-/* ---------- Boardroom CEO Dashboard — نسخه 12.0 ---------- */
+/* ---------- Boardroom CEO Dashboard — نسخه 11.6 ---------- */
 function CEODashboard({tasks,onRefresh,loading,lastUpdated,currentUser,onLogout}){
   const h=React.createElement;
   const [range,setRange]=useState('90');
@@ -6806,7 +5814,7 @@ function CEODashboard({tasks,onRefresh,loading,lastUpdated,currentUser,onLogout}
         )
       ),
 
-      h('footer',{className:'c8-footer'},h('span',null,'نسخه 12.0 · دسترسی فقط خواندنی مدیرعامل'),h('span',null,'ریسک فروشگاه‌های فعال و فعالیت‌های پیش‌افتتاح به‌صورت جداگانه تحلیل می‌شوند.'))
+      h('footer',{className:'c8-footer'},h('span',null,'نسخه 11.6 · دسترسی فقط خواندنی مدیرعامل'),h('span',null,'ریسک فروشگاه‌های فعال و فعالیت‌های پیش‌افتتاح به‌صورت جداگانه تحلیل می‌شوند.'))
     ),
 
     modal
@@ -7225,7 +6233,7 @@ function RegionalDashboard({tasks,onRefresh,loading,lastUpdated,currentUser,onLo
       ),
 
       h('footer',{className:'rm-footer'},
-        h('span',null,'نسخه 12.0 · دسترسی مدیر منطقه · فقط خواندنی'),
+        h('span',null,'نسخه 11.6 · دسترسی مدیر منطقه · فقط خواندنی'),
         h('span',null,'فیلتر دسترسی در سرور انجام می‌شود و فقط اطلاعات مناطق تخصیص‌یافته به این حساب ارسال می‌شود.')
       )
     ),
@@ -7246,7 +6254,7 @@ function LoginView({ onLogin }){
   useEffect(()=>{
     // هیچ تلاش ناموفقی در مرورگر ذخیره یا قفل نمی‌شود.
     // ورود قبلیِ ناقص نیز پاک می‌شود تا کاربران فعلی بتوانند دوباره تلاش کنند.
-    try{ sessionStorage.removeItem('ticketing-user-v120'); }catch(e){}
+    try{ sessionStorage.removeItem('ticketing-user-v116'); }catch(e){}
   },[]);
 
   const clearError = () => {
@@ -7259,7 +6267,7 @@ function LoginView({ onLogin }){
     setError('');
     setUsername('');
     setPassword('');
-    try{ sessionStorage.removeItem('ticketing-user-v120'); }catch(e){}
+    try{ sessionStorage.removeItem('ticketing-user-v116'); }catch(e){}
     setTimeout(()=>usernameRef.current && usernameRef.current.focus(),30);
   };
 
@@ -7296,7 +6304,7 @@ function LoginView({ onLogin }){
 
       if(result && result.success){
         // هیچ خطای قبلی یا نشست ناقصی به ورود درست منتقل نمی‌شود.
-        try{ sessionStorage.removeItem('ticketing-user-v120'); }catch(e){}
+        try{ sessionStorage.removeItem('ticketing-user-v116'); }catch(e){}
         onLogin({
           username: String(result.username || cleanUsername).trim(),
           name: String(result.name || '').trim(),
@@ -7397,7 +6405,7 @@ function LoginView({ onLogin }){
 
 /* ---------- اپ اصلی ---------- */
 function App(){
-  const [currentUser,setCurrentUser]=useState(()=>{try{const raw=sessionStorage.getItem('ticketing-user-v120');return raw?JSON.parse(raw):null;}catch(e){return null;}});
+  const [currentUser,setCurrentUser]=useState(()=>{try{const raw=sessionStorage.getItem('ticketing-user-v116');return raw?JSON.parse(raw):null;}catch(e){return null;}});
   const [tasks,setTasks]=useState([]);
   const [technicianDirectory,setTechnicianDirectory]=useState([]);
   const [activeStoreDirectory,setActiveStoreDirectory]=useState([]);
@@ -7422,14 +6430,14 @@ function App(){
   const showToast=m=>{setToastMsg(m);clearTimeout(toastTimer.current);toastTimer.current=setTimeout(()=>setToastMsg(''),2600);};
 
   const handleLogin=user=>{
-    sessionStorage.setItem('ticketing-user-v120',JSON.stringify(user));
+    sessionStorage.setItem('ticketing-user-v116',JSON.stringify(user));
     dataRevisionRef.current='';
     lastFullSyncRef.current=0;
     setCurrentUser(user);
     setLoaded(false);
   };
   const logout=()=>{
-    sessionStorage.removeItem('ticketing-user-v120');
+    sessionStorage.removeItem('ticketing-user-v116');
     dataRevisionRef.current='';
     lastFullSyncRef.current=0;
     setCurrentUser(null);
@@ -7647,7 +6655,7 @@ function App(){
 
   return React.createElement('div',{className:'wrap'},
     React.createElement('div',{className:'top'},
-      React.createElement('div',{className:'brand'},React.createElement('span',{className:'dot'}),React.createElement('div',null,React.createElement('h1',null,'پشتیبانی فنی فروشگاه‌ها'),React.createElement('span',null,(role==='tech'?'محیط نیروی فنی':'مرکز کنترل مدیریت فنی')+' • نسخه 12.0'))),
+      React.createElement('div',{className:'brand'},React.createElement('span',{className:'dot'}),React.createElement('div',null,React.createElement('h1',null,'پشتیبانی فنی فروشگاه‌ها'),React.createElement('span',null,(role==='tech'?'محیط نیروی فنی':'مرکز کنترل مدیریت فنی')+' • نسخه 11.6'))),
       React.createElement('div',{className:'user-bar'},React.createElement('div',{className:'user-info'},React.createElement('b',null,currentUser.name),React.createElement('span',null,role==='manager'?'مدیر فنی':'کد پرسنلی: '+currentUser.username)),React.createElement('button',{className:'logout-btn',onClick:logout},'خروج'))
     ),
     !loaded?React.createElement('div',{className:'empty'},'در حال بارگذاری اطلاعات...'):(role==='tech'?React.createElement(TechView,{tasks,saveTasks,showToast,currentUser,refreshTasks:loadTasks}):React.createElement(ManagerView,{tasks,updateTask:updateManagerTask,showToast,refreshTasks:loadTasks,managerLoading,lastUpdated,currentUser,technicianDirectory,activeStoreDirectory})),
