@@ -4231,7 +4231,6 @@ function waitMs(ms){
 async function confirmTicketSaved(ticket, token){
   const delays=[350,500,750,1000,1400,1800];
   const wantedFingerprint=ticketSubmissionFingerprintClient(ticket);
-  const wantedMs=Date.parse(ticket.createdAt||'')||Date.now();
 
   for(const delay of delays){
     await waitMs(delay);
@@ -4257,16 +4256,15 @@ async function confirmTicketSaved(ticket, token){
       }
 
       if(!found){
+        const wantedDate=normalizeTicketDateLabel(ticket.date||ticketDate(ticket)||'');
         const candidates=list
-          .filter(x=>ticketSubmissionFingerprintClient(x)===wantedFingerprint)
-          .map(x=>({
-            ticket:x,
-            gap:Math.abs((Date.parse(x.createdAt||'')||0)-wantedMs)
-          }))
-          .filter(x=>x.gap<=120000)
-          .sort((a,b)=>a.gap-b.gap);
+          .filter(x=>
+            ticketSubmissionFingerprintClient(x)===wantedFingerprint &&
+            normalizeTicketDateLabel(x.date||ticketDate(x)||'')===wantedDate
+          )
+          .sort((a,b)=>Number(b.rowNumber||0)-Number(a.rowNumber||0));
 
-        if(candidates.length)found=candidates[0].ticket;
+        if(candidates.length)found=candidates[0];
       }
 
       if(found)return found;
@@ -5167,7 +5165,20 @@ function TechView({ tasks, saveTasks, showToast, currentUser, refreshTasks }){
 
       showToast('درخواست دریافت شد؛ در حال تأیید ثبت در سرور...');
 
-      await sendToSheet(newTicket);
+      const serverResult=await sendToSheet(newTicket);
+
+      if(serverResult&&serverResult.duplicatePrevented){
+        await saveTasks(list=>list.filter(x=>String(x.id||'')!==String(newTicket.id||'')));
+        await refreshTasks({silent:true});
+
+        showToast(
+          serverResult.dedupReason==='same_day_fingerprint'
+            ?'برای این فروشگاه و همین نوع خرابی امروز قبلاً تیکت '+serverResult.ticketNumber+' ثبت شده است؛ تیکت جدید ایجاد نشد.'
+            :'این درخواست قبلاً با شماره '+serverResult.ticketNumber+' ثبت شده بود؛ تیکت جدید ایجاد نشد.'
+        );
+
+        return;
+      }
 
       const confirmed=await confirmTicketSaved(newTicket,currentUser.token);
 
@@ -6288,13 +6299,15 @@ function DataAnalysisView({tasks,onRefresh,loading,lastUpdated,showToast,dataDia
             Number.isFinite(previousCompletedMs) &&
             previousCompletedMs<=ts;
 
-          if(wasCompletedBeforeNext){
+          const isDifferentBusinessDay=ticketDate(t)!==ticketDate(previousTicket);
+
+          if(wasCompletedBeforeNext&&isDifferentBusinessDay){
             const gapFromCompletion=(ts-previousCompletedMs)/DAY;
             if(gapFromCompletion>=0&&gapFromCompletion<=30){
               repeated.push({...t,__gapDays:Math.round(gapFromCompletion)});
               repeatEventRows.add(Number(t.rowNumber||0));
             }
-          }else if(Number.isFinite(previousCreatedMs)){
+          }else if(!wasCompletedBeforeNext&&Number.isFinite(previousCreatedMs)){
             const gapFromCreate=(ts-previousCreatedMs)/DAY;
             if(gapFromCreate>=0&&gapFromCreate<=30){
               openRelogs.push({...t,__gapDays:Math.round(gapFromCreate)});
@@ -7085,7 +7098,9 @@ function DataAnalysisView({tasks,onRefresh,loading,lastUpdated,showToast,dataDia
               Number.isFinite(previousCompletedMs) &&
               previousCompletedMs<=ts;
 
-            if(wasCompletedBeforeNext){
+            const isDifferentBusinessDay=ticketDate(t)!==ticketDate(previousTicket);
+
+            if(wasCompletedBeforeNext&&isDifferentBusinessDay){
               const gapFromCompletion=(ts-previousCompletedMs)/DAY;
               if(gapFromCompletion>=0&&gapFromCompletion<=30&&t.costStatus==='final'){
                 repeatCost+=Number(t.totalCost||0);
@@ -7364,7 +7379,7 @@ function DataAnalysisView({tasks,onRefresh,loading,lastUpdated,showToast,dataDia
             h('div',{className:'high'},
               h('span',null,'Duplicate مطمئن جدید'),
               h('b',null,dqHighCount.toLocaleString('fa-IR')),
-              h('small',null,'همان امضا در حداکثر ۱۲۰ ثانیه')
+              h('small',null,'همان خرابی در همان روز')
             ),
             h('div',{className:'suspect'},
               h('span',null,'Duplicate مشکوک'),
@@ -7413,7 +7428,7 @@ function DataAnalysisView({tasks,onRefresh,loading,lastUpdated,showToast,dataDia
           h('div',{className:'dq-actions'},
             h('div',null,
               h('b',null,'قاعده Duplicate مطمئن'),
-              h('span',null,'همان کارشناس + همان فروشگاه + همان نوع کار + همان Level 1 / Level 2 در حداکثر ۱۲۰ ثانیه')
+              h('span',null,'همان روز + همان کارشناس + همان فروشگاه + همان نوع کار + همان Level 1 / Level 2')
             ),
             h('button',{
               className:'dq-apply-btn',
@@ -7436,7 +7451,7 @@ function DataAnalysisView({tasks,onRefresh,loading,lastUpdated,showToast,dataDia
                     h('th',null,'فروشگاه'),
                     h('th',null,'کارشناس'),
                     h('th',null,'خرابی'),
-                    h('th',null,'فاصله'),
+                    h('th',null,'بازه ثبت همان روز'),
                     h('th',null,'هزینه Duplicate')
                   )),
                   h('tbody',null,
@@ -7452,7 +7467,7 @@ function DataAnalysisView({tasks,onRefresh,loading,lastUpdated,showToast,dataDia
                         h('td',null,g.canonical.storeCode+' · '+(g.canonical.storeName||'')),
                         h('td',null,g.canonical.technician||'—'),
                         h('td',null,[g.canonical.level1,(g.canonical.level2||[]).join(' + ')].filter(Boolean).join(' / ')),
-                        h('td',null,Number(g.gapSeconds||0).toLocaleString('fa-IR')+' ثانیه'),
+                        h('td',null,(Number(g.gapSeconds||0)/3600).toLocaleString('fa-IR',{maximumFractionDigits:1})+' ساعت'),
                         h('td',null,duplicateCost?improvementMoney(duplicateCost):'—')
                       );
                     })
@@ -7461,7 +7476,7 @@ function DataAnalysisView({tasks,onRefresh,loading,lastUpdated,showToast,dataDia
               )
               :h('div',{className:'dq-empty'},
                 Number((dqAudit.diagnostics||{}).eligibleRows||0)>0
-                  ?'اسکن انجام شد اما Duplicate مطمئن با قاعده ۱۲۰ ثانیه پیدا نشد.'
+                  ?'اسکن انجام شد اما Duplicate مطمئن با قاعده «همان خرابی در همان روز» پیدا نشد.'
                   :'ردیف واجد شرایط برای اسکن پیدا نشد؛ شاخص‌های تشخیصی بالا را بررسی کنید.'
               )
           ),
@@ -8014,7 +8029,7 @@ function DataAnalysisView({tasks,onRefresh,loading,lastUpdated,showToast,dataDia
             h('p',null,'در همین فروشگاه، خرابی «'+d.issue+'» پس از Completion یک تیکت قبلی دوباره رخ داده و فاصله رخداد جدید با پایان کار قبلی حداکثر ۳۰ روز بوده است. ثبت‌های Duplicate فنی و Re-log قبل از Completion وارد این محاسبه نمی‌شوند.'),
             h('div',{className:'analysis-rule-line'},
               h('span',null,'Rule'),
-              h('code',null,'Same Store + Same Failure + Previous Completed + Gap from Completion ≤ 30 Days')
+              h('code',null,'Same Store + Same Failure + Previous Completed + Different Day + Gap from Completion ≤ 30 Days')
             )
           ),
           h('div',{className:'analysis-confidence-explain'},
@@ -10111,7 +10126,7 @@ function ExecutiveDashboard({tasks,onRefresh,loading,lastUpdated,currentUser,onL
 
 /* ---------- اپ اصلی ---------- */
 
-/* ---------- Boardroom CEO Dashboard — نسخه 11.14 ---------- */
+/* ---------- Boardroom CEO Dashboard — نسخه 11.15 ---------- */
 function CEODashboard({tasks,onRefresh,loading,lastUpdated,currentUser,onLogout}){
   const h=React.createElement;
 
@@ -10149,7 +10164,9 @@ function CEODashboard({tasks,onRefresh,loading,lastUpdated,currentUser,onLogout}
           completed!==null &&
           completed<=ts;
 
-        if(completedBeforeNext){
+        const isDifferentBusinessDay=ticketDate(t)!==ticketDate(previous);
+
+        if(completedBeforeNext&&isDifferentBusinessDay){
           const gap=(ts-completed)/dayMs;
           if(gap>=0&&gap<=30)count++;
         }
@@ -10432,7 +10449,7 @@ function CEODashboard({tasks,onRefresh,loading,lastUpdated,currentUser,onLogout}
         )
       ),
 
-      h('footer',{className:'c8-footer'},h('span',null,'نسخه 11.14 · دسترسی فقط خواندنی مدیرعامل'),h('span',null,'ریسک فروشگاه‌های فعال و فعالیت‌های پیش‌افتتاح به‌صورت جداگانه تحلیل می‌شوند.'))
+      h('footer',{className:'c8-footer'},h('span',null,'نسخه 11.15 · دسترسی فقط خواندنی مدیرعامل'),h('span',null,'ریسک فروشگاه‌های فعال و فعالیت‌های پیش‌افتتاح به‌صورت جداگانه تحلیل می‌شوند.'))
     ),
 
     modal
@@ -10851,7 +10868,7 @@ function RegionalDashboard({tasks,onRefresh,loading,lastUpdated,currentUser,onLo
       ),
 
       h('footer',{className:'rm-footer'},
-        h('span',null,'نسخه 11.14 · دسترسی مدیر منطقه · فقط خواندنی'),
+        h('span',null,'نسخه 11.15 · دسترسی مدیر منطقه · فقط خواندنی'),
         h('span',null,'فیلتر دسترسی در سرور انجام می‌شود و فقط اطلاعات مناطق تخصیص‌یافته به این حساب ارسال می‌شود.')
       )
     ),
@@ -10872,7 +10889,7 @@ function LoginView({ onLogin }){
   useEffect(()=>{
     // هیچ تلاش ناموفقی در مرورگر ذخیره یا قفل نمی‌شود.
     // ورود قبلیِ ناقص نیز پاک می‌شود تا کاربران فعلی بتوانند دوباره تلاش کنند.
-    try{ sessionStorage.removeItem('ticketing-user-v1114'); }catch(e){}
+    try{ sessionStorage.removeItem('ticketing-user-v1115'); }catch(e){}
   },[]);
 
   const clearError = () => {
@@ -10885,7 +10902,7 @@ function LoginView({ onLogin }){
     setError('');
     setUsername('');
     setPassword('');
-    try{ sessionStorage.removeItem('ticketing-user-v1114'); }catch(e){}
+    try{ sessionStorage.removeItem('ticketing-user-v1115'); }catch(e){}
     setTimeout(()=>usernameRef.current && usernameRef.current.focus(),30);
   };
 
@@ -10922,7 +10939,7 @@ function LoginView({ onLogin }){
 
       if(result && result.success){
         // هیچ خطای قبلی یا نشست ناقصی به ورود درست منتقل نمی‌شود.
-        try{ sessionStorage.removeItem('ticketing-user-v1114'); }catch(e){}
+        try{ sessionStorage.removeItem('ticketing-user-v1115'); }catch(e){}
         onLogin({
           username: String(result.username || cleanUsername).trim(),
           name: String(result.name || '').trim(),
@@ -11023,7 +11040,7 @@ function LoginView({ onLogin }){
 
 /* ---------- اپ اصلی ---------- */
 function App(){
-  const [currentUser,setCurrentUser]=useState(()=>{try{const raw=sessionStorage.getItem('ticketing-user-v1114');return raw?JSON.parse(raw):null;}catch(e){return null;}});
+  const [currentUser,setCurrentUser]=useState(()=>{try{const raw=sessionStorage.getItem('ticketing-user-v1115');return raw?JSON.parse(raw):null;}catch(e){return null;}});
   const [tasks,setTasks]=useState([]);
   const [technicianDirectory,setTechnicianDirectory]=useState([]);
   const [activeStoreDirectory,setActiveStoreDirectory]=useState([]);
@@ -11049,14 +11066,14 @@ function App(){
   const showToast=m=>{setToastMsg(m);clearTimeout(toastTimer.current);toastTimer.current=setTimeout(()=>setToastMsg(''),2600);};
 
   const handleLogin=user=>{
-    sessionStorage.setItem('ticketing-user-v1114',JSON.stringify(user));
+    sessionStorage.setItem('ticketing-user-v1115',JSON.stringify(user));
     dataRevisionRef.current='';
     lastFullSyncRef.current=0;
     setCurrentUser(user);
     setLoaded(false);
   };
   const logout=()=>{
-    sessionStorage.removeItem('ticketing-user-v1114');
+    sessionStorage.removeItem('ticketing-user-v1115');
     dataRevisionRef.current='';
     lastFullSyncRef.current=0;
     setCurrentUser(null);
@@ -11276,7 +11293,7 @@ function App(){
 
   return React.createElement('div',{className:'wrap'},
     React.createElement('div',{className:'top'},
-      React.createElement('div',{className:'brand'},React.createElement('span',{className:'dot'}),React.createElement('div',null,React.createElement('h1',null,'پشتیبانی فنی فروشگاه‌ها'),React.createElement('span',null,(role==='tech'?'محیط نیروی فنی':'مرکز کنترل مدیریت فنی')+' • نسخه 11.14'))),
+      React.createElement('div',{className:'brand'},React.createElement('span',{className:'dot'}),React.createElement('div',null,React.createElement('h1',null,'پشتیبانی فنی فروشگاه‌ها'),React.createElement('span',null,(role==='tech'?'محیط نیروی فنی':'مرکز کنترل مدیریت فنی')+' • نسخه 11.15'))),
       React.createElement('div',{className:'user-bar'},React.createElement('div',{className:'user-info'},React.createElement('b',null,currentUser.name),React.createElement('span',null,role==='manager'?'مدیر فنی':'کد پرسنلی: '+currentUser.username)),React.createElement('button',{className:'logout-btn',onClick:logout},'خروج'))
     ),
     !loaded?React.createElement('div',{className:'empty'},'در حال بارگذاری اطلاعات...'):(role==='tech'?React.createElement(TechView,{tasks,saveTasks,showToast,currentUser,refreshTasks:loadTasks}):React.createElement(ManagerView,{tasks,updateTask:updateManagerTask,showToast,refreshTasks:loadTasks,managerLoading,lastUpdated,currentUser,technicianDirectory,activeStoreDirectory,dataDiagnostics})),
