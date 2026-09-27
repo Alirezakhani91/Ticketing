@@ -3931,6 +3931,29 @@
   }
 }
 
+
+/* ========================================================
+   Durable Technician Outbox — 11.17
+   ======================================================== */
+.sync-badge{
+  display:inline-flex;
+  align-items:center;
+  margin-inline-start:5px;
+  padding:4px 7px;
+  border-radius:999px;
+  font-size:8px;
+  font-weight:900;
+  white-space:nowrap;
+}
+.sync-badge.pending{
+  background:#fff4df;
+  color:#98651d;
+}
+.sync-badge.syncing{
+  background:#eef3f8;
+  color:#315f89;
+}
+
 </style>
 </head>
 <body>
@@ -4197,59 +4220,71 @@ async function sendTechnicianCancel(ticket, token){
 }
 
 async function sendToSheet(t){
-  const now = new Date(t.createdAt || Date.now());
-  await fetch(SHEET_URL, {
-    method: 'POST',
-    mode: 'no-cors',
-    headers: { 'Content-Type': 'text/plain' },
-    body: JSON.stringify({
-      action: 'createTicket',
-      date: now.toLocaleDateString('fa-IR'),
-      time: now.toLocaleTimeString('fa-IR', {hour:'2-digit', minute:'2-digit'}),
-      storeCode: t.storeCode || '',
-      technician: t.technician || '',
-      type: t.type || '',
-      level1: t.level1 || '',
-      level2: t.level2 || [],
-      otherText: t.otherText || '',
-      consumedParts: t.consumedParts || [],
-      hotParts: t.hotParts || [],
-      outsourceReason: t.outsourceReason || '',
-      initialCause: t.initialCause || '',
-      initialCauseDetails: t.initialCauseDetails || '',
-      finalCause: t.finalCause || '',
-      finalCauseDetails: t.finalCauseDetails || '',
-      reviewStatus: t.reviewStatus || '',
-      managerNote: t.managerNote || '',
-      id: t.id || '',
-      createdAt: t.createdAt || '',
-      technicianCode: t.technicianCode || '',
-      storeName: t.storeName || '',
-      region: t.region || '',
-      locationType: t.locationType || '',
-      workStatus: t.workStatus || '',
-      completedAt: t.completedAt || '',
-      ticketNumber: t.ticketNumber || '',
-      costStatus: t.costStatus || '',
-      partsCost: t.partsCost || 0,
-      serviceCost: t.serviceCost || 0,
-      otherCost: t.otherCost || 0,
-      clientSubmissionId: t.clientSubmissionId || '',
-      token: t.token || ''
+  const now=new Date(t.createdAt||Date.now());
+
+  await fetch(SHEET_URL,{
+    method:'POST',
+    mode:'no-cors',
+    headers:{'Content-Type':'text/plain'},
+    body:JSON.stringify({
+      action:'createTicket',
+      date:t.dateText||t.date||now.toLocaleDateString('fa-IR'),
+      time:t.timeText||t.time||now.toLocaleTimeString('fa-IR',{hour:'2-digit',minute:'2-digit'}),
+      storeCode:t.storeCode||'',
+      technician:t.technician||'',
+      type:t.type||'',
+      level1:t.level1||'',
+      level2:t.level2||[],
+      otherText:t.otherText||'',
+      consumedParts:t.consumedParts||[],
+      hotParts:t.hotParts||[],
+      outsourceReason:t.outsourceReason||'',
+      initialCause:t.initialCause||'',
+      initialCauseDetails:t.initialCauseDetails||'',
+      finalCause:t.finalCause||'',
+      finalCauseDetails:t.finalCauseDetails||'',
+      reviewStatus:t.reviewStatus||'',
+      managerNote:t.managerNote||'',
+      id:t.id||'',
+      createdAt:t.createdAt||'',
+      technicianCode:t.technicianCode||'',
+      storeName:t.storeName||'',
+      region:t.region||'',
+      locationType:t.locationType||'',
+      workStatus:t.workStatus||'',
+      completedAt:t.completedAt||'',
+      ticketNumber:t.ticketNumber||'',
+      costStatus:t.costStatus||'',
+      partsCost:t.partsCost||0,
+      serviceCost:t.serviceCost||0,
+      otherCost:t.otherCost||0,
+      clientSubmissionId:t.clientSubmissionId||'',
+      token:t.token||''
     })
   });
+
+  // no-cors فقط یعنی Request ارسال شده؛
+  // موفقیت واقعی باید از mytickets تأیید شود.
+  return{
+    submitted:true,
+    clientSubmissionId:t.clientSubmissionId||''
+  };
 }
 
 function waitMs(ms){
   return new Promise(resolve=>setTimeout(resolve,ms));
 }
 
-async function confirmTicketSaved(ticket, token){
-  const delays=[350,500,750,1000,1400,1800];
-  const wantedFingerprint=ticketSubmissionFingerprintClient(ticket);
+async function confirmTicketSaved(ticket,token,options={}){
+  const delays=Array.isArray(options.delays)&&options.delays.length
+    ?options.delays
+    :[350,600,900,1300,1800,2400,3200];
 
-  for(const delay of delays){
-    await waitMs(delay);
+  const attempts=Number(options.attempts||delays.length);
+
+  for(let i=0;i<attempts;i++){
+    await waitMs(delays[Math.min(i,delays.length-1)]);
+
     const result=await fetchTechnicianTickets(token);
 
     if(result&&result.sessionExpired){
@@ -4257,33 +4292,21 @@ async function confirmTicketSaved(ticket, token){
     }
 
     if(result&&result.success){
-      const list=result.tickets||[];
-
-      let found=list.find(x=>
-        ticket.clientSubmissionId &&
-        String(x.clientSubmissionId||'')===String(ticket.clientSubmissionId)
+      const match=findServerMatchForOutbox(
+        result.tickets||[],
+        {
+          clientSubmissionId:ticket.clientSubmissionId||'',
+          ticket
+        }
       );
 
-      if(!found){
-        found=list.find(x=>
-          String(x.id||'')===String(ticket.id||'') ||
-          (ticket.ticketNumber&&String(x.ticketNumber||'')===String(ticket.ticketNumber))
-        );
+      if(match){
+        return{
+          ...match,
+          serverTickets:result.tickets||[],
+          updatedAt:result.updatedAt||new Date().toISOString()
+        };
       }
-
-      if(!found){
-        const wantedDate=normalizeTicketDateLabel(ticket.date||ticketDate(ticket)||'');
-        const candidates=list
-          .filter(x=>
-            ticketSubmissionFingerprintClient(x)===wantedFingerprint &&
-            normalizeTicketDateLabel(x.date||ticketDate(x)||'')===wantedDate
-          )
-          .sort((a,b)=>Number(b.rowNumber||0)-Number(a.rowNumber||0));
-
-        if(candidates.length)found=candidates[0];
-      }
-
-      if(found)return found;
     }
   }
 
@@ -4378,6 +4401,167 @@ function ticketSubmissionFingerprintClient(ticket){
     normalizeSubmissionText(ticket&&ticket.level1||''),
     level2
   ].join('||');
+}
+
+const TECH_OUTBOX_PREFIX='ticketing-tech-outbox-v1117:';
+
+function technicianOutboxKey(username){
+  return TECH_OUTBOX_PREFIX+normalizeLoginDigits(username||'unknown');
+}
+
+function readTechnicianOutbox(username){
+  try{
+    const raw=localStorage.getItem(technicianOutboxKey(username));
+    if(!raw)return [];
+    const parsed=JSON.parse(raw);
+    return Array.isArray(parsed)?parsed:[];
+  }catch(e){
+    return [];
+  }
+}
+
+function writeTechnicianOutbox(username,items){
+  try{
+    const clean=(Array.isArray(items)?items:[])
+      .filter(Boolean)
+      .slice(0,300);
+
+    localStorage.setItem(
+      technicianOutboxKey(username),
+      JSON.stringify(clean)
+    );
+
+    return clean;
+  }catch(e){
+    return Array.isArray(items)?items:[];
+  }
+}
+
+function upsertTechnicianOutbox(username,item){
+  const list=readTechnicianOutbox(username);
+  const key=String(item&&item.clientSubmissionId||'');
+
+  return writeTechnicianOutbox(username,[
+    item,
+    ...list.filter(x=>String(x&&x.clientSubmissionId||'')!==key)
+  ]);
+}
+
+function patchTechnicianOutbox(username,clientSubmissionId,patch){
+  const key=String(clientSubmissionId||'');
+
+  return writeTechnicianOutbox(
+    username,
+    readTechnicianOutbox(username).map(item=>
+      String(item&&item.clientSubmissionId||'')===key
+        ?{...item,...patch}
+        :item
+    )
+  );
+}
+
+function removeTechnicianOutbox(username,clientSubmissionId){
+  const key=String(clientSubmissionId||'');
+
+  return writeTechnicianOutbox(
+    username,
+    readTechnicianOutbox(username).filter(item=>
+      String(item&&item.clientSubmissionId||'')!==key
+    )
+  );
+}
+
+function outboxTicketFromItem(item){
+  if(!item||!item.ticket)return null;
+
+  return{
+    ...item.ticket,
+    syncState:item.syncState||'pending',
+    syncAttempts:Number(item.attempts||0),
+    syncLastAttempt:item.lastAttempt||'',
+    syncLastError:item.lastError||'',
+    __fromOutbox:true
+  };
+}
+
+function findServerMatchForOutbox(serverTickets,item){
+  const list=Array.isArray(serverTickets)?serverTickets:[];
+  const ticket=item&&item.ticket;
+  if(!ticket)return null;
+
+  const wantedId=String(item.clientSubmissionId||ticket.clientSubmissionId||'');
+
+  if(wantedId){
+    const exact=list.find(t=>
+      String(t.clientSubmissionId||'')===wantedId
+    );
+
+    if(exact){
+      return{
+        ticket:exact,
+        matchType:'submission_id'
+      };
+    }
+  }
+
+  const wantedFingerprint=ticketSubmissionFingerprintClient(ticket);
+  const wantedDate=normalizeTicketDateLabel(
+    ticket.dateText||
+    ticket.date||
+    ticketDate(ticket)||
+    ''
+  );
+
+  const sameDay=list.find(t=>{
+    const status=String(t.reviewStatus||'').toLowerCase();
+    const workStatus=String(t.workStatus||'').toLowerCase();
+
+    if(
+      status==='rejected'||
+      status==='cancelled'||
+      workStatus==='cancelled'
+    ){
+      return false;
+    }
+
+    return(
+      ticketSubmissionFingerprintClient(t)===wantedFingerprint &&
+      normalizeTicketDateLabel(
+        t.dateText||
+        t.date||
+        ticketDate(t)||
+        ''
+      )===wantedDate
+    );
+  });
+
+  return sameDay
+    ?{ticket:sameDay,matchType:'same_day_fingerprint'}
+    :null;
+}
+
+function pruneConfirmedOutbox(username,serverTickets){
+  const current=readTechnicianOutbox(username);
+
+  const remaining=current.filter(item=>
+    !findServerMatchForOutbox(serverTickets,item)
+  );
+
+  writeTechnicianOutbox(username,remaining);
+  return remaining;
+}
+
+function mergeServerTicketsWithOutbox(serverTickets,outboxItems){
+  const server=Array.isArray(serverTickets)?serverTickets:[];
+  const pending=(Array.isArray(outboxItems)?outboxItems:[])
+    .filter(item=>!findServerMatchForOutbox(server,item))
+    .map(outboxTicketFromItem)
+    .filter(Boolean);
+
+  return[
+    ...pending,
+    ...server
+  ];
 }
 
 function makeTicketNumber(){
@@ -4927,6 +5111,8 @@ function TechView({ tasks, saveTasks, showToast, currentUser, refreshTasks }){
   const [draft,setDraft]=useState(emptyDraft('active'));
   const [askMore,setAskMore]=useState(false);
   const [submitting,setSubmitting]=useState(false);
+  const [syncingOutbox,setSyncingOutbox]=useState(false);
+  const outboxSyncBusyRef=useRef(false);
   const [costDraft,setCostDraft]=useState(emptyCostDraft());
 
   const [preOpeningStores,setPreOpeningStores]=useState([]);
@@ -5120,25 +5306,262 @@ function TechView({ tasks, saveTasks, showToast, currentUser, refreshTasks }){
     setAskMore(false);
   };
 
+  const syncTechnicianOutbox=useCallback(async(options={})=>{
+    if(outboxSyncBusyRef.current)return;
+    if(!currentUser||!currentUser.token||!currentUser.username)return;
+
+    const username=currentUser.username;
+    let outbox=readTechnicianOutbox(username);
+
+    if(!outbox.length)return;
+
+    outboxSyncBusyRef.current=true;
+    if(!options.silent)setSyncingOutbox(true);
+
+    try{
+      // اول Outboxهایی که قبلاً روی Server نشسته‌اند پاک می‌شوند.
+      const initialServer=await fetchTechnicianTickets(currentUser.token);
+
+      if(initialServer&&initialServer.sessionExpired){
+        return;
+      }
+
+      if(initialServer&&initialServer.success){
+        outbox=pruneConfirmedOutbox(
+          username,
+          initialServer.tickets||[]
+        );
+      }
+
+      for(const item of outbox){
+        if(!item||!item.ticket||!item.clientSubmissionId)continue;
+
+        const attempts=Number(item.attempts||0)+1;
+        const lastAttempt=new Date().toISOString();
+
+        patchTechnicianOutbox(
+          username,
+          item.clientSubmissionId,
+          {
+            syncState:'syncing',
+            attempts,
+            lastAttempt,
+            lastError:''
+          }
+        );
+
+        try{
+          await sendToSheet({
+            ...item.ticket,
+            token:currentUser.token,
+            clientSubmissionId:item.clientSubmissionId
+          });
+
+          const confirmed=await confirmTicketSaved(
+            {
+              ...item.ticket,
+              clientSubmissionId:item.clientSubmissionId
+            },
+            currentUser.token,
+            {
+              attempts:5,
+              delays:[450,700,1100,1600,2300]
+            }
+          );
+
+          if(confirmed&&confirmed.ticket){
+            removeTechnicianOutbox(
+              username,
+              item.clientSubmissionId
+            );
+
+            await saveTasks(list=>{
+              const withoutLocal=list.filter(x=>
+                String(x.clientSubmissionId||'')!==String(item.clientSubmissionId||'') &&
+                String(x.id||'')!==String(item.ticket.id||'')
+              );
+
+              return[
+                {
+                  ...confirmed.ticket,
+                  syncState:'confirmed'
+                },
+                ...withoutLocal
+              ];
+            });
+          }else{
+            patchTechnicianOutbox(
+              username,
+              item.clientSubmissionId,
+              {
+                syncState:'pending',
+                attempts,
+                lastAttempt,
+                lastError:'ثبت هنوز روی سرور تأیید نشده است'
+              }
+            );
+          }
+        }catch(error){
+          patchTechnicianOutbox(
+            username,
+            item.clientSubmissionId,
+            {
+              syncState:'pending',
+              attempts,
+              lastAttempt,
+              lastError:(error&&error.message)||'خطای ارتباط با سرور'
+            }
+          );
+        }
+      }
+
+      if(!options.skipRefresh){
+        await refreshTasks({silent:true});
+      }
+    }finally{
+      outboxSyncBusyRef.current=false;
+      if(!options.silent)setSyncingOutbox(false);
+    }
+  },[
+    currentUser&&currentUser.token,
+    currentUser&&currentUser.username,
+    refreshTasks,
+    saveTasks
+  ]);
+
+  useEffect(()=>{
+    if(!currentUser||currentUser.role!=='technician')return;
+
+    const startupTimer=setTimeout(()=>{
+      syncTechnicianOutbox({silent:true});
+    },600);
+
+    const interval=setInterval(()=>{
+      if(readTechnicianOutbox(currentUser.username).length){
+        syncTechnicianOutbox({silent:true});
+      }
+    },20000);
+
+    const onOnline=()=>{
+      syncTechnicianOutbox({silent:true});
+    };
+
+    window.addEventListener('online',onOnline);
+
+    return()=>{
+      clearTimeout(startupTimer);
+      clearInterval(interval);
+      window.removeEventListener('online',onOnline);
+    };
+  },[
+    currentUser&&currentUser.username,
+    syncTechnicianOutbox
+  ]);
+
+  useEffect(()=>{
+    if(!currentUser||currentUser.role!=='technician')return;
+
+    const onPageHide=()=>{
+      const first=readTechnicianOutbox(currentUser.username)
+        .find(x=>x&&x.ticket);
+
+      if(!first||!navigator.sendBeacon)return;
+
+      try{
+        const t=first.ticket;
+        const now=new Date(t.createdAt||Date.now());
+
+        const payload={
+          action:'createTicket',
+          date:t.dateText||t.date||now.toLocaleDateString('fa-IR'),
+          time:t.timeText||t.time||now.toLocaleTimeString('fa-IR',{hour:'2-digit',minute:'2-digit'}),
+          storeCode:t.storeCode||'',
+          technician:t.technician||'',
+          type:t.type||'',
+          level1:t.level1||'',
+          level2:t.level2||[],
+          otherText:t.otherText||'',
+          consumedParts:t.consumedParts||[],
+          hotParts:t.hotParts||[],
+          outsourceReason:t.outsourceReason||'',
+          initialCause:t.initialCause||'',
+          initialCauseDetails:t.initialCauseDetails||'',
+          finalCause:t.finalCause||'',
+          finalCauseDetails:t.finalCauseDetails||'',
+          reviewStatus:t.reviewStatus||'pending',
+          managerNote:t.managerNote||'',
+          id:t.id||'',
+          createdAt:t.createdAt||'',
+          technicianCode:t.technicianCode||'',
+          storeName:t.storeName||'',
+          region:t.region||'',
+          locationType:t.locationType||'',
+          workStatus:t.workStatus||'',
+          completedAt:t.completedAt||'',
+          ticketNumber:t.ticketNumber||'',
+          costStatus:t.costStatus||'',
+          partsCost:t.partsCost||0,
+          serviceCost:t.serviceCost||0,
+          otherCost:t.otherCost||0,
+          clientSubmissionId:first.clientSubmissionId||'',
+          token:currentUser.token||''
+        };
+
+        navigator.sendBeacon(
+          SHEET_URL,
+          new Blob(
+            [JSON.stringify(payload)],
+            {type:'text/plain;charset=UTF-8'}
+          )
+        );
+      }catch(e){}
+    };
+
+    window.addEventListener('pagehide',onPageHide);
+    return()=>window.removeEventListener('pagehide',onPageHide);
+  },[
+    currentUser&&currentUser.username,
+    currentUser&&currentUser.token
+  ]);
+
   const submitItem=async()=>{
     if(submitting){
-      showToast('ثبت قبلی هنوز در حال تأیید است؛ لطفاً دوباره ارسال نکنید');
+      showToast('ثبت قبلی هنوز در حال پردازش است');
       return;
     }
-    if(!validDraft(draft)){showToast('لطفاً همه مراحل ثبت کار را کامل کنید');return;}
+
+    if(!validDraft(draft)){
+      showToast('لطفاً همه مراحل ثبت کار را کامل کنید');
+      return;
+    }
+
     if(!validCostDraft(costDraft)){
       showToast('وضعیت هزینه این کار را مشخص کنید');
       return;
     }
-    if(!storeInfo){showToast('اطلاعات محل پیدا نشد');return;}
+
+    if(!storeInfo){
+      showToast('اطلاعات محل پیدا نشد');
+      return;
+    }
 
     setSubmitting(true);
 
     const createdAt=new Date().toISOString();
-    const clientSubmissionId=makeClientSubmissionId();
-    const preOpening=isPreOpeningLocation(storeInfo.locationType,storeInfo.code);
+    const dateText=new Date(createdAt).toLocaleDateString('fa-IR');
+    const timeText=new Date(createdAt).toLocaleTimeString(
+      'fa-IR',
+      {hour:'2-digit',minute:'2-digit'}
+    );
 
-    const cleanDraft={...draft,
+    const clientSubmissionId=makeClientSubmissionId();
+    const preOpening=isPreOpeningLocation(
+      storeInfo.locationType,
+      storeInfo.code
+    );
+
+    const cleanDraft={
+      ...draft,
       locationType:preOpening?'preopening':'active',
       initialCause:preOpening?'فعالیت پیش‌افتتاح':draft.initialCause,
       initialCauseDetails:preOpening?'':draft.initialCauseDetails,
@@ -5159,6 +5582,8 @@ function TechView({ tasks, saveTasks, showToast, currentUser, refreshTasks }){
       technicianCode:currentUser.username,
       token:currentUser.token,
       createdAt,
+      dateText,
+      timeText,
       reviewStatus:'pending',
       managerNote:'',
       workStatus:cleanDraft.type==='outsourced'?'open':'completed',
@@ -5169,60 +5594,70 @@ function TechView({ tasks, saveTasks, showToast, currentUser, refreshTasks }){
       ...cleanDraft
     };
 
+    const outboxItem={
+      clientSubmissionId,
+      ticket:newTicket,
+      syncState:'pending',
+      attempts:0,
+      createdAt,
+      lastAttempt:'',
+      lastError:''
+    };
+
     try{
-      // UX protection:
-      // کاربر همان لحظه کارت را می‌بیند و تا تأیید ثبت، دکمه ثبت دوباره فعال نمی‌شود.
-      await saveTasks(list=>[newTicket,...list.filter(x=>x.id!==newTicket.id)]);
+      // مهم: قبل از هر Network Call ابتدا روی دستگاه Durable می‌شود.
+      upsertTechnicianOutbox(
+        currentUser.username,
+        outboxItem
+      );
+
+      await saveTasks(list=>[
+        {
+          ...newTicket,
+          __fromOutbox:true
+        },
+        ...list.filter(x=>
+          String(x.clientSubmissionId||'')!==String(clientSubmissionId)
+        )
+      ]);
 
       setVisitCount(c=>c+1);
       setDraft(emptyDraft(preOpening?'preopening':'active'));
       setCostDraft(emptyCostDraft());
       setAskMore(true);
 
-      showToast('درخواست دریافت شد؛ در حال تأیید ثبت در سرور...');
+      showToast('تیکت ذخیره شد؛ در حال تأیید ثبت روی سرور...');
 
-      const serverResult=await sendToSheet(newTicket);
+      await syncTechnicianOutbox({
+        silent:true,
+        skipRefresh:false
+      });
 
-      if(serverResult&&serverResult.duplicatePrevented){
-        await saveTasks(list=>list.filter(x=>String(x.id||'')!==String(newTicket.id||'')));
-        await refreshTasks({silent:true});
-
-        showToast(
-          serverResult.dedupReason==='same_day_fingerprint'
-            ?'برای این فروشگاه و همین نوع خرابی امروز قبلاً تیکت '+serverResult.ticketNumber+' ثبت شده است؛ تیکت جدید ایجاد نشد.'
-            :'این درخواست قبلاً با شماره '+serverResult.ticketNumber+' ثبت شده بود؛ تیکت جدید ایجاد نشد.'
+      const pendingItem=readTechnicianOutbox(currentUser.username)
+        .find(x=>
+          String(x.clientSubmissionId||'')===String(clientSubmissionId)
         );
 
-        return;
-      }
-
-      const confirmed=await confirmTicketSaved(newTicket,currentUser.token);
-
-      if(confirmed){
-        await saveTasks(list=>{
-          const filtered=list.filter(x=>
-            String(x.id||'')!==String(newTicket.id||'') &&
-            (!confirmed.rowNumber||Number(x.rowNumber||0)!==Number(confirmed.rowNumber||0))
-          );
-          return [{...confirmed,syncState:'confirmed'},...filtered];
-        });
-
-        showToast(preOpening
-          ? 'گزارش پیش‌افتتاح با شماره '+confirmed.ticketNumber+' ثبت و تأیید شد'
-          : 'تیکت '+confirmed.ticketNumber+' ثبت و تأیید شد'
-        );
+      if(pendingItem){
+        showToast('تیکت روی دستگاه محفوظ است و در صف همگام‌سازی باقی ماند');
       }else{
-        showToast('درخواست ارسال شده و در حال همگام‌سازی است؛ لطفاً همین تیکت را دوباره ثبت نکنید');
-        setTimeout(()=>refreshTasks({silent:true}),1200);
+        showToast('تیکت روی سرور ثبت و تأیید شد');
       }
     }catch(error){
-      showToast('ارسال کامل تأیید نشد؛ تیکت محلی حفظ شده است. قبل از ثبت دوباره، «کارهای اخیر من» را بررسی کنید.');
-      setTimeout(()=>refreshTasks({silent:true}),1500);
+      patchTechnicianOutbox(
+        currentUser.username,
+        clientSubmissionId,
+        {
+          syncState:'pending',
+          lastError:(error&&error.message)||'خطای ارتباط با سرور'
+        }
+      );
+
+      showToast('تیکت محفوظ است؛ با اتصال بعدی خودکار همگام می‌شود');
     }finally{
       setSubmitting(false);
     }
   };
-
   const completeOutsource=async(ticket,completion)=>{
     if(!ticket.rowNumber){
       showToast('تیکت هنوز با سرور همگام نشده است؛ چند ثانیه بعد دوباره امتحان کنید');
@@ -5510,6 +5945,10 @@ function TechnicianTicketItem({t,currentUser,showToast,onEdit,onCancel,onCostUpd
   const normalizedCode=normalizeStoreCodeClient(editStoreCode);
   const reviewStatus=t.reviewStatus||'pending';
   const canChange=reviewStatus==='pending';
+  const syncState=t.syncState||'confirmed';
+  const syncLabel=syncState==='pending'
+    ?'در انتظار همگام‌سازی'
+    :(syncState==='syncing'?'در حال همگام‌سازی':'ثبت تأییدشده');
 
   useEffect(()=>{
     if(!editing)return;
@@ -5574,6 +6013,7 @@ function TechnicianTicketItem({t,currentUser,showToast,onEdit,onCancel,onCostUpd
       React.createElement('div',null,
         React.createElement('span',{className:'badge '+(t.type==='internal'?'b-internal':'b-outsourced')},t.type==='internal'?'درون‌سپاری':'برون‌سپاری'),
         t.type==='outsourced'&&reviewStatus!=='cancelled'&&React.createElement('span',{className:'work-badge '+(workDone?'work-done':'work-open')},workDone?'تکمیل‌شده':'در حال انجام'),
+        (syncState==='pending'||syncState==='syncing')&&React.createElement('span',{className:'sync-badge '+syncState},syncLabel),
         React.createElement('span',{className:'review-badge '+statusClass},statusLabel)
       )
     ),
@@ -10159,7 +10599,7 @@ function ExecutiveDashboard({tasks,onRefresh,loading,lastUpdated,currentUser,onL
 
 /* ---------- اپ اصلی ---------- */
 
-/* ---------- Boardroom CEO Dashboard — نسخه 11.16 ---------- */
+/* ---------- Boardroom CEO Dashboard — نسخه 11.17 ---------- */
 function CEODashboard({tasks,onRefresh,loading,lastUpdated,currentUser,onLogout}){
   const h=React.createElement;
 
@@ -10482,7 +10922,7 @@ function CEODashboard({tasks,onRefresh,loading,lastUpdated,currentUser,onLogout}
         )
       ),
 
-      h('footer',{className:'c8-footer'},h('span',null,'نسخه 11.16 · دسترسی فقط خواندنی مدیرعامل'),h('span',null,'ریسک فروشگاه‌های فعال و فعالیت‌های پیش‌افتتاح به‌صورت جداگانه تحلیل می‌شوند.'))
+      h('footer',{className:'c8-footer'},h('span',null,'نسخه 11.17 · دسترسی فقط خواندنی مدیرعامل'),h('span',null,'ریسک فروشگاه‌های فعال و فعالیت‌های پیش‌افتتاح به‌صورت جداگانه تحلیل می‌شوند.'))
     ),
 
     modal
@@ -10901,7 +11341,7 @@ function RegionalDashboard({tasks,onRefresh,loading,lastUpdated,currentUser,onLo
       ),
 
       h('footer',{className:'rm-footer'},
-        h('span',null,'نسخه 11.16 · دسترسی مدیر منطقه · فقط خواندنی'),
+        h('span',null,'نسخه 11.17 · دسترسی مدیر منطقه · فقط خواندنی'),
         h('span',null,'فیلتر دسترسی در سرور انجام می‌شود و فقط اطلاعات مناطق تخصیص‌یافته به این حساب ارسال می‌شود.')
       )
     ),
@@ -10922,7 +11362,7 @@ function LoginView({ onLogin }){
   useEffect(()=>{
     // هیچ تلاش ناموفقی در مرورگر ذخیره یا قفل نمی‌شود.
     // ورود قبلیِ ناقص نیز پاک می‌شود تا کاربران فعلی بتوانند دوباره تلاش کنند.
-    try{ sessionStorage.removeItem('ticketing-user-v1116'); }catch(e){}
+    try{ sessionStorage.removeItem('ticketing-user-v1117'); }catch(e){}
   },[]);
 
   const clearError = () => {
@@ -10935,7 +11375,7 @@ function LoginView({ onLogin }){
     setError('');
     setUsername('');
     setPassword('');
-    try{ sessionStorage.removeItem('ticketing-user-v1116'); }catch(e){}
+    try{ sessionStorage.removeItem('ticketing-user-v1117'); }catch(e){}
     setTimeout(()=>usernameRef.current && usernameRef.current.focus(),30);
   };
 
@@ -10972,7 +11412,7 @@ function LoginView({ onLogin }){
 
       if(result && result.success){
         // هیچ خطای قبلی یا نشست ناقصی به ورود درست منتقل نمی‌شود.
-        try{ sessionStorage.removeItem('ticketing-user-v1116'); }catch(e){}
+        try{ sessionStorage.removeItem('ticketing-user-v1117'); }catch(e){}
         onLogin({
           username: String(result.username || cleanUsername).trim(),
           name: String(result.name || '').trim(),
@@ -11073,7 +11513,7 @@ function LoginView({ onLogin }){
 
 /* ---------- اپ اصلی ---------- */
 function App(){
-  const [currentUser,setCurrentUser]=useState(()=>{try{const raw=sessionStorage.getItem('ticketing-user-v1116');return raw?JSON.parse(raw):null;}catch(e){return null;}});
+  const [currentUser,setCurrentUser]=useState(()=>{try{const raw=sessionStorage.getItem('ticketing-user-v1117');return raw?JSON.parse(raw):null;}catch(e){return null;}});
   const [tasks,setTasks]=useState([]);
   const [technicianDirectory,setTechnicianDirectory]=useState([]);
   const [activeStoreDirectory,setActiveStoreDirectory]=useState([]);
@@ -11100,7 +11540,7 @@ function App(){
   const showToast=m=>{setToastMsg(m);clearTimeout(toastTimer.current);toastTimer.current=setTimeout(()=>setToastMsg(''),2600);};
 
   const handleLogin=user=>{
-    sessionStorage.setItem('ticketing-user-v1116',JSON.stringify(user));
+    sessionStorage.setItem('ticketing-user-v1117',JSON.stringify(user));
     dataRevisionRef.current='';
     lastFullSyncRef.current=0;
     pendingManagerReviewRef.current.clear();
@@ -11108,7 +11548,7 @@ function App(){
     setLoaded(false);
   };
   const logout=()=>{
-    sessionStorage.removeItem('ticketing-user-v1116');
+    sessionStorage.removeItem('ticketing-user-v1117');
     dataRevisionRef.current='';
     lastFullSyncRef.current=0;
     pendingManagerReviewRef.current.clear();
@@ -11214,7 +11654,20 @@ function App(){
         const result=await fetchTechnicianTickets(currentUser.token);
         if(result&&result.success){
           lastSyncError.current='';
-          setTasks(result.tickets||[]);
+
+          const serverTickets=result.tickets||[];
+          const remainingOutbox=pruneConfirmedOutbox(
+            currentUser.username,
+            serverTickets
+          );
+
+          setTasks(
+            mergeServerTicketsWithOutbox(
+              serverTickets,
+              remainingOutbox
+            )
+          );
+
           dataRevisionRef.current=String(result.revision||dataRevisionRef.current||'0');
           lastFullSyncRef.current=Date.now();
           setLastUpdated(result.updatedAt||new Date().toISOString());
@@ -11231,11 +11684,24 @@ function App(){
       }catch(e){
         try{
           const res=await window.storage.get('tasks',true);
-          setTasks(res?JSON.parse(res.value):[]);
+          const local=res?JSON.parse(res.value):[];
+          const outbox=readTechnicianOutbox(currentUser.username);
+
+          setTasks(
+            mergeServerTicketsWithOutbox(
+              local,
+              outbox
+            )
+          );
         }catch(_){
-          setTasks([]);
+          setTasks(
+            readTechnicianOutbox(currentUser.username)
+              .map(outboxTicketFromItem)
+              .filter(Boolean)
+          );
         }
-        showSyncErrorOnce('ارتباط با سرور برقرار نشد؛ اطلاعات محلی نمایش داده شد');
+
+        showSyncErrorOnce('ارتباط با سرور برقرار نشد؛ تیکت‌های در صف همگام‌سازی حفظ شده‌اند');
         setLoaded(true);
       }
     }
@@ -11442,7 +11908,7 @@ function App(){
 
   return React.createElement('div',{className:'wrap'},
     React.createElement('div',{className:'top'},
-      React.createElement('div',{className:'brand'},React.createElement('span',{className:'dot'}),React.createElement('div',null,React.createElement('h1',null,'پشتیبانی فنی فروشگاه‌ها'),React.createElement('span',null,(role==='tech'?'محیط نیروی فنی':'مرکز کنترل مدیریت فنی')+' • نسخه 11.16'))),
+      React.createElement('div',{className:'brand'},React.createElement('span',{className:'dot'}),React.createElement('div',null,React.createElement('h1',null,'پشتیبانی فنی فروشگاه‌ها'),React.createElement('span',null,(role==='tech'?'محیط نیروی فنی':'مرکز کنترل مدیریت فنی')+' • نسخه 11.17'))),
       React.createElement('div',{className:'user-bar'},React.createElement('div',{className:'user-info'},React.createElement('b',null,currentUser.name),React.createElement('span',null,role==='manager'?'مدیر فنی':'کد پرسنلی: '+currentUser.username)),React.createElement('button',{className:'logout-btn',onClick:logout},'خروج'))
     ),
     !loaded?React.createElement('div',{className:'empty'},'در حال بارگذاری اطلاعات...'):(role==='tech'?React.createElement(TechView,{tasks,saveTasks,showToast,currentUser,refreshTasks:loadTasks}):React.createElement(ManagerView,{tasks,updateTask:updateManagerTask,showToast,refreshTasks:loadTasks,managerLoading,lastUpdated,currentUser,technicianDirectory,activeStoreDirectory,dataDiagnostics})),
