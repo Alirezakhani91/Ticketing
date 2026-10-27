@@ -4518,6 +4518,292 @@
   }
 }
 
+
+/* ========================================================
+   Phase 2 — Checklist → Technician Dispatch
+   ======================================================== */
+.external-maintenance-card{
+  margin:0 0 14px;
+  padding:16px;
+  border:1px solid #d9e5df;
+  border-radius:16px;
+  background:
+    radial-gradient(circle at 100% 0,rgba(46,105,87,.10),transparent 33%),
+    #fff;
+  box-shadow:var(--shadow);
+}
+.external-maintenance-card.empty-state{
+  background:#fbfcfc;
+}
+.external-maintenance-title{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:14px;
+  margin-bottom:12px;
+}
+.external-maintenance-kicker{
+  display:inline-flex;
+  padding:4px 7px;
+  border-radius:999px;
+  background:#eaf5f0;
+  color:#2d6b59;
+  font-size:7px;
+  font-weight:950;
+  letter-spacing:.65px;
+  direction:ltr;
+}
+.external-maintenance-title h3,
+.external-resolution-head h3{
+  margin:6px 0 3px;
+  color:#2d423b;
+  font-size:14px;
+}
+.external-maintenance-title p,
+.external-resolution-head p{
+  margin:0;
+  color:#77827d;
+  font-size:8.5px;
+  line-height:1.7;
+}
+.external-maintenance-total{
+  min-width:38px;
+  height:38px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:12px;
+  background:#2f6b59;
+  color:#fff;
+  font-size:12px;
+  font-weight:950;
+}
+.external-maintenance-total.zero{
+  background:#e8ecea;
+  color:#71807a;
+}
+.external-queue-section{
+  margin-top:12px;
+}
+.external-section-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-bottom:7px;
+}
+.external-section-head b{
+  color:#31463f;
+  font-size:10px;
+}
+.external-section-head span{
+  color:#7d8883;
+  font-size:7.5px;
+}
+.external-ticket{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) 150px;
+  gap:12px;
+  align-items:center;
+  padding:12px;
+  margin-bottom:8px;
+  border:1px solid #e1e7e4;
+  border-radius:12px;
+  background:#fff;
+}
+.external-ticket.urgent{
+  border-color:#e9c5c5;
+  box-shadow:inset 4px 0 0 #b84a4a;
+}
+.external-ticket.active{
+  border-color:#d4e4dc;
+  background:#fbfdfc;
+}
+.external-ticket-head{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:10px;
+}
+.external-ticket-head b{
+  display:block;
+  color:#2c423a;
+  font-size:10.5px;
+}
+.external-ticket-head span{
+  display:block;
+  margin-top:2px;
+  color:#7d8883;
+  font-size:7.5px;
+}
+.external-badges{
+  display:flex;
+  flex-wrap:wrap;
+  gap:5px;
+}
+.external-source-badge,
+.external-priority-badge,
+.external-stage-badge{
+  display:inline-flex!important;
+  width:auto!important;
+  margin:0!important;
+  padding:4px 7px;
+  border-radius:999px;
+  font-size:6.8px!important;
+  font-weight:900;
+}
+.external-source-badge{
+  background:#eef3f8;
+  color:#315f89!important;
+}
+.external-priority-badge{
+  background:#fff0f0;
+  color:#a44343!important;
+}
+.external-stage-badge.claimed{
+  background:#fff5e6;
+  color:#90631f!important;
+}
+.external-stage-badge.arrived{
+  background:#e9f6f0;
+  color:#2b6c59!important;
+}
+.external-report{
+  margin-top:9px;
+  padding:9px 10px;
+  border-radius:9px;
+  background:#f7f9f8;
+}
+.external-report span{
+  color:#7c8782;
+  font-size:7px;
+  font-weight:900;
+}
+.external-report p{
+  margin:4px 0 0;
+  color:#344a42;
+  font-size:9px;
+  line-height:1.75;
+}
+.external-meta{
+  display:flex;
+  flex-wrap:wrap;
+  gap:6px 10px;
+  margin-top:8px;
+}
+.external-meta span{
+  color:#7a8580;
+  font-size:7.2px;
+}
+.external-ticket-action{
+  display:flex;
+  justify-content:flex-end;
+}
+.external-ticket-action.stacked{
+  flex-direction:column;
+  gap:7px;
+}
+.external-claim-btn,
+.external-arrive-btn,
+.external-resolve-btn{
+  width:100%;
+  min-height:40px;
+  border:0;
+  border-radius:9px;
+  color:#fff;
+  font-family:inherit;
+  font-size:8.5px;
+  font-weight:950;
+  cursor:pointer;
+}
+.external-claim-btn{
+  background:#315f89;
+}
+.external-arrive-btn{
+  background:#9a6b22;
+}
+.external-resolve-btn{
+  background:#2f6b59;
+}
+.external-timeline{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:6px;
+  margin-top:8px;
+}
+.external-timeline>div{
+  padding:7px;
+  border-radius:8px;
+  background:#f6f8f7;
+}
+.external-timeline span{
+  display:block;
+  color:#84908a;
+  font-size:6.5px;
+}
+.external-timeline b{
+  display:block;
+  margin-top:2px;
+  color:#354a42;
+  font-size:7.5px;
+}
+.external-resolution-panel{
+  margin-top:14px;
+  padding:14px;
+  border:1px solid #cfe0d8;
+  border-radius:13px;
+  background:#fbfdfc;
+}
+.external-resolution-head{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:12px;
+  margin-bottom:12px;
+}
+.external-close-btn{
+  width:32px;
+  height:32px;
+  border:1px solid #dce4e0;
+  border-radius:8px;
+  background:#fff;
+  color:#6d7873;
+  font-size:17px;
+  cursor:pointer;
+}
+.external-outsourced-note{
+  margin:10px 0;
+  padding:9px 10px;
+  border-radius:9px;
+  background:#fff6e4;
+  color:#7a5c1e;
+  font-size:8px;
+  line-height:1.7;
+}
+.external-resolution-actions{
+  display:flex;
+  justify-content:flex-end;
+  gap:8px;
+  margin-top:12px;
+}
+@media(max-width:760px){
+  .external-ticket{
+    grid-template-columns:1fr;
+  }
+  .external-ticket-action{
+    justify-content:stretch;
+  }
+  .external-timeline{
+    grid-template-columns:1fr;
+  }
+  .external-maintenance-title,
+  .external-resolution-head{
+    flex-direction:column;
+  }
+  .external-resolution-actions{
+    flex-direction:column-reverse;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -4624,6 +4910,47 @@ function fetchCeoTickets(token){
 }
 function fetchTechnicianTickets(token){
   return jsonpRequest({action:'mytickets', token:String(token||'')}, 30000);
+}
+
+function claimExternalTicketRequest(ticket,token){
+  return jsonpRequest({
+    action:'claimexternalticket',
+    token:String(token||''),
+    rowNumber:String(ticket&&ticket.rowNumber||''),
+    ticketNumber:String(ticket&&ticket.ticketNumber||'')
+  },30000);
+}
+
+function arriveExternalTicketRequest(ticket,token){
+  return jsonpRequest({
+    action:'arriveexternalticket',
+    token:String(token||''),
+    rowNumber:String(ticket&&ticket.rowNumber||''),
+    ticketNumber:String(ticket&&ticket.ticketNumber||'')
+  },30000);
+}
+
+function resolveExternalTicketRequest(ticket,draft,cost,completionNote,token){
+  return jsonpRequest({
+    action:'resolveexternalticket',
+    token:String(token||''),
+    rowNumber:String(ticket&&ticket.rowNumber||''),
+    ticketNumber:String(ticket&&ticket.ticketNumber||''),
+    type:String(draft&&draft.type||''),
+    level1:String(draft&&draft.level1||''),
+    level2:JSON.stringify((draft&&draft.level2)||[]),
+    otherText:String(draft&&draft.otherText||''),
+    initialCause:String(draft&&draft.initialCause||''),
+    initialCauseDetails:String(draft&&draft.initialCauseDetails||''),
+    outsourceReason:String(draft&&draft.outsourceReason||''),
+    consumedParts:JSON.stringify((draft&&draft.consumedParts)||[]),
+    hotParts:JSON.stringify((draft&&draft.hotParts)||[]),
+    completionNote:String(completionNote||''),
+    costStatus:String(cost&&cost.costStatus||''),
+    partsCost:String(cost&&cost.partsCost||0),
+    serviceCost:String(cost&&cost.serviceCost||0),
+    otherCost:String(cost&&cost.otherCost||0)
+  },45000);
 }
 function fetchSupervisorTeamTickets(token){
   return jsonpRequest({action:'supervisorteam', token:String(token||'')}, 45000);
@@ -4982,7 +5309,7 @@ function ticketSubmissionFingerprintClient(ticket){
   ].join('||');
 }
 
-const TECH_OUTBOX_PREFIX='ticketing-tech-outbox-v1119:';
+const TECH_OUTBOX_PREFIX='ticketing-tech-outbox-v1120p2:';
 
 function technicianOutboxKey(username){
   return TECH_OUTBOX_PREFIX+normalizeLoginDigits(username||'unknown');
@@ -5889,6 +6216,412 @@ function SupervisorTeamPerformance({currentUser,showToast}){
   );
 }
 
+
+function ExternalMaintenanceQueue({
+  tasks,
+  currentUser,
+  refreshTasks,
+  showToast
+}){
+  const h=React.createElement;
+  const username=String(currentUser&&currentUser.username||'');
+
+  const queue=(Array.isArray(tasks)?tasks:[])
+    .filter(t=>
+      String(t.source||'').toUpperCase()==='CHECKLIST' &&
+      !String(t.technicianCode||'').trim() &&
+      String(t.dispatchStatus||'reported')==='reported' &&
+      t.reviewStatus!=='cancelled'
+    )
+    .sort((a,b)=>
+      (String(b.priority||'')==='urgent'?1:0)-
+      (String(a.priority||'')==='urgent'?1:0) ||
+      Number(a.rowNumber||0)-Number(b.rowNumber||0)
+    );
+
+  const assigned=(Array.isArray(tasks)?tasks:[])
+    .filter(t=>
+      String(t.source||'').toUpperCase()==='CHECKLIST' &&
+      String(t.technicianCode||'')===username &&
+      ['claimed','arrived'].includes(
+        String(t.dispatchStatus||'')
+      ) &&
+      t.workStatus!=='completed' &&
+      t.reviewStatus!=='cancelled'
+    )
+    .sort((a,b)=>Number(a.rowNumber||0)-Number(b.rowNumber||0));
+
+  const [busyKey,setBusyKey]=useState('');
+  const [resolveTicket,setResolveTicket]=useState(null);
+  const [resolveDraft,setResolveDraft]=useState(emptyDraft('active'));
+  const [resolveCost,setResolveCost]=useState(emptyCostDraft());
+  const [completionNote,setCompletionNote]=useState('');
+
+  const resetResolution=()=>{
+    setResolveTicket(null);
+    setResolveDraft(emptyDraft('active'));
+    setResolveCost(emptyCostDraft());
+    setCompletionNote('');
+  };
+
+  const claim=async ticket=>{
+    const key='claim-'+ticketClientKey(ticket);
+    setBusyKey(key);
+
+    try{
+      const result=await claimExternalTicketRequest(
+        ticket,
+        currentUser.token
+      );
+
+      if(result&&result.success){
+        showToast(result.message||'تیکت به نام شما ثبت شد');
+        await refreshTasks({silent:true});
+      }else{
+        showToast(
+          (result&&result.message)||
+          'پذیرش تیکت انجام نشد'
+        );
+        await refreshTasks({silent:true});
+      }
+    }catch(e){
+      showToast('ارتباط با سرور برای پذیرش تیکت برقرار نشد');
+    }finally{
+      setBusyKey('');
+    }
+  };
+
+  const arrive=async ticket=>{
+    const key='arrive-'+ticketClientKey(ticket);
+    setBusyKey(key);
+
+    try{
+      const result=await arriveExternalTicketRequest(
+        ticket,
+        currentUser.token
+      );
+
+      if(result&&result.success){
+        showToast(result.message||'زمان رسیدن ثبت شد');
+        await refreshTasks({silent:true});
+      }else{
+        showToast(
+          (result&&result.message)||
+          'ثبت زمان رسیدن انجام نشد'
+        );
+        await refreshTasks({silent:true});
+      }
+    }catch(e){
+      showToast('ارتباط با سرور برای ثبت رسیدن برقرار نشد');
+    }finally{
+      setBusyKey('');
+    }
+  };
+
+  const startResolve=ticket=>{
+    setResolveTicket(ticket);
+    setResolveDraft(emptyDraft('active'));
+    setResolveCost(emptyCostDraft());
+    setCompletionNote('');
+  };
+
+  const resolve=async()=>{
+    if(!resolveTicket)return;
+
+    if(!validDraft(resolveDraft)){
+      showToast('اطلاعات فنی و علت خرابی را کامل کنید');
+      return;
+    }
+
+    if(!validCostDraft(resolveCost)){
+      showToast('وضعیت هزینه را مشخص کنید');
+      return;
+    }
+
+    if(
+      resolveDraft.type==='internal' &&
+      !String(completionNote||'').trim()
+    ){
+      showToast('شرح اقدام انجام‌شده را وارد کنید');
+      return;
+    }
+
+    const key='resolve-'+ticketClientKey(resolveTicket);
+    setBusyKey(key);
+
+    try{
+      const result=await resolveExternalTicketRequest(
+        resolveTicket,
+        resolveDraft,
+        resolveCost,
+        completionNote,
+        currentUser.token
+      );
+
+      if(result&&result.success){
+        showToast(result.message||'نتیجه فنی ثبت شد');
+        resetResolution();
+        await refreshTasks({silent:true});
+      }else{
+        showToast(
+          (result&&result.message)||
+          'ثبت نتیجه انجام نشد'
+        );
+        await refreshTasks({silent:true});
+      }
+    }catch(e){
+      showToast('ارتباط با سرور برای ثبت نتیجه برقرار نشد');
+    }finally{
+      setBusyKey('');
+    }
+  };
+
+  const serverTime=value=>{
+    if(!value)return '—';
+    try{
+      return new Date(value).toLocaleString('fa-IR',{
+        year:'numeric',
+        month:'2-digit',
+        day:'2-digit',
+        hour:'2-digit',
+        minute:'2-digit'
+      });
+    }catch(e){
+      return String(value);
+    }
+  };
+
+  if(!queue.length&&!assigned.length&&!resolveTicket){
+    return h('section',{className:'external-maintenance-card empty-state'},
+      h('div',{className:'external-maintenance-title'},
+        h('div',null,
+          h('span',{className:'external-maintenance-kicker'},'OPERATIONS → TECHNICAL'),
+          h('h3',null,'تیکت‌های ارجاع‌شده از عملیات'),
+          h('p',null,'در حال حاضر تیکت جدید یا در حال انجامی برای شما وجود ندارد.')
+        ),
+        h('span',{className:'external-maintenance-total zero'},'۰')
+      )
+    );
+  }
+
+  return h('section',{className:'external-maintenance-card'},
+    h('div',{className:'external-maintenance-title'},
+      h('div',null,
+        h('span',{className:'external-maintenance-kicker'},'OPERATIONS → TECHNICAL'),
+        h('h3',null,'تیکت‌های ارجاع‌شده از عملیات'),
+        h('p',null,'گزارش‌هایی که رئیس ناحیه از داخل Checklist ثبت کرده است. پذیرش هر تیکت به‌صورت اتمیک روی سرور انجام می‌شود.')
+      ),
+      h('span',{className:'external-maintenance-total'},
+        (queue.length+assigned.length).toLocaleString('fa-IR')
+      )
+    ),
+
+    queue.length>0&&h('div',{className:'external-queue-section'},
+      h('div',{className:'external-section-head'},
+        h('b',null,'تیکت‌های جدید منطقه'),
+        h('span',null,queue.length.toLocaleString('fa-IR')+' مورد')
+      ),
+      ...queue.map(ticket=>
+        h('article',{
+          className:'external-ticket new'+(
+            String(ticket.priority||'')==='urgent'?' urgent':''
+          ),
+          key:ticketClientKey(ticket)
+        },
+          h('div',{className:'external-ticket-main'},
+            h('div',{className:'external-ticket-head'},
+              h('div',null,
+                h('b',null,ticket.storeName||('فروشگاه '+ticket.storeCode)),
+                h('span',null,
+                  [
+                    ticket.storeCode?'کد '+ticket.storeCode:'',
+                    ticket.region||''
+                  ].filter(Boolean).join(' · ')
+                )
+              ),
+              h('div',{className:'external-badges'},
+                h('span',{className:'external-source-badge'},'Checklist'),
+                String(ticket.priority||'')==='urgent'&&
+                  h('span',{className:'external-priority-badge'},'فوری')
+              )
+            ),
+            h('div',{className:'external-report'},
+              h('span',null,'شرح خرابی گزارش‌شده'),
+              h('p',null,ticket.reportedDescription||ticket.otherText||'—')
+            ),
+            h('div',{className:'external-meta'},
+              h('span',null,'تیکت: '+(ticket.ticketNumber||'—')),
+              h('span',null,'گزارش‌دهنده: '+(ticket.reportedByName||'رئیس ناحیه')),
+              h('span',null,'ثبت: '+(
+                ticket.createdAt
+                  ?serverTime(ticket.createdAt)
+                  :([ticket.dateText,ticket.timeText].filter(Boolean).join(' ')||'—')
+              ))
+            )
+          ),
+          h('div',{className:'external-ticket-action'},
+            h('button',{
+              className:'btn external-claim-btn',
+              disabled:!!busyKey,
+              onClick:()=>claim(ticket)
+            },busyKey==='claim-'+ticketClientKey(ticket)
+              ?'در حال پذیرش...'
+              :'پذیرش تیکت'
+            )
+          )
+        )
+      )
+    ),
+
+    assigned.length>0&&h('div',{className:'external-queue-section active-list'},
+      h('div',{className:'external-section-head'},
+        h('b',null,'تیکت‌های پذیرفته‌شده من'),
+        h('span',null,assigned.length.toLocaleString('fa-IR')+' مورد')
+      ),
+      ...assigned.map(ticket=>
+        h('article',{
+          className:'external-ticket active',
+          key:ticketClientKey(ticket)
+        },
+          h('div',{className:'external-ticket-main'},
+            h('div',{className:'external-ticket-head'},
+              h('div',null,
+                h('b',null,ticket.storeName||('فروشگاه '+ticket.storeCode)),
+                h('span',null,
+                  [
+                    ticket.storeCode?'کد '+ticket.storeCode:'',
+                    ticket.region||''
+                  ].filter(Boolean).join(' · ')
+                )
+              ),
+              h('div',{className:'external-badges'},
+                h('span',{
+                  className:'external-stage-badge '+(
+                    ticket.dispatchStatus==='arrived'?'arrived':'claimed'
+                  )
+                },
+                  ticket.dispatchStatus==='arrived'
+                    ?'در فروشگاه'
+                    :'پذیرفته‌شده'
+                )
+              )
+            ),
+            h('div',{className:'external-report'},
+              h('span',null,'شرح خرابی رئیس ناحیه'),
+              h('p',null,ticket.reportedDescription||ticket.otherText||'—')
+            ),
+            h('div',{className:'external-timeline'},
+              h('div',null,
+                h('span',null,'ثبت'),
+                h('b',null,
+                  ticket.createdAt
+                    ?serverTime(ticket.createdAt)
+                    :([ticket.dateText,ticket.timeText].filter(Boolean).join(' ')||'—')
+                )
+              ),
+              h('div',null,
+                h('span',null,'پذیرش'),
+                h('b',null,serverTime(ticket.acceptedAt))
+              ),
+              h('div',null,
+                h('span',null,'رسیدن'),
+                h('b',null,serverTime(ticket.arrivedAt))
+              )
+            )
+          ),
+          h('div',{className:'external-ticket-action stacked'},
+            ticket.dispatchStatus==='claimed'&&
+              h('button',{
+                className:'btn external-arrive-btn',
+                disabled:!!busyKey,
+                onClick:()=>arrive(ticket)
+              },busyKey==='arrive-'+ticketClientKey(ticket)
+                ?'در حال ثبت...'
+                :'رسیدم به فروشگاه'
+              ),
+            ticket.dispatchStatus==='arrived'&&
+              h('button',{
+                className:'btn external-resolve-btn',
+                disabled:!!busyKey,
+                onClick:()=>startResolve(ticket)
+              },'ثبت نتیجه فنی')
+          )
+        )
+      )
+    ),
+
+    resolveTicket&&h('div',{className:'external-resolution-panel'},
+      h('div',{className:'external-resolution-head'},
+        h('div',null,
+          h('span',{className:'external-maintenance-kicker'},'TECHNICAL RESULT'),
+          h('h3',null,'ثبت نتیجه فنی — '+(resolveTicket.storeName||resolveTicket.storeCode)),
+          h('p',null,'گزارش رئیس ناحیه: '+(resolveTicket.reportedDescription||resolveTicket.otherText||'—'))
+        ),
+        h('button',{
+          type:'button',
+          className:'external-close-btn',
+          onClick:resetResolution,
+          disabled:!!busyKey
+        },'×')
+      ),
+
+      h(TicketFields,{
+        draft:resolveDraft,
+        setDraft:setResolveDraft
+      }),
+
+      resolveDraft.type==='internal'&&h(React.Fragment,null,
+        h('label',null,'شرح اقدام انجام‌شده *'),
+        h('textarea',{
+          value:completionNote,
+          onChange:e=>setCompletionNote(e.target.value),
+          placeholder:'مثلاً موتور کرکره بررسی و تنظیم شد و عملکرد نهایی تست شد.'
+        })
+      ),
+
+      resolveDraft.type&&h(CostCaptureFields,{
+        cost:resolveCost,
+        setCost:setResolveCost,
+        title:resolveDraft.type==='outsourced'
+          ?'وضعیت هزینه برون‌سپاری'
+          :'اطلاعات هزینه این تعمیر'
+      }),
+
+      resolveDraft.type==='outsourced'&&h('div',{className:'external-outsourced-note'},
+        'با ثبت برون‌سپاری، تیکت وارد بخش «برون‌سپاری‌های باز من» می‌شود و بعد از اتمام پیمانکار، پایان کار را از همان بخش ثبت می‌کنید.'
+      ),
+
+      h('div',{className:'external-resolution-actions'},
+        h('button',{
+          className:'btn btn-line',
+          onClick:resetResolution,
+          disabled:!!busyKey
+        },'انصراف'),
+        h('button',{
+          className:'btn btn-primary',
+          onClick:resolve,
+          disabled:
+            !!busyKey ||
+            !validDraft(resolveDraft) ||
+            !validCostDraft(resolveCost) ||
+            (
+              resolveDraft.type==='internal' &&
+              !String(completionNote||'').trim()
+            )
+        },busyKey==='resolve-'+ticketClientKey(resolveTicket)
+          ?'در حال ثبت نتیجه...'
+          :(
+            resolveDraft.type==='outsourced'
+              ?'ثبت و ارجاع به پیمانکار'
+              :'ثبت رفع خرابی و تکمیل'
+          )
+        )
+      )
+    )
+  );
+}
+
+
 function TechView({ tasks, saveTasks, showToast, currentUser, refreshTasks }){
   const name=currentUser.name;
   const isSupervisor=isTehranSupervisorUser(currentUser);
@@ -6518,7 +7251,18 @@ function TechView({ tasks, saveTasks, showToast, currentUser, refreshTasks }){
     setDraft(emptyDraft(isPreOpeningLocation(storeInfo&&storeInfo.locationType,storeInfo&&storeInfo.code)?'preopening':'active'));
     setCostDraft(emptyCostDraft());
   };
-  const mine=tasks.filter(t=>String(t.technicianCode||'')===String(currentUser.username)||t.technician===name).slice(0,20);
+  const mine=tasks
+    .filter(t=>
+      String(t.technicianCode||'')===String(currentUser.username)||
+      t.technician===name
+    )
+    .filter(t=>
+      !(
+        String(t.source||'').toUpperCase()==='CHECKLIST' &&
+        t.workStatus!=='completed'
+      )
+    )
+    .slice(0,20);
   const openOutsources=tasks.filter(t=>(String(t.technicianCode||'')===String(currentUser.username)||t.technician===name)&&t.type==='outsourced'&&t.workStatus!=='completed'&&t.reviewStatus!=='cancelled');
 
   const storeResult=storeLoading
@@ -6649,6 +7393,12 @@ function TechView({ tasks, saveTasks, showToast, currentUser, refreshTasks }){
 
   if(!visitActive){
     return React.createElement(React.Fragment,null,
+      React.createElement(ExternalMaintenanceQueue,{
+        tasks,
+        currentUser,
+        refreshTasks,
+        showToast
+      }),
       React.createElement('div',{className:'card'},
         React.createElement('h3',null,'مرحله ۱ — انتخاب محل فعالیت'),
         React.createElement('p',{className:'sub'},'فروشگاه فعال یا پروژه پیش‌افتتاح را انتخاب کنید'),
@@ -12066,7 +12816,7 @@ function ExecutiveDashboard({tasks,onRefresh,loading,lastUpdated,currentUser,onL
 
 /* ---------- اپ اصلی ---------- */
 
-/* ---------- Boardroom CEO Dashboard — نسخه 11.19 ---------- */
+/* ---------- Boardroom CEO Dashboard — نسخه 11.20 P2 ---------- */
 function CEODashboard({tasks,onRefresh,loading,lastUpdated,currentUser,onLogout}){
   const h=React.createElement;
 
@@ -12389,7 +13139,7 @@ function CEODashboard({tasks,onRefresh,loading,lastUpdated,currentUser,onLogout}
         )
       ),
 
-      h('footer',{className:'c8-footer'},h('span',null,'نسخه 11.19 · دسترسی فقط خواندنی مدیرعامل'),h('span',null,'ریسک فروشگاه‌های فعال و فعالیت‌های پیش‌افتتاح به‌صورت جداگانه تحلیل می‌شوند.'))
+      h('footer',{className:'c8-footer'},h('span',null,'نسخه 11.20 P2 · دسترسی فقط خواندنی مدیرعامل'),h('span',null,'ریسک فروشگاه‌های فعال و فعالیت‌های پیش‌افتتاح به‌صورت جداگانه تحلیل می‌شوند.'))
     ),
 
     modal
@@ -12808,7 +13558,7 @@ function RegionalDashboard({tasks,onRefresh,loading,lastUpdated,currentUser,onLo
       ),
 
       h('footer',{className:'rm-footer'},
-        h('span',null,'نسخه 11.19 · دسترسی مدیر منطقه · فقط خواندنی'),
+        h('span',null,'نسخه 11.20 P2 · دسترسی مدیر منطقه · فقط خواندنی'),
         h('span',null,'فیلتر دسترسی در سرور انجام می‌شود و فقط اطلاعات مناطق تخصیص‌یافته به این حساب ارسال می‌شود.')
       )
     ),
@@ -12829,7 +13579,7 @@ function LoginView({ onLogin }){
   useEffect(()=>{
     // هیچ تلاش ناموفقی در مرورگر ذخیره یا قفل نمی‌شود.
     // ورود قبلیِ ناقص نیز پاک می‌شود تا کاربران فعلی بتوانند دوباره تلاش کنند.
-    try{ sessionStorage.removeItem('ticketing-user-v1119'); }catch(e){}
+    try{ sessionStorage.removeItem('ticketing-user-v1120p2'); }catch(e){}
   },[]);
 
   const clearError = () => {
@@ -12842,7 +13592,7 @@ function LoginView({ onLogin }){
     setError('');
     setUsername('');
     setPassword('');
-    try{ sessionStorage.removeItem('ticketing-user-v1119'); }catch(e){}
+    try{ sessionStorage.removeItem('ticketing-user-v1120p2'); }catch(e){}
     setTimeout(()=>usernameRef.current && usernameRef.current.focus(),30);
   };
 
@@ -12879,7 +13629,7 @@ function LoginView({ onLogin }){
 
       if(result && result.success){
         // هیچ خطای قبلی یا نشست ناقصی به ورود درست منتقل نمی‌شود.
-        try{ sessionStorage.removeItem('ticketing-user-v1119'); }catch(e){}
+        try{ sessionStorage.removeItem('ticketing-user-v1120p2'); }catch(e){}
         onLogin({
           username: String(result.username || cleanUsername).trim(),
           name: String(result.name || '').trim(),
@@ -12980,7 +13730,7 @@ function LoginView({ onLogin }){
 
 /* ---------- اپ اصلی ---------- */
 function App(){
-  const [currentUser,setCurrentUser]=useState(()=>{try{const raw=sessionStorage.getItem('ticketing-user-v1119');return raw?JSON.parse(raw):null;}catch(e){return null;}});
+  const [currentUser,setCurrentUser]=useState(()=>{try{const raw=sessionStorage.getItem('ticketing-user-v1120p2');return raw?JSON.parse(raw):null;}catch(e){return null;}});
   const [tasks,setTasks]=useState([]);
   const [technicianDirectory,setTechnicianDirectory]=useState([]);
   const [activeStoreDirectory,setActiveStoreDirectory]=useState([]);
@@ -13007,7 +13757,7 @@ function App(){
   const showToast=m=>{setToastMsg(m);clearTimeout(toastTimer.current);toastTimer.current=setTimeout(()=>setToastMsg(''),2600);};
 
   const handleLogin=user=>{
-    sessionStorage.setItem('ticketing-user-v1119',JSON.stringify(user));
+    sessionStorage.setItem('ticketing-user-v1120p2',JSON.stringify(user));
     dataRevisionRef.current='';
     lastFullSyncRef.current=0;
     pendingManagerReviewRef.current.clear();
@@ -13015,7 +13765,7 @@ function App(){
     setLoaded(false);
   };
   const logout=()=>{
-    sessionStorage.removeItem('ticketing-user-v1119');
+    sessionStorage.removeItem('ticketing-user-v1120p2');
     dataRevisionRef.current='';
     lastFullSyncRef.current=0;
     pendingManagerReviewRef.current.clear();
@@ -13375,7 +14125,7 @@ function App(){
 
   return React.createElement('div',{className:'wrap'},
     React.createElement('div',{className:'top'},
-      React.createElement('div',{className:'brand'},React.createElement('span',{className:'dot'}),React.createElement('div',null,React.createElement('h1',null,'پشتیبانی فنی فروشگاه‌ها'),React.createElement('span',null,(role==='tech'?'محیط نیروی فنی':'مرکز کنترل مدیریت فنی')+' • نسخه 11.19'))),
+      React.createElement('div',{className:'brand'},React.createElement('span',{className:'dot'}),React.createElement('div',null,React.createElement('h1',null,'پشتیبانی فنی فروشگاه‌ها'),React.createElement('span',null,(role==='tech'?'محیط نیروی فنی':'مرکز کنترل مدیریت فنی')+' • نسخه 11.20 P2'))),
       React.createElement('div',{className:'user-bar'},React.createElement('div',{className:'user-info'},React.createElement('b',null,currentUser.name),React.createElement('span',null,role==='manager'?'مدیر فنی':'کد پرسنلی: '+currentUser.username)),React.createElement('button',{className:'logout-btn',onClick:logout},'خروج'))
     ),
     !loaded?React.createElement('div',{className:'empty'},'در حال بارگذاری اطلاعات...'):(role==='tech'?React.createElement(TechView,{tasks,saveTasks,showToast,currentUser,refreshTasks:loadTasks}):React.createElement(ManagerView,{tasks,updateTask:updateManagerTask,showToast,refreshTasks:loadTasks,managerLoading,lastUpdated,currentUser,technicianDirectory,activeStoreDirectory,dataDiagnostics})),
