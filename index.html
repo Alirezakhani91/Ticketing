@@ -4919,6 +4919,122 @@
   .ops3-filters,.ops3-kpis,.ops3-detail-grid,.ops3-duration-grid,.ops3-timeline{grid-template-columns:1fr}
 }
 
+
+/* ============================================================
+   Phase 4 — Technical Coverage Management
+   ============================================================ */
+.coverage-main-tab{font-weight:950!important}
+.cov4-shell{direction:rtl;color:#2d4039}
+.cov4-loading{padding:40px;text-align:center;color:#75827d}
+.cov4-toast{position:fixed;left:22px;bottom:22px;z-index:12000;background:#263e36;color:#fff;padding:10px 14px;border-radius:9px;font-size:8px;box-shadow:0 10px 35px rgba(0,0,0,.2)}
+.cov4-hero{display:flex;justify-content:space-between;align-items:flex-start;gap:18px;padding:18px 20px;margin-bottom:12px;border:1px solid #d9e5df;border-radius:16px;background:linear-gradient(135deg,#f7fbf9 0%,#edf6f2 100%)}
+.cov4-eyebrow{display:inline-flex;padding:4px 8px;border-radius:999px;background:#264f43;color:#fff;font-size:6.8px;font-weight:950;letter-spacing:.65px;direction:ltr}
+.cov4-hero h2{margin:8px 0 4px;font-size:18px;color:#233f36}
+.cov4-hero p{margin:0;max-width:760px;color:#728079;font-size:9px;line-height:1.8}
+.cov4-hero-actions{display:flex;gap:7px;flex-wrap:wrap}
+.cov4-hero-actions button,.cov4-savebar button,.cov4-store-tools button,.cov4-pagination button{
+  border:1px solid #d4dfda;background:#fff;color:#2f6252;border-radius:8px;padding:8px 11px;font-family:inherit;font-size:8px;font-weight:900;cursor:pointer
+}
+.cov4-hero-actions button.secondary{background:#2f6252;color:#fff;border-color:#2f6252}
+.cov4-kpis{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px;margin-bottom:12px}
+.cov4-kpi{padding:12px;border:1px solid #e0e7e3;border-radius:12px;background:#fff}
+.cov4-kpi span{display:block;color:#78857f;font-size:7.2px;font-weight:900}
+.cov4-kpi b{display:block;margin:5px 0 2px;color:#2f473f;font-size:18px}
+.cov4-kpi small{display:block;color:#98a29d;font-size:6.5px}
+.cov4-kpi.green{border-top:3px solid #34765f}.cov4-kpi.gold{border-top:3px solid #b18232}
+.cov4-kpi.blue{border-top:3px solid #3c6d98}.cov4-kpi.danger{border-top:3px solid #b54e4e}
+.cov4-kpi.neutral{border-top:3px solid #53645e}
+.cov4-alert{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;padding:12px 14px;margin-bottom:10px;border:1px solid #efc9c9;border-radius:11px;background:#fff7f7}
+.cov4-alert b{display:block;color:#994747;font-size:9px}.cov4-alert span{display:block;margin-top:3px;color:#886e6e;font-size:7.2px;line-height:1.7}
+.cov4-alert-tickets{display:flex;gap:5px;flex-wrap:wrap;justify-content:flex-end;max-width:48%}
+.cov4-alert-tickets span{padding:4px 7px;border-radius:999px;background:#fff;color:#9a5050;border:1px solid #eed1d1;font-size:6.5px}
+.cov4-new-techs{display:flex;justify-content:space-between;align-items:center;gap:14px;padding:11px 14px;margin-bottom:10px;border:1px solid #dfd3b8;border-radius:11px;background:#fffbf2}
+.cov4-new-techs b{display:block;color:#725b2a;font-size:8.8px}.cov4-new-techs span{display:block;margin-top:2px;color:#8b7a57;font-size:7px}
+.cov4-new-techs>div:last-child{display:flex;gap:5px;flex-wrap:wrap;justify-content:flex-end}
+.cov4-new-techs button{border:1px solid #e1d4b7;background:#fff;color:#765e2b;border-radius:999px;padding:5px 8px;font-family:inherit;font-size:7px;cursor:pointer}
+.cov4-tabs{display:flex;gap:6px;margin:0 0 10px;flex-wrap:wrap}
+.cov4-tabs button{border:1px solid #dce4e0;background:#fff;color:#66756f;border-radius:999px;padding:8px 12px;font-family:inherit;font-size:8px;font-weight:900;cursor:pointer}
+.cov4-tabs button.active{background:#2d6152;color:#fff;border-color:#2d6152}
+.cov4-assign-layout{display:grid;grid-template-columns:minmax(0,1.65fr) minmax(280px,.75fr);gap:10px}
+.cov4-form-card,.cov4-side-card,.cov4-card{border:1px solid #e0e7e3;border-radius:14px;background:#fff;padding:14px;margin-bottom:12px}
+.cov4-card-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:11px}
+.cov4-card-head span{display:block;color:#55766b;font-size:6.5px;font-weight:950;letter-spacing:.6px}
+.cov4-card-head h3{margin:3px 0 0;color:#304a41;font-size:11px}
+.cov4-card-head em{font-style:normal;color:#7e8a85;font-size:7px}
+.cov4-form-card>label{display:block;margin-bottom:9px;color:#65736d;font-size:7.5px;font-weight:900}
+.cov4-form-card select,.cov4-form-card input,.cov4-store-tools input,.cov4-matrix-filters input,.cov4-matrix-filters select{
+  width:100%;margin-top:4px;border:1px solid #dce4e0;background:#fff;border-radius:9px;padding:9px;font-family:inherit;font-size:8px;color:#354b43;box-sizing:border-box
+}
+.cov4-queue-explain{padding:12px;border-radius:10px;background:#f2f7f5;margin:10px 0}
+.cov4-queue-explain b{display:block;color:#315c50;font-size:8.5px}.cov4-queue-explain p{margin:4px 0 0;color:#738079;font-size:7.4px;line-height:1.8}
+.cov4-store-tools{display:grid;grid-template-columns:minmax(220px,1fr) auto auto;gap:7px;align-items:end;margin:10px 0 8px}
+.cov4-store-tools input{margin:0}
+.cov4-store-list{max-height:460px;overflow:auto;border:1px solid #e7ece9;border-radius:10px}
+.cov4-store-row{display:grid;grid-template-columns:24px minmax(180px,1fr) minmax(200px,.9fr) 90px;gap:8px;align-items:center;padding:9px;border-top:1px solid #eef2f0;cursor:pointer;background:#fff}
+.cov4-store-row:first-child{border-top:0}.cov4-store-row:hover{background:#fbfdfc}.cov4-store-row.selected{background:#f0f7f4}
+.cov4-store-row input{width:auto;margin:0}
+.cov4-store-id b{display:block;color:#30473f;font-size:8.3px}.cov4-store-id span{display:block;margin-top:2px;color:#7c8983;font-size:7px}
+.cov4-current span{display:block;color:#77857f;font-size:6.8px;line-height:1.65}
+.cov4-route{display:inline-flex;justify-content:center;padding:4px 7px;border-radius:999px;font-style:normal;font-size:6.5px;font-weight:950;white-space:nowrap}
+.cov4-route.primary{background:#e8f5ef;color:#28644f}.cov4-route.backup{background:#fff3df;color:#886128}
+.cov4-route.queue{background:#eaf1f8;color:#35648d}.cov4-route.unassigned{background:#fdecec;color:#9e4848}
+.cov4-savebar{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:10px}
+.cov4-savebar span{color:#7c8883;font-size:7px}.cov4-savebar button{background:#2f6756;color:#fff;border-color:#2f6756;min-width:150px}
+.cov4-mini-list{display:grid;gap:6px;max-height:610px;overflow:auto}
+.cov4-mini-list>div{display:flex;justify-content:space-between;gap:8px;align-items:center;padding:9px;border:1px solid #e8edea;border-radius:9px}
+.cov4-mini-list b{display:block;color:#344d44;font-size:7.8px}.cov4-mini-list span{display:block;margin-top:2px;color:#83908a;font-size:6.6px}
+.cov4-mini-list button,.cov4-off-btn{border:1px solid #e0caca;background:#fff;color:#9a4f4f;border-radius:7px;padding:5px 7px;font-family:inherit;font-size:6.7px;cursor:pointer}
+.cov4-empty{padding:25px;text-align:center;color:#909b96;font-size:7.5px}
+.cov4-matrix-filters{display:grid;grid-template-columns:1fr 180px 180px;gap:7px;margin-bottom:9px}.cov4-matrix-filters input,.cov4-matrix-filters select{margin:0}
+.cov4-table-wrap{overflow:auto;border:1px solid #edf0ef;border-radius:10px}.cov4-table{width:100%;border-collapse:collapse;min-width:860px}
+.cov4-table th{background:#f4f7f5;color:#687771;font-size:7px;font-weight:950;padding:9px;text-align:right;white-space:nowrap}
+.cov4-table td{border-top:1px solid #edf1ef;padding:9px;color:#3c5149;font-size:7.6px;vertical-align:top}
+.cov4-table td b{display:block;color:#314b42;font-size:8px}.cov4-table td small{display:block;margin-top:2px;color:#8d9893;font-size:6.3px}
+.cov4-type{display:inline-flex;padding:4px 7px;border-radius:999px;font-size:6.5px;font-weight:900}.cov4-type.primary{background:#e8f5ef;color:#28644f}.cov4-type.backup{background:#fff3df;color:#886128}.cov4-type.region_queue{background:#eaf1f8;color:#35648d}
+.cov4-pagination{display:flex;align-items:center;justify-content:center;gap:10px;margin-top:10px}.cov4-pagination span{font-size:7px;color:#7b8781}
+@media(max-width:1100px){
+  .cov4-kpis{grid-template-columns:repeat(3,1fr)}
+  .cov4-assign-layout{grid-template-columns:1fr}
+}
+@media(max-width:760px){
+  .cov4-hero,.cov4-alert,.cov4-new-techs{flex-direction:column}
+  .cov4-alert-tickets{max-width:100%;justify-content:flex-start}
+  .cov4-new-techs>div:last-child{justify-content:flex-start}
+  .cov4-kpis{grid-template-columns:repeat(2,1fr)}
+  .cov4-store-tools{grid-template-columns:1fr}
+  .cov4-store-row{grid-template-columns:24px 1fr}
+  .cov4-current,.cov4-store-row .cov4-route{grid-column:2}
+  .cov4-matrix-filters{grid-template-columns:1fr}
+}
+@media(max-width:480px){
+  .cov4-kpis{grid-template-columns:1fr}
+}
+
+
+.cov4-route.legacy{
+  background:#eef1f0!important;
+  color:#52635d!important;
+}
+.cov4-hybrid-warning{
+  padding:10px 11px;
+  margin:0 0 12px;
+  border:1px solid #e2c98f;
+  border-radius:10px;
+  background:#fff8e8;
+}
+.cov4-hybrid-warning b{
+  display:block;
+  color:#76591d;
+  font-size:8px;
+  margin-bottom:4px;
+}
+.cov4-hybrid-warning span{
+  display:block;
+  color:#7d6c46;
+  font-size:7px;
+  line-height:1.75;
+}
+
 </style>
 </head>
 <body>
@@ -5025,6 +5141,39 @@ function fetchCeoTickets(token){
 }
 function fetchTechnicianTickets(token){
   return jsonpRequest({action:'mytickets', token:String(token||'')}, 30000);
+}
+
+function fetchTechnicalCoverage(token){
+  return jsonpRequest({
+    action:'technicalcoverage',
+    token:String(token||'')
+  },45000);
+}
+
+function saveTechnicalCoverageRequest(payload,token){
+  return jsonpRequest({
+    action:'savecoverage',
+    token:String(token||''),
+    technicianCode:String(payload&&payload.technicianCode||''),
+    assignmentType:String(payload&&payload.assignmentType||''),
+    region:String(payload&&payload.region||''),
+    storeCodes:String(payload&&payload.storeCodes||'')
+  },45000);
+}
+
+function deactivateTechnicalCoverageRequest(assignmentId,token){
+  return jsonpRequest({
+    action:'deactivatecoverage',
+    token:String(token||''),
+    assignmentId:String(assignmentId||'')
+  },45000);
+}
+
+function rerouteTechnicalCoverageRequest(token){
+  return jsonpRequest({
+    action:'reroutecoverage',
+    token:String(token||'')
+  },45000);
 }
 
 function claimExternalTicketRequest(ticket,token){
@@ -5424,7 +5573,7 @@ function ticketSubmissionFingerprintClient(ticket){
   ].join('||');
 }
 
-const TECH_OUTBOX_PREFIX='ticketing-tech-outbox-v1121p3:';
+const TECH_OUTBOX_PREFIX='ticketing-tech-outbox-v1122p4h:';
 
 function technicianOutboxKey(username){
   return TECH_OUTBOX_PREFIX+normalizeLoginDigits(username||'unknown');
@@ -11221,6 +11370,572 @@ function ManagerDailyActivityView({
 
 
 
+
+function TechnicalCoverageManager({
+  currentUser,
+  showToast
+}){
+  const h=React.createElement;
+  const [data,setData]=useState(null);
+  const [loading,setLoading]=useState(false);
+  const [saving,setSaving]=useState(false);
+  const [localMsg,setLocalMsg]=useState('');
+  const [tab,setTab]=useState('assign');
+  const [technicianCode,setTechnicianCode]=useState('');
+  const [assignmentType,setAssignmentType]=useState('PRIMARY');
+  const [region,setRegion]=useState('');
+  const [storeSearch,setStoreSearch]=useState('');
+  const [selectedStores,setSelectedStores]=useState([]);
+  const [matrixRegion,setMatrixRegion]=useState('all');
+  const [matrixMode,setMatrixMode]=useState('all');
+  const [matrixSearch,setMatrixSearch]=useState('');
+  const [page,setPage]=useState(0);
+  const pageSize=20;
+
+  const notify=msg=>{
+    const text=String(msg||'').trim();
+    if(showToast)showToast(text);
+    else{
+      setLocalMsg(text);
+      setTimeout(()=>setLocalMsg(''),2800);
+    }
+  };
+
+  const load=async(silent=false)=>{
+    if(!currentUser||!currentUser.token)return;
+    if(!silent)setLoading(true);
+
+    try{
+      const result=await fetchTechnicalCoverage(currentUser.token);
+
+      if(result&&result.success){
+        setData(result);
+
+        if(!technicianCode&&result.technicians&&result.technicians.length){
+          setTechnicianCode(String(result.technicians[0].code||''));
+        }
+
+        const regionList=[...new Set((result.stores||[])
+          .map(x=>String(x.region||'').trim())
+          .filter(Boolean)
+        )].sort((a,b)=>a.localeCompare(b,'fa'));
+
+        if(!region&&regionList.length)setRegion(regionList[0]);
+      }else{
+        notify((result&&result.message)||'اطلاعات پوشش کارشناسان دریافت نشد');
+      }
+    }catch(e){
+      notify('ارتباط با مدیریت پوشش کارشناسان برقرار نشد');
+    }finally{
+      if(!silent)setLoading(false);
+    }
+  };
+
+  useEffect(()=>{
+    load();
+  },[currentUser&&currentUser.token]);
+
+  useEffect(()=>{
+    setSelectedStores([]);
+    setStoreSearch('');
+  },[region,assignmentType,technicianCode]);
+
+  useEffect(()=>setPage(0),[matrixRegion,matrixMode,matrixSearch]);
+
+  const technicians=(data&&data.technicians)||[];
+  const stores=(data&&data.stores)||[];
+  const assignments=(data&&data.assignments)||[];
+  const coverageRows=(data&&data.storeCoverage)||[];
+  const stats=(data&&data.stats)||{};
+  const missingTechs=(data&&data.techniciansWithoutCoverage)||[];
+  const pendingUnassigned=(data&&data.pendingUnassignedTickets)||[];
+
+  const regions=[...new Set(stores
+    .map(x=>String(x.region||'').trim())
+    .filter(Boolean)
+  )].sort((a,b)=>a.localeCompare(b,'fa'));
+
+  const coverageMap={};
+  coverageRows.forEach(x=>{
+    coverageMap[String(x.storeCode||'')]=x;
+  });
+
+  const typeLabel=type=>{
+    if(type==='PRIMARY')return 'مسئول اصلی';
+    if(type==='BACKUP')return 'پشتیبان';
+    if(type==='REGION_QUEUE')return 'صف منطقه‌ای';
+    return type||'—';
+  };
+
+  const routeLabel=mode=>{
+    if(mode==='primary')return 'Primary جدید';
+    if(mode==='backup')return 'Backup جدید';
+    if(mode==='hybrid_region_queue')return 'صف جدید + سیستم فعلی';
+    if(mode==='legacy')return 'سیستم فعلی';
+    return 'بدون مسیر';
+  };
+
+  const routeTone=mode=>{
+    if(mode==='primary')return 'primary';
+    if(mode==='backup')return 'backup';
+    if(mode==='hybrid_region_queue')return 'queue';
+    if(mode==='legacy')return 'legacy';
+    return 'unassigned';
+  };
+
+  const visibleStores=stores
+    .filter(s=>!region||String(s.region||'')===region)
+    .filter(s=>{
+      const q=String(storeSearch||'').trim().toLowerCase();
+      if(!q)return true;
+      return (
+        String(s.code||'').toLowerCase().includes(q)||
+        String(s.name||'').toLowerCase().includes(q)
+      );
+    })
+    .sort((a,b)=>String(a.code||'').localeCompare(
+      String(b.code||''),
+      'fa',
+      {numeric:true}
+    ));
+
+  const toggleStore=code=>{
+    const value=String(code||'');
+    setSelectedStores(list=>
+      list.includes(value)
+        ?list.filter(x=>x!==value)
+        :[...list,value]
+    );
+  };
+
+  const selectVisible=()=>{
+    const values=visibleStores.map(x=>String(x.code||'')).filter(Boolean);
+    setSelectedStores(values);
+  };
+
+  const save=async()=>{
+    if(!technicianCode){
+      notify('کارشناس را انتخاب کنید');
+      return;
+    }
+
+    if(!region){
+      notify('منطقه را انتخاب کنید');
+      return;
+    }
+
+    if(
+      assignmentType!=='REGION_QUEUE' &&
+      !selectedStores.length
+    ){
+      notify('حداقل یک فروشگاه را انتخاب کنید');
+      return;
+    }
+
+    setSaving(true);
+
+    try{
+      if(assignmentType==='REGION_QUEUE'){
+        const result=await saveTechnicalCoverageRequest({
+          technicianCode,
+          assignmentType,
+          region,
+          storeCodes:''
+        },currentUser.token);
+
+        if(!(result&&result.success)){
+          notify((result&&result.message)||'ثبت پوشش انجام نشد');
+          return;
+        }
+      }else{
+        // برای جلوگیری از URL خیلی بلند، تخصیص فروشگاه‌ها در بسته‌های 20تایی ارسال می‌شود.
+        const chunks=[];
+        for(let i=0;i<selectedStores.length;i+=20){
+          chunks.push(selectedStores.slice(i,i+20));
+        }
+
+        for(const chunk of chunks){
+          const result=await saveTechnicalCoverageRequest({
+            technicianCode,
+            assignmentType,
+            region,
+            storeCodes:chunk.join(';')
+          },currentUser.token);
+
+          if(!(result&&result.success)){
+            notify((result&&result.message)||'ثبت بخشی از تخصیص‌ها انجام نشد');
+            return;
+          }
+        }
+      }
+
+      notify(
+        assignmentType==='REGION_QUEUE'
+          ?'عضویت صف منطقه‌ای ثبت شد'
+          :'تخصیص فروشگاه‌ها ثبت شد و تیکت‌های باز دوباره مسیریابی شدند'
+      );
+
+      setSelectedStores([]);
+      await load(true);
+    }catch(e){
+      notify('ثبت پوشش کارشناسان با خطا مواجه شد');
+    }finally{
+      setSaving(false);
+    }
+  };
+
+  const deactivate=async item=>{
+    if(!item||!item.assignmentId)return;
+
+    setSaving(true);
+    try{
+      const result=await deactivateTechnicalCoverageRequest(
+        item.assignmentId,
+        currentUser.token
+      );
+
+      if(result&&result.success){
+        notify('تخصیص غیرفعال شد و Routing تیکت‌های باز به‌روز شد');
+        await load(true);
+      }else{
+        notify((result&&result.message)||'غیرفعال‌سازی انجام نشد');
+      }
+    }catch(e){
+      notify('ارتباط با سرور برای غیرفعال‌سازی برقرار نشد');
+    }finally{
+      setSaving(false);
+    }
+  };
+
+  const reroute=async()=>{
+    setSaving(true);
+    try{
+      const result=await rerouteTechnicalCoverageRequest(currentUser.token);
+      if(result&&result.success){
+        const r=result.routing||{};
+        notify(
+          'مسیریابی مجدد انجام شد؛ '+
+          Number(r.rerouted||0).toLocaleString('fa-IR')+
+          ' تیکت به‌روزرسانی شد'
+        );
+        await load(true);
+      }else{
+        notify((result&&result.message)||'مسیریابی مجدد انجام نشد');
+      }
+    }catch(e){
+      notify('ارتباط با سرور برای مسیریابی مجدد برقرار نشد');
+    }finally{
+      setSaving(false);
+    }
+  };
+
+  const selectedTech=technicians.find(x=>
+    String(x.code||'')===String(technicianCode||'')
+  );
+
+  const myAssignments=assignments
+    .filter(x=>!technicianCode||String(x.technicianCode||'')===String(technicianCode))
+    .sort((a,b)=>
+      String(a.region||'').localeCompare(String(b.region||''),'fa')||
+      String(a.storeCode||'').localeCompare(String(b.storeCode||''),'fa',{numeric:true})
+    );
+
+  const matrixFiltered=coverageRows
+    .filter(x=>matrixRegion==='all'||String(x.region||'')===matrixRegion)
+    .filter(x=>matrixMode==='all'||String(x.effectiveMode||'')===matrixMode)
+    .filter(x=>{
+      const q=String(matrixSearch||'').trim().toLowerCase();
+      if(!q)return true;
+      return (
+        String(x.storeCode||'').toLowerCase().includes(q)||
+        String(x.storeName||'').toLowerCase().includes(q)||
+        String(x.primaryName||'').toLowerCase().includes(q)||
+        String(x.backupName||'').toLowerCase().includes(q)
+      );
+    })
+    .sort((a,b)=>
+      String(a.region||'').localeCompare(String(b.region||''),'fa')||
+      String(a.storeCode||'').localeCompare(String(b.storeCode||''),'fa',{numeric:true})
+    );
+
+  const pageCount=Math.max(1,Math.ceil(matrixFiltered.length/pageSize));
+  const safePage=Math.min(page,pageCount-1);
+  const pageRows=matrixFiltered.slice(
+    safePage*pageSize,
+    (safePage+1)*pageSize
+  );
+
+  const kpi=(label,value,note,tone)=>h('div',{className:'cov4-kpi '+tone},
+    h('span',null,label),
+    h('b',null,Number(value||0).toLocaleString('fa-IR')),
+    h('small',null,note||'')
+  );
+
+  if(loading&&!data){
+    return h('div',{className:'cov4-loading'},'در حال دریافت ماتریس پوشش کارشناسان...');
+  }
+
+  return h('div',{className:'cov4-shell'},
+    localMsg&&h('div',{className:'cov4-toast'},localMsg),
+
+    h('section',{className:'cov4-hero'},
+      h('div',null,
+        h('span',{className:'cov4-eyebrow'},'NEW TECHNICIAN COVERAGE'),
+        h('h2',null,'پوشش کارشناسان جدید'),
+        h('p',null,'این بخش فقط برای کارشناسان جدید است. کارشناسان قدیمی بدون هیچ تغییری با Routing فعلی و سابقه موجود ادامه می‌دهند؛ فقط کارشناسی که از اینجا برایش Coverage ثبت شود وارد مدل جدید می‌شود.')
+      ),
+      h('div',{className:'cov4-hero-actions'},
+        h('button',{onClick:()=>load(),disabled:loading||saving},loading?'در حال دریافت...':'↻ تازه‌سازی'),
+        h('button',{className:'secondary',onClick:reroute,disabled:saving},'مسیریابی مجدد تیکت‌های باز')
+      )
+    ),
+
+    h('section',{className:'cov4-kpis'},
+      kpi('کارشناسان قدیمی',stats.legacyTechnicians,'بدون تغییر در Routing فعلی','neutral'),
+      kpi('کارشناسان جدید Managed',stats.managedTechnicians,'دارای سابقه Coverage در این بخش','blue'),
+      kpi('Managed بدون پوشش فعال',stats.techniciansWithoutCoverage,'نیازمند Assignment جدید','danger'),
+      kpi('فروشگاه Primary جدید',stats.storesWithPrimary,'Override فقط برای همین فروشگاه','green'),
+      kpi('فروشگاه Backup جدید',stats.storesUsingBackup,'در نبود Primary فعال','gold'),
+      kpi('فروشگاه روی سیستم فعلی',stats.storesUsingLegacy,'Legacy بدون تغییر','neutral')
+    ),
+
+    pendingUnassigned.length>0&&h('section',{className:'cov4-alert'},
+      h('div',null,
+        h('b',null,'⚠ '+pendingUnassigned.length.toLocaleString('fa-IR')+' تیکت Checklist بدون مسیر فنی'),
+        h('span',null,'این هشدار فقط برای مسیرهایی است که واقعاً بدون Routing مانده‌اند؛ فروشگاه‌های Legacy همچنان با منطق قبلی کار می‌کنند.')
+      ),
+      h('div',{className:'cov4-alert-tickets'},
+        ...pendingUnassigned.slice(0,6).map(t=>
+          h('span',{key:t.ticketNumber||t.rowNumber},
+            (t.ticketNumber||'—')+' · '+(t.storeCode||'—')+' · '+(t.region||'—')
+          )
+        )
+      )
+    ),
+
+    missingTechs.length>0&&h('section',{className:'cov4-new-techs'},
+      h('div',null,
+        h('b',null,'کارشناسان جدیدِ Managed بدون محدوده فعال'),
+        h('span',null,'کارشناس قدیمی را وارد این بخش نکنید. برای کارشناس جدید، با اولین Assignment او را وارد مدل Managed می‌کنید و دیگر سابقه قبلی لازم نیست.')
+      ),
+      h('div',null,...missingTechs.map(t=>
+        h('button',{
+          key:t.code,
+          onClick:()=>{
+            setTechnicianCode(String(t.code||''));
+            setTab('assign');
+          }
+        },(t.name||t.code)+' · '+t.code)
+      ))
+    ),
+
+    h('div',{className:'cov4-tabs'},
+      h('button',{className:tab==='assign'?'active':'',onClick:()=>setTab('assign')},'تخصیص محدوده'),
+      h('button',{className:tab==='matrix'?'active':'',onClick:()=>setTab('matrix')},'ماتریس فروشگاه‌ها'),
+      h('button',{className:tab==='assignments'?'active':'',onClick:()=>setTab('assignments')},'تخصیص‌های فعال')
+    ),
+
+    tab==='assign'&&h('section',{className:'cov4-assign-layout'},
+      h('div',{className:'cov4-form-card'},
+        h('div',{className:'cov4-card-head'},
+          h('div',null,h('span',null,'ROUTING RULE'),h('h3',null,'تعریف محدوده فقط برای کارشناس جدید')),
+          selectedTech&&h('em',null,selectedTech.name+' · '+selectedTech.code)
+        ),
+
+        h('div',{className:'cov4-hybrid-warning'},
+          h('b',null,'مهم: فقط برای کارشناس جدید'),
+          h('span',null,'اگر برای یک کارشناس قدیمی اینجا Assignment ثبت کنید، همان کارشناس از آن لحظه Managed محسوب می‌شود. کارشناسان قدیمی را بدون Assignment رها کنید تا سیستم فعلی‌شان کاملاً دست‌نخورده بماند.')
+        ),
+
+        h('label',null,'کارشناس فنی',
+          h('select',{value:technicianCode,onChange:e=>setTechnicianCode(e.target.value)},
+            h('option',{value:''},'انتخاب کارشناس'),
+            ...technicians.map(t=>
+              h('option',{key:t.code,value:t.code},t.name+' — '+t.code)
+            )
+          )
+        ),
+
+        h('label',null,'نوع مسئولیت',
+          h('select',{value:assignmentType,onChange:e=>setAssignmentType(e.target.value)},
+            h('option',{value:'PRIMARY'},'Primary — مسئول اصلی فروشگاه'),
+            h('option',{value:'BACKUP'},'Backup — پشتیبان فروشگاه'),
+            h('option',{value:'REGION_QUEUE'},'Region Queue — صف منطقه‌ای')
+          )
+        ),
+
+        h('label',null,'منطقه',
+          h('select',{value:region,onChange:e=>setRegion(e.target.value)},
+            h('option',{value:''},'انتخاب منطقه'),
+            ...regions.map(r=>h('option',{key:r,value:r},r))
+          )
+        ),
+
+        assignmentType==='REGION_QUEUE'
+          ?h('div',{className:'cov4-queue-explain'},
+              h('b',null,'کارشناس جدید کنار کارشناسان قدیمی'),
+              h('p',null,'این کارشناس فقط وقتی تیکت فروشگاه Primary یا Backup مؤثر ندارد، تیکت‌های این منطقه را در Queue می‌بیند. اگر چند کارشناس عضو Queue باشند، اولین نفری که پذیرش کند مالک تیکت می‌شود.')
+            )
+          :h(React.Fragment,null,
+              h('div',{className:'cov4-store-tools'},
+                h('input',{
+                  placeholder:'جست‌وجوی کد یا نام فروشگاه...',
+                  value:storeSearch,
+                  onChange:e=>setStoreSearch(e.target.value)
+                }),
+                h('button',{type:'button',onClick:selectVisible},'انتخاب همه نمایش‌داده‌شده'),
+                h('button',{type:'button',onClick:()=>setSelectedStores([])},'پاک کردن انتخاب')
+              ),
+              h('div',{className:'cov4-store-list'},
+                ...visibleStores.map(s=>{
+                  const cov=coverageMap[String(s.code||'')]||{};
+                  const checked=selectedStores.includes(String(s.code||''));
+                  return h('label',{
+                    key:s.code,
+                    className:'cov4-store-row'+(checked?' selected':'')
+                  },
+                    h('input',{
+                      type:'checkbox',
+                      checked,
+                      onChange:()=>toggleStore(s.code)
+                    }),
+                    h('div',{className:'cov4-store-id'},
+                      h('b',null,s.code),
+                      h('span',null,String(s.name||'').replace(/^فروشگاه\s*/,''))
+                    ),
+                    h('div',{className:'cov4-current'},
+                      h('span',null,'Primary: '+(cov.primaryName||'—')),
+                      h('span',null,'Backup: '+(cov.backupName||'—'))
+                    ),
+                    h('em',{className:'cov4-route '+routeTone(cov.effectiveMode)},routeLabel(cov.effectiveMode))
+                  );
+                })
+              )
+            ),
+
+        h('div',{className:'cov4-savebar'},
+          assignmentType!=='REGION_QUEUE'&&h('span',null,selectedStores.length.toLocaleString('fa-IR')+' فروشگاه انتخاب شده'),
+          h('button',{
+            onClick:save,
+            disabled:saving||!technicianCode||!region||(assignmentType!=='REGION_QUEUE'&&!selectedStores.length)
+          },saving?'در حال ثبت...':(
+            assignmentType==='REGION_QUEUE'
+              ?'ثبت عضویت صف منطقه‌ای'
+              :'ثبت تخصیص فروشگاه‌ها'
+          ))
+        )
+      ),
+
+      h('div',{className:'cov4-side-card'},
+        h('div',{className:'cov4-card-head'},
+          h('div',null,h('span',null,'CURRENT SCOPE'),h('h3',null,'محدوده فعلی کارشناس')),
+          h('em',null,myAssignments.length.toLocaleString('fa-IR')+' تخصیص')
+        ),
+        myAssignments.length
+          ?h('div',{className:'cov4-mini-list'},
+              ...myAssignments.slice(0,80).map(a=>
+                h('div',{key:a.assignmentId},
+                  h('div',null,
+                    h('b',null,typeLabel(a.assignmentType)),
+                    h('span',null,a.assignmentType==='REGION_QUEUE'
+                      ?a.region
+                      :(a.storeCode+' · '+a.storeName)
+                    )
+                  ),
+                  h('button',{onClick:()=>deactivate(a),disabled:saving},'غیرفعال')
+                )
+              )
+            )
+          :h('div',{className:'cov4-empty'},'برای این کارشناس هنوز هیچ محدوده فعالی ثبت نشده است.')
+      )
+    ),
+
+    tab==='matrix'&&h('section',{className:'cov4-card'},
+      h('div',{className:'cov4-card-head'},
+        h('div',null,h('span',null,'STORE COVERAGE MATRIX'),h('h3',null,'مسیر مؤثر هر فروشگاه')),
+        h('em',null,matrixFiltered.length.toLocaleString('fa-IR')+' فروشگاه')
+      ),
+      h('div',{className:'cov4-matrix-filters'},
+        h('input',{placeholder:'جست‌وجوی فروشگاه یا کارشناس...',value:matrixSearch,onChange:e=>setMatrixSearch(e.target.value)}),
+        h('select',{value:matrixRegion,onChange:e=>setMatrixRegion(e.target.value)},
+          h('option',{value:'all'},'همه مناطق'),
+          ...regions.map(r=>h('option',{key:r,value:r},r))
+        ),
+        h('select',{value:matrixMode,onChange:e=>setMatrixMode(e.target.value)},
+          h('option',{value:'all'},'همه مسیرها'),
+          h('option',{value:'primary'},'Primary جدید'),
+          h('option',{value:'backup'},'Backup جدید'),
+          h('option',{value:'hybrid_region_queue'},'صف جدید + سیستم فعلی'),
+          h('option',{value:'legacy'},'سیستم فعلی'),
+          h('option',{value:'unassigned'},'بدون مسیر')
+        )
+      ),
+      h('div',{className:'cov4-table-wrap'},
+        h('table',{className:'cov4-table'},
+          h('thead',null,h('tr',null,
+            h('th',null,'فروشگاه'),
+            h('th',null,'منطقه'),
+            h('th',null,'Primary'),
+            h('th',null,'Backup'),
+            h('th',null,'اعضای Queue منطقه'),
+            h('th',null,'مسیر مؤثر')
+          )),
+          h('tbody',null,...pageRows.map(x=>
+            h('tr',{key:x.storeCode},
+              h('td',null,h('b',null,x.storeCode),h('small',null,x.storeName||'')),
+              h('td',null,x.region||'—'),
+              h('td',null,x.primaryName?h(React.Fragment,null,h('b',null,x.primaryName),h('small',null,x.primaryCode)): '—'),
+              h('td',null,x.backupName?h(React.Fragment,null,h('b',null,x.backupName),h('small',null,x.backupCode)): '—'),
+              h('td',null,(x.regionQueueNames||[]).length?(x.regionQueueNames||[]).join('، '):'—'),
+              h('td',null,h('span',{className:'cov4-route '+routeTone(x.effectiveMode)},routeLabel(x.effectiveMode)))
+            )
+          ))
+        )
+      ),
+      matrixFiltered.length>pageSize&&h('div',{className:'cov4-pagination'},
+        h('button',{disabled:safePage<=0,onClick:()=>setPage(Math.max(0,safePage-1))},'قبلی'),
+        h('span',null,'صفحه '+(safePage+1).toLocaleString('fa-IR')+' از '+pageCount.toLocaleString('fa-IR')),
+        h('button',{disabled:safePage>=pageCount-1,onClick:()=>setPage(Math.min(pageCount-1,safePage+1))},'بعدی')
+      )
+    ),
+
+    tab==='assignments'&&h('section',{className:'cov4-card'},
+      h('div',{className:'cov4-card-head'},
+        h('div',null,h('span',null,'ACTIVE ASSIGNMENTS'),h('h3',null,'تخصیص‌های فعال')),
+        h('em',null,assignments.length.toLocaleString('fa-IR')+' مورد')
+      ),
+      h('div',{className:'cov4-table-wrap'},
+        h('table',{className:'cov4-table'},
+          h('thead',null,h('tr',null,
+            h('th',null,'کارشناس'),
+            h('th',null,'نوع'),
+            h('th',null,'منطقه'),
+            h('th',null,'فروشگاه'),
+            h('th',null,'آخرین تغییر'),
+            h('th',null,'')
+          )),
+          h('tbody',null,...assignments
+            .slice()
+            .sort((a,b)=>
+              String(a.technicianName||'').localeCompare(String(b.technicianName||''),'fa')||
+              String(a.region||'').localeCompare(String(b.region||''),'fa')
+            )
+            .map(a=>h('tr',{key:a.assignmentId},
+              h('td',null,h('b',null,a.technicianName||'—'),h('small',null,a.technicianCode||'')),
+              h('td',null,h('span',{className:'cov4-type '+String(a.assignmentType||'').toLowerCase()},typeLabel(a.assignmentType))),
+              h('td',null,a.region||'—'),
+              h('td',null,a.storeCode?(a.storeCode+' · '+a.storeName):'—'),
+              h('td',null,a.updatedAt?new Date(a.updatedAt).toLocaleString('fa-IR',{year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'}):'—'),
+              h('td',null,h('button',{className:'cov4-off-btn',onClick:()=>deactivate(a),disabled:saving},'غیرفعال'))
+            ))
+          )
+        )
+      )
+    )
+  );
+}
+
+
 function OperationsChecklistDashboard({
   tasks,
   onRefresh,
@@ -11475,7 +12190,7 @@ function OperationsChecklistDashboard({
       ),
       h('div',{className:'ops3-detail-grid'},
         h('div',null,h('span',null,'رئیس ناحیه'),h('b',null,selected.reportedByName||'—'),h('small',null,selected.reportedByCode?'کد '+selected.reportedByCode:'—')),
-        h('div',null,h('span',null,'کارشناس فنی'),h('b',null,selected.technician||selected.acceptedByName||'هنوز تخصیص نیافته'),h('small',null,selected.technicianCode?'کد '+selected.technicianCode:'—')),
+        h('div',null,h('span',null,'کارشناس فنی'),h('b',null,selected.technician||selected.acceptedByName||selected.routedTechnicianName||(selected.routingMode==='region_queue'?'صف منطقه‌ای':'هنوز تخصیص نیافته')),h('small',null,selected.technicianCode?'کد '+selected.technicianCode:(selected.routedTechnicianCode?'مقصد: '+selected.routedTechnicianCode:(selected.routingMode||'—')))),
         h('div',null,h('span',null,'Visit ID'),h('b',null,selected.sourceVisitId||'—')),
         h('div',null,h('span',null,'وضعیت'),h('b',null,statusInfo(selected).label))
       ),
@@ -11653,7 +12368,10 @@ function OperationsChecklistDashboard({
               h('td',null,h('b',null,t.reportedByName||'—'),h('small',null,t.reportedByCode||'')),
               h('td',null,h('b',null,t.region||'—'),h('small',null,(t.storeCode||'—')+' — '+String(t.storeName||'').replace(/^فروشگاه\s*/,''))),
               h('td',{className:'ops3-desc-cell'},String(t.reportedDescription||t.otherText||'—').slice(0,95)),
-              h('td',null,h('b',null,t.technician||t.acceptedByName||'—'),h('small',null,t.technicianCode||'')),
+              h('td',null,
+                h('b',null,t.technician||t.acceptedByName||t.routedTechnicianName||(t.routingMode==='region_queue'?'صف منطقه‌ای':(t.routingMode==='unassigned'?'بدون مسئول':'—'))),
+                h('small',null,t.technicianCode||t.routedTechnicianCode||t.routingMode||'')
+              ),
               h('td',null,h('span',{className:'ops3-status '+st.tone},st.label)),
               h('td',null,dateTime(t.acceptedAt)),
               h('td',null,dateTime(t.arrivedAt)),
@@ -11735,12 +12453,13 @@ function ManagerView({ tasks, updateTask, showToast, refreshTasks, managerLoadin
       React.createElement('button',{className:tab==='report'?'active':'',onClick:()=>setTab('report')},'فروشگاه‌های فعال'),
       React.createElement('button',{className:tab==='daily'?'active daily-main-tab':'daily-main-tab',onClick:()=>setTab('daily')},'عملکرد روزانه'),
       React.createElement('button',{className:tab==='operations'?'active ops-main-tab':'ops-main-tab',onClick:()=>setTab('operations')},'تیکت‌های عملیات'),
+      React.createElement('button',{className:tab==='coverage'?'active coverage-main-tab':'coverage-main-tab',onClick:()=>setTab('coverage')},'پوشش کارشناسان'),
       React.createElement('button',{className:tab==='analysis'?'active analysis-main-tab':'analysis-main-tab',onClick:()=>setTab('analysis')},'تحلیل دیتا'),
       React.createElement('button',{className:tab==='preopening'?'active':'',onClick:()=>setTab('preopening')},'پیش‌افتتاح'+(preOpeningProjects?' ('+preOpeningProjects+')':'')),
       React.createElement('button',{className:tab==='pending'?'active':'',onClick:()=>setTab('pending')},'در انتظار ('+pending.length+')'),
       React.createElement('button',{className:tab==='all'?'active':'',onClick:()=>setTab('all')},'همه تیکت‌ها')
     ),
-    !['report','preopening','analysis','daily','operations'].includes(tab) && React.createElement('div',{className:'filter-row'},
+    !['report','preopening','analysis','daily','operations','coverage'].includes(tab) && React.createElement('div',{className:'filter-row'},
       React.createElement('input',{placeholder:'جست‌وجوی شماره تیکت، کد، نام فروشگاه یا منطقه...',value:storeFilter,onChange:e=>setStoreFilter(e.target.value)}),
       React.createElement('button',{className:'refresh-btn',onClick:refreshTasks,disabled:managerLoading},managerLoading?'در حال دریافت...':'↻ تازه‌سازی')
     ),
@@ -11770,6 +12489,10 @@ function ManagerView({ tasks, updateTask, showToast, refreshTasks, managerLoadin
       onRefresh:refreshTasks,
       loading:managerLoading,
       lastUpdated
+    }),
+    tab==='coverage' && React.createElement(TechnicalCoverageManager,{
+      currentUser,
+      showToast
     }),
     tab==='analysis' && React.createElement(DataAnalysisView,{
       tasks:tasks.filter(t=>!isPreOpeningLocation(t.locationType,t.storeCode)),
@@ -13398,7 +14121,7 @@ function ExecutiveDashboard({tasks,onRefresh,loading,lastUpdated,currentUser,onL
 
 /* ---------- اپ اصلی ---------- */
 
-/* ---------- Boardroom CEO Dashboard — نسخه 11.21 P3 ---------- */
+/* ---------- Boardroom CEO Dashboard — نسخه 11.22 P4H ---------- */
 function CEODashboard({tasks,onRefresh,loading,lastUpdated,currentUser,onLogout}){
   const h=React.createElement;
 
@@ -13665,20 +14388,27 @@ function CEODashboard({tasks,onRefresh,loading,lastUpdated,currentUser,onLogout}
         lastUpdated&&h('span',null,'آخرین به‌روزرسانی '+new Date(lastUpdated).toLocaleTimeString('fa-IR',{hour:'2-digit',minute:'2-digit'})),
         h('button',{className:pageMode==='executive'?'active-mode':'',onClick:()=>setPageMode('executive')},'داشبورد کلان'),
         h('button',{className:pageMode==='operations'?'active-mode':'',onClick:()=>setPageMode('operations')},'تیکت‌های عملیات'),
+        h('button',{className:pageMode==='coverage'?'active-mode':'',onClick:()=>setPageMode('coverage')},'پوشش کارشناسان'),
         h('button',{onClick:onRefresh,disabled:loading},loading?'در حال دریافت...':'تازه‌سازی'),
         h('button',{className:'ghost',onClick:onLogout},'خروج')
       )
     ),
-    pageMode==='operations'
+    pageMode==='coverage'
       ? h('main',{className:'c8-main'},
-          h(OperationsChecklistDashboard,{
-            tasks:allTasks,
-            onRefresh,
-            loading,
-            lastUpdated
+          h(TechnicalCoverageManager,{
+            currentUser
           })
         )
-      : h('main',{className:'c8-main'},
+      : pageMode==='operations'
+        ? h('main',{className:'c8-main'},
+            h(OperationsChecklistDashboard,{
+              tasks:allTasks,
+              onRefresh,
+              loading,
+              lastUpdated
+            })
+          )
+        : h('main',{className:'c8-main'},
       h('section',{className:'c8-filter'},
         h('div',null,h('b',null,'نمای گزارش'),h('span',null,'فیلتر روی تمام تحلیل‌ها اعمال می‌شود')),
         h('label',null,'دوره',h('select',{value:range,onChange:e=>setRange(e.target.value)},h('option',{value:'30'},'۳۰ روز اخیر'),h('option',{value:'90'},'۹۰ روز اخیر'),h('option',{value:'all'},'کل سوابق'))),
@@ -13737,7 +14467,7 @@ function CEODashboard({tasks,onRefresh,loading,lastUpdated,currentUser,onLogout}
         )
       ),
 
-      h('footer',{className:'c8-footer'},h('span',null,'نسخه 11.21 P3 · دسترسی فقط خواندنی مدیرعامل'),h('span',null,'ریسک فروشگاه‌های فعال و فعالیت‌های پیش‌افتتاح به‌صورت جداگانه تحلیل می‌شوند.'))
+      h('footer',{className:'c8-footer'},h('span',null,'نسخه 11.22 P4H · دسترسی فقط خواندنی مدیرعامل'),h('span',null,'ریسک فروشگاه‌های فعال و فعالیت‌های پیش‌افتتاح به‌صورت جداگانه تحلیل می‌شوند.'))
     ),
 
     modal
@@ -14165,7 +14895,7 @@ function RegionalDashboard({tasks,onRefresh,loading,lastUpdated,currentUser,onLo
       ),
 
       h('footer',{className:'rm-footer'},
-        h('span',null,'نسخه 11.21 P3 · دسترسی مدیر منطقه · فقط خواندنی'),
+        h('span',null,'نسخه 11.22 P4H · دسترسی مدیر منطقه · فقط خواندنی'),
         h('span',null,'فیلتر دسترسی در سرور انجام می‌شود و فقط اطلاعات مناطق تخصیص‌یافته به این حساب ارسال می‌شود.')
       )
     ),
@@ -14186,7 +14916,7 @@ function LoginView({ onLogin }){
   useEffect(()=>{
     // هیچ تلاش ناموفقی در مرورگر ذخیره یا قفل نمی‌شود.
     // ورود قبلیِ ناقص نیز پاک می‌شود تا کاربران فعلی بتوانند دوباره تلاش کنند.
-    try{ sessionStorage.removeItem('ticketing-user-v1121p3'); }catch(e){}
+    try{ sessionStorage.removeItem('ticketing-user-v1122p4h'); }catch(e){}
   },[]);
 
   const clearError = () => {
@@ -14199,7 +14929,7 @@ function LoginView({ onLogin }){
     setError('');
     setUsername('');
     setPassword('');
-    try{ sessionStorage.removeItem('ticketing-user-v1121p3'); }catch(e){}
+    try{ sessionStorage.removeItem('ticketing-user-v1122p4h'); }catch(e){}
     setTimeout(()=>usernameRef.current && usernameRef.current.focus(),30);
   };
 
@@ -14236,7 +14966,7 @@ function LoginView({ onLogin }){
 
       if(result && result.success){
         // هیچ خطای قبلی یا نشست ناقصی به ورود درست منتقل نمی‌شود.
-        try{ sessionStorage.removeItem('ticketing-user-v1121p3'); }catch(e){}
+        try{ sessionStorage.removeItem('ticketing-user-v1122p4h'); }catch(e){}
         onLogin({
           username: String(result.username || cleanUsername).trim(),
           name: String(result.name || '').trim(),
@@ -14337,7 +15067,7 @@ function LoginView({ onLogin }){
 
 /* ---------- اپ اصلی ---------- */
 function App(){
-  const [currentUser,setCurrentUser]=useState(()=>{try{const raw=sessionStorage.getItem('ticketing-user-v1121p3');return raw?JSON.parse(raw):null;}catch(e){return null;}});
+  const [currentUser,setCurrentUser]=useState(()=>{try{const raw=sessionStorage.getItem('ticketing-user-v1122p4h');return raw?JSON.parse(raw):null;}catch(e){return null;}});
   const [tasks,setTasks]=useState([]);
   const [technicianDirectory,setTechnicianDirectory]=useState([]);
   const [activeStoreDirectory,setActiveStoreDirectory]=useState([]);
@@ -14364,7 +15094,7 @@ function App(){
   const showToast=m=>{setToastMsg(m);clearTimeout(toastTimer.current);toastTimer.current=setTimeout(()=>setToastMsg(''),2600);};
 
   const handleLogin=user=>{
-    sessionStorage.setItem('ticketing-user-v1121p3',JSON.stringify(user));
+    sessionStorage.setItem('ticketing-user-v1122p4h',JSON.stringify(user));
     dataRevisionRef.current='';
     lastFullSyncRef.current=0;
     pendingManagerReviewRef.current.clear();
@@ -14372,7 +15102,7 @@ function App(){
     setLoaded(false);
   };
   const logout=()=>{
-    sessionStorage.removeItem('ticketing-user-v1121p3');
+    sessionStorage.removeItem('ticketing-user-v1122p4h');
     dataRevisionRef.current='';
     lastFullSyncRef.current=0;
     pendingManagerReviewRef.current.clear();
@@ -14732,7 +15462,7 @@ function App(){
 
   return React.createElement('div',{className:'wrap'},
     React.createElement('div',{className:'top'},
-      React.createElement('div',{className:'brand'},React.createElement('span',{className:'dot'}),React.createElement('div',null,React.createElement('h1',null,'پشتیبانی فنی فروشگاه‌ها'),React.createElement('span',null,(role==='tech'?'محیط نیروی فنی':'مرکز کنترل مدیریت فنی')+' • نسخه 11.21 P3'))),
+      React.createElement('div',{className:'brand'},React.createElement('span',{className:'dot'}),React.createElement('div',null,React.createElement('h1',null,'پشتیبانی فنی فروشگاه‌ها'),React.createElement('span',null,(role==='tech'?'محیط نیروی فنی':'مرکز کنترل مدیریت فنی')+' • نسخه 11.22 P4H'))),
       React.createElement('div',{className:'user-bar'},React.createElement('div',{className:'user-info'},React.createElement('b',null,currentUser.name),React.createElement('span',null,role==='manager'?'مدیر فنی':'کد پرسنلی: '+currentUser.username)),React.createElement('button',{className:'logout-btn',onClick:logout},'خروج'))
     ),
     !loaded?React.createElement('div',{className:'empty'},'در حال بارگذاری اطلاعات...'):(role==='tech'?React.createElement(TechView,{tasks,saveTasks,showToast,currentUser,refreshTasks:loadTasks}):React.createElement(ManagerView,{tasks,updateTask:updateManagerTask,showToast,refreshTasks:loadTasks,managerLoading,lastUpdated,currentUser,technicianDirectory,activeStoreDirectory,dataDiagnostics})),
