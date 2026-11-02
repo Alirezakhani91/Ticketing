@@ -5035,6 +5035,107 @@
   line-height:1.75;
 }
 
+
+/* ============================================================
+   Manager Pending Queue Type Filter — P4H-F1
+   ============================================================ */
+.manager-pending-type-filter{
+  margin:0 0 12px;
+  padding:13px 14px;
+  border:1px solid #dde5e1;
+  border-radius:13px;
+  background:#fff;
+  box-shadow:0 3px 12px rgba(27,50,43,.035);
+}
+.manager-pending-type-head{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:12px;
+  margin-bottom:10px;
+}
+.manager-pending-type-head b{
+  display:block;
+  color:#304a41;
+  font-size:9px;
+}
+.manager-pending-type-head span{
+  display:block;
+  margin-top:3px;
+  color:#85908b;
+  font-size:7px;
+}
+.manager-pending-type-head small{
+  color:#7c8983;
+  font-size:7px;
+  white-space:nowrap;
+}
+.manager-pending-type-chips{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:7px;
+}
+.manager-pending-type-chips button{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:7px;
+  min-height:38px;
+  padding:8px 10px;
+  border:1px solid #dfe6e2;
+  border-radius:9px;
+  background:#f9fbfa;
+  color:#53635d;
+  font-family:inherit;
+  font-size:8px;
+  font-weight:900;
+  cursor:pointer;
+  transition:.18s ease;
+}
+.manager-pending-type-chips button:hover{
+  border-color:#bccbc5;
+  background:#fff;
+}
+.manager-pending-type-chips button em{
+  min-width:24px;
+  padding:3px 6px;
+  border-radius:999px;
+  background:#edf1ef;
+  color:#66736e;
+  font-style:normal;
+  font-size:7px;
+  text-align:center;
+}
+.manager-pending-type-chips button.active{
+  color:#fff;
+  border-color:transparent;
+  box-shadow:0 4px 12px rgba(31,61,51,.10);
+}
+.manager-pending-type-chips button.active.all{
+  background:#3f514b;
+}
+.manager-pending-type-chips button.active.internal{
+  background:#315f89;
+}
+.manager-pending-type-chips button.active.outsourced{
+  background:#765d92;
+}
+.manager-pending-type-chips button.active.operations{
+  background:#2f6b59;
+}
+.manager-pending-type-chips button.active em{
+  background:rgba(255,255,255,.18);
+  color:#fff;
+}
+@media(max-width:760px){
+  .manager-pending-type-head{
+    flex-direction:column;
+  }
+  .manager-pending-type-chips{
+    grid-template-columns:1fr 1fr;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -5573,7 +5674,7 @@ function ticketSubmissionFingerprintClient(ticket){
   ].join('||');
 }
 
-const TECH_OUTBOX_PREFIX='ticketing-tech-outbox-v1122p4h:';
+const TECH_OUTBOX_PREFIX='ticketing-tech-outbox-v1122p4hf1:';
 
 function technicianOutboxKey(username){
   return TECH_OUTBOX_PREFIX+normalizeLoginDigits(username||'unknown');
@@ -12401,6 +12502,7 @@ function OperationsChecklistDashboard({
 function ManagerView({ tasks, updateTask, showToast, refreshTasks, managerLoading, lastUpdated, currentUser, technicianDirectory, activeStoreDirectory, dataDiagnostics }){
   const [tab, setTab] = useState('report');
   const [storeFilter, setStoreFilter] = useState('');
+  const [pendingTypeFilter, setPendingTypeFilter] = useState('all');
   const preOpeningTasks=tasks.filter(t=>isPreOpeningLocation(t.locationType,t.storeCode));
   const preOpeningProjects=new Set(preOpeningTasks.map(t=>String(t.storeCode||'')).filter(Boolean)).size;
 
@@ -12446,7 +12548,25 @@ function ManagerView({ tasks, updateTask, showToast, refreshTasks, managerLoadin
   };
 
   const filtered = tasks.filter(t => {const q=storeFilter.trim().toLowerCase();return !q||String(t.storeCode||'').toLowerCase().includes(q)||String(t.storeName||'').toLowerCase().includes(q)||String(t.region||'').toLowerCase().includes(q)||String(t.ticketNumber||'').toLowerCase().includes(q);});
-  const pending = filtered.filter(t => !t.reviewStatus || t.reviewStatus==='pending');
+
+  const pendingAll = filtered.filter(t => !t.reviewStatus || t.reviewStatus==='pending');
+
+  const pendingCategory = t => {
+    if(String(t.source||'').trim().toUpperCase()==='CHECKLIST') return 'operations';
+    if(String(t.type||'').trim()==='outsourced') return 'outsourced';
+    return 'internal';
+  };
+
+  const pendingCounts = {
+    all: pendingAll.length,
+    internal: pendingAll.filter(t=>pendingCategory(t)==='internal').length,
+    outsourced: pendingAll.filter(t=>pendingCategory(t)==='outsourced').length,
+    operations: pendingAll.filter(t=>pendingCategory(t)==='operations').length
+  };
+
+  const pending = pendingTypeFilter==='all'
+    ? pendingAll
+    : pendingAll.filter(t=>pendingCategory(t)===pendingTypeFilter);
 
   return React.createElement(React.Fragment,null,
     React.createElement('div',{className:'tabs manager-main-tabs'},
@@ -12456,16 +12576,51 @@ function ManagerView({ tasks, updateTask, showToast, refreshTasks, managerLoadin
       React.createElement('button',{className:tab==='coverage'?'active coverage-main-tab':'coverage-main-tab',onClick:()=>setTab('coverage')},'پوشش کارشناسان'),
       React.createElement('button',{className:tab==='analysis'?'active analysis-main-tab':'analysis-main-tab',onClick:()=>setTab('analysis')},'تحلیل دیتا'),
       React.createElement('button',{className:tab==='preopening'?'active':'',onClick:()=>setTab('preopening')},'پیش‌افتتاح'+(preOpeningProjects?' ('+preOpeningProjects+')':'')),
-      React.createElement('button',{className:tab==='pending'?'active':'',onClick:()=>setTab('pending')},'در انتظار ('+pending.length+')'),
+      React.createElement('button',{className:tab==='pending'?'active':'',onClick:()=>setTab('pending')},'در انتظار ('+pendingAll.length+')'),
       React.createElement('button',{className:tab==='all'?'active':'',onClick:()=>setTab('all')},'همه تیکت‌ها')
     ),
     !['report','preopening','analysis','daily','operations','coverage'].includes(tab) && React.createElement('div',{className:'filter-row'},
       React.createElement('input',{placeholder:'جست‌وجوی شماره تیکت، کد، نام فروشگاه یا منطقه...',value:storeFilter,onChange:e=>setStoreFilter(e.target.value)}),
       React.createElement('button',{className:'refresh-btn',onClick:refreshTasks,disabled:managerLoading},managerLoading?'در حال دریافت...':'↻ تازه‌سازی')
     ),
-    tab==='pending' && (pending.length===0
-      ? React.createElement('div',{className:'card'},React.createElement('div',{className:'empty'},managerLoading?'در حال دریافت...':'تیکتی در انتظار بررسی نیست'))
-      : pending.map(t=>React.createElement(TaskItem,{key:ticketClientKey(t),t,onReview:review,onReject:reject,onEdit:edit,onCostEdit:editCost}))),
+    tab==='pending' && React.createElement(React.Fragment,null,
+      React.createElement('div',{className:'manager-pending-type-filter'},
+        React.createElement('div',{className:'manager-pending-type-head'},
+          React.createElement('div',null,
+            React.createElement('b',null,'نوع تیکت در انتظار'),
+            React.createElement('span',null,'برای تمرکز سریع‌تر، صف موردنظر را انتخاب کنید')
+          ),
+          React.createElement('small',null,pending.length.toLocaleString('fa-IR')+' مورد نمایش داده می‌شود')
+        ),
+        React.createElement('div',{className:'manager-pending-type-chips'},
+          React.createElement('button',{
+            className:pendingTypeFilter==='all'?'active all':'',
+            onClick:()=>setPendingTypeFilter('all')
+          },'همه',React.createElement('em',null,pendingCounts.all.toLocaleString('fa-IR'))),
+          React.createElement('button',{
+            className:pendingTypeFilter==='internal'?'active internal':'',
+            onClick:()=>setPendingTypeFilter('internal')
+          },'درون‌سپاری',React.createElement('em',null,pendingCounts.internal.toLocaleString('fa-IR'))),
+          React.createElement('button',{
+            className:pendingTypeFilter==='outsourced'?'active outsourced':'',
+            onClick:()=>setPendingTypeFilter('outsourced')
+          },'برون‌سپاری',React.createElement('em',null,pendingCounts.outsourced.toLocaleString('fa-IR'))),
+          React.createElement('button',{
+            className:pendingTypeFilter==='operations'?'active operations':'',
+            onClick:()=>setPendingTypeFilter('operations')
+          },'تیکت‌های عملیات',React.createElement('em',null,pendingCounts.operations.toLocaleString('fa-IR')))
+        )
+      ),
+      pending.length===0
+        ? React.createElement('div',{className:'card'},React.createElement('div',{className:'empty'},
+            managerLoading
+              ?'در حال دریافت...'
+              :(pendingTypeFilter==='all'
+                  ?'تیکتی در انتظار بررسی نیست'
+                  :'در این دسته تیکتی در انتظار بررسی نیست')
+          ))
+        : pending.map(t=>React.createElement(TaskItem,{key:ticketClientKey(t),t,onReview:review,onReject:reject,onEdit:edit,onCostEdit:editCost}))
+    ),
     tab==='all' && (filtered.length===0
       ? React.createElement('div',{className:'card'},React.createElement('div',{className:'empty'},managerLoading?'در حال دریافت...':'تیکتی ثبت نشده'))
       : filtered.map(t=>React.createElement(TaskItem,{key:ticketClientKey(t),t,onReview:review,onReject:reject,onEdit:edit,onCostEdit:editCost}))),
@@ -14121,7 +14276,7 @@ function ExecutiveDashboard({tasks,onRefresh,loading,lastUpdated,currentUser,onL
 
 /* ---------- اپ اصلی ---------- */
 
-/* ---------- Boardroom CEO Dashboard — نسخه 11.22 P4H ---------- */
+/* ---------- Boardroom CEO Dashboard — نسخه 11.22 P4H-F1 ---------- */
 function CEODashboard({tasks,onRefresh,loading,lastUpdated,currentUser,onLogout}){
   const h=React.createElement;
 
@@ -14467,7 +14622,7 @@ function CEODashboard({tasks,onRefresh,loading,lastUpdated,currentUser,onLogout}
         )
       ),
 
-      h('footer',{className:'c8-footer'},h('span',null,'نسخه 11.22 P4H · دسترسی فقط خواندنی مدیرعامل'),h('span',null,'ریسک فروشگاه‌های فعال و فعالیت‌های پیش‌افتتاح به‌صورت جداگانه تحلیل می‌شوند.'))
+      h('footer',{className:'c8-footer'},h('span',null,'نسخه 11.22 P4H-F1 · دسترسی فقط خواندنی مدیرعامل'),h('span',null,'ریسک فروشگاه‌های فعال و فعالیت‌های پیش‌افتتاح به‌صورت جداگانه تحلیل می‌شوند.'))
     ),
 
     modal
@@ -14895,7 +15050,7 @@ function RegionalDashboard({tasks,onRefresh,loading,lastUpdated,currentUser,onLo
       ),
 
       h('footer',{className:'rm-footer'},
-        h('span',null,'نسخه 11.22 P4H · دسترسی مدیر منطقه · فقط خواندنی'),
+        h('span',null,'نسخه 11.22 P4H-F1 · دسترسی مدیر منطقه · فقط خواندنی'),
         h('span',null,'فیلتر دسترسی در سرور انجام می‌شود و فقط اطلاعات مناطق تخصیص‌یافته به این حساب ارسال می‌شود.')
       )
     ),
@@ -14916,7 +15071,7 @@ function LoginView({ onLogin }){
   useEffect(()=>{
     // هیچ تلاش ناموفقی در مرورگر ذخیره یا قفل نمی‌شود.
     // ورود قبلیِ ناقص نیز پاک می‌شود تا کاربران فعلی بتوانند دوباره تلاش کنند.
-    try{ sessionStorage.removeItem('ticketing-user-v1122p4h'); }catch(e){}
+    try{ sessionStorage.removeItem('ticketing-user-v1122p4hf1'); }catch(e){}
   },[]);
 
   const clearError = () => {
@@ -14929,7 +15084,7 @@ function LoginView({ onLogin }){
     setError('');
     setUsername('');
     setPassword('');
-    try{ sessionStorage.removeItem('ticketing-user-v1122p4h'); }catch(e){}
+    try{ sessionStorage.removeItem('ticketing-user-v1122p4hf1'); }catch(e){}
     setTimeout(()=>usernameRef.current && usernameRef.current.focus(),30);
   };
 
@@ -14966,7 +15121,7 @@ function LoginView({ onLogin }){
 
       if(result && result.success){
         // هیچ خطای قبلی یا نشست ناقصی به ورود درست منتقل نمی‌شود.
-        try{ sessionStorage.removeItem('ticketing-user-v1122p4h'); }catch(e){}
+        try{ sessionStorage.removeItem('ticketing-user-v1122p4hf1'); }catch(e){}
         onLogin({
           username: String(result.username || cleanUsername).trim(),
           name: String(result.name || '').trim(),
@@ -15067,7 +15222,7 @@ function LoginView({ onLogin }){
 
 /* ---------- اپ اصلی ---------- */
 function App(){
-  const [currentUser,setCurrentUser]=useState(()=>{try{const raw=sessionStorage.getItem('ticketing-user-v1122p4h');return raw?JSON.parse(raw):null;}catch(e){return null;}});
+  const [currentUser,setCurrentUser]=useState(()=>{try{const raw=sessionStorage.getItem('ticketing-user-v1122p4hf1');return raw?JSON.parse(raw):null;}catch(e){return null;}});
   const [tasks,setTasks]=useState([]);
   const [technicianDirectory,setTechnicianDirectory]=useState([]);
   const [activeStoreDirectory,setActiveStoreDirectory]=useState([]);
@@ -15094,7 +15249,7 @@ function App(){
   const showToast=m=>{setToastMsg(m);clearTimeout(toastTimer.current);toastTimer.current=setTimeout(()=>setToastMsg(''),2600);};
 
   const handleLogin=user=>{
-    sessionStorage.setItem('ticketing-user-v1122p4h',JSON.stringify(user));
+    sessionStorage.setItem('ticketing-user-v1122p4hf1',JSON.stringify(user));
     dataRevisionRef.current='';
     lastFullSyncRef.current=0;
     pendingManagerReviewRef.current.clear();
@@ -15102,7 +15257,7 @@ function App(){
     setLoaded(false);
   };
   const logout=()=>{
-    sessionStorage.removeItem('ticketing-user-v1122p4h');
+    sessionStorage.removeItem('ticketing-user-v1122p4hf1');
     dataRevisionRef.current='';
     lastFullSyncRef.current=0;
     pendingManagerReviewRef.current.clear();
@@ -15462,7 +15617,7 @@ function App(){
 
   return React.createElement('div',{className:'wrap'},
     React.createElement('div',{className:'top'},
-      React.createElement('div',{className:'brand'},React.createElement('span',{className:'dot'}),React.createElement('div',null,React.createElement('h1',null,'پشتیبانی فنی فروشگاه‌ها'),React.createElement('span',null,(role==='tech'?'محیط نیروی فنی':'مرکز کنترل مدیریت فنی')+' • نسخه 11.22 P4H'))),
+      React.createElement('div',{className:'brand'},React.createElement('span',{className:'dot'}),React.createElement('div',null,React.createElement('h1',null,'پشتیبانی فنی فروشگاه‌ها'),React.createElement('span',null,(role==='tech'?'محیط نیروی فنی':'مرکز کنترل مدیریت فنی')+' • نسخه 11.22 P4H-F1'))),
       React.createElement('div',{className:'user-bar'},React.createElement('div',{className:'user-info'},React.createElement('b',null,currentUser.name),React.createElement('span',null,role==='manager'?'مدیر فنی':'کد پرسنلی: '+currentUser.username)),React.createElement('button',{className:'logout-btn',onClick:logout},'خروج'))
     ),
     !loaded?React.createElement('div',{className:'empty'},'در حال بارگذاری اطلاعات...'):(role==='tech'?React.createElement(TechView,{tasks,saveTasks,showToast,currentUser,refreshTasks:loadTasks}):React.createElement(ManagerView,{tasks,updateTask:updateManagerTask,showToast,refreshTasks:loadTasks,managerLoading,lastUpdated,currentUser,technicianDirectory,activeStoreDirectory,dataDiagnostics})),
