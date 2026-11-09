@@ -5136,6 +5136,67 @@
   }
 }
 
+
+/* ============================================================
+   P5 — Operation tickets: Store Visit Session
+   ============================================================ */
+.ops-store-session-panel{
+  margin:0 0 14px;padding:13px;border:1px solid #b8d4c8;border-radius:14px;
+  background:linear-gradient(135deg,#f4fbf8,#eef7f3);
+  box-shadow:0 5px 18px rgba(38,93,73,.08);
+}
+.ops-store-session-head{
+  display:flex;align-items:flex-start;justify-content:space-between;gap:12px;
+  padding-bottom:10px;border-bottom:1px solid #d5e6de;
+}
+.ops-store-session-kicker{
+  display:inline-flex;padding:4px 7px;border-radius:999px;background:#2e6756;
+  color:#fff;font-size:6.5px;font-weight:950;letter-spacing:.6px;direction:ltr;
+}
+.ops-store-session-head h3{margin:6px 0 3px;color:#24473b;font-size:13px}
+.ops-store-session-head p{margin:0;color:#71817a;font-size:7.5px;line-height:1.7}
+.ops-store-session-head-actions{
+  display:flex;align-items:center;gap:7px;flex-wrap:wrap;justify-content:flex-end;
+}
+.ops-store-session-count{
+  display:inline-flex;padding:6px 9px;border-radius:999px;background:#fff;color:#326a58;
+  border:1px solid #d4e4dd;font-size:7px;font-weight:900;white-space:nowrap;
+}
+.ops-store-session-end{
+  border:1px solid #d8aaa6;background:#fff;color:#9b4740;border-radius:8px;
+  padding:7px 10px;font-family:inherit;font-size:7.5px;font-weight:900;cursor:pointer;
+}
+.ops-store-session-list{display:grid;gap:7px;margin-top:10px}
+.ops-store-session-ticket{
+  display:grid;grid-template-columns:minmax(0,1fr) 145px;gap:10px;align-items:center;
+  padding:10px;border:1px solid #dce9e3;border-radius:10px;background:#fff;
+}
+.ops-store-session-ticket-head{display:flex;align-items:flex-start;justify-content:space-between;gap:8px}
+.ops-store-session-ticket-head b{display:block;color:#304d43;font-size:8.5px}
+.ops-store-session-ticket-head span{display:block;margin-top:2px;color:#7b8982;font-size:6.5px}
+.ops-store-session-ticket p{margin:7px 0 4px;color:#3d514a;font-size:8px;line-height:1.7}
+.ops-store-session-ticket small{color:#8b9691;font-size:6.5px}
+.ops-store-session-ticket-action .btn{width:100%}
+.ops-store-session-empty{
+  padding:14px;margin-top:10px;border-radius:9px;background:#fff;color:#77857f;
+  text-align:center;font-size:7.5px;
+}
+.ops-continue-prompt{
+  display:flex;align-items:center;justify-content:space-between;gap:14px;margin:0 0 14px;
+  padding:13px 14px;border:1px solid #ddca94;border-radius:12px;background:#fff9e9;
+}
+.ops-continue-prompt b{display:block;color:#6f571d;font-size:9px}
+.ops-continue-prompt span{
+  display:block;margin-top:4px;color:#807250;font-size:7px;line-height:1.7;
+}
+.ops-continue-prompt-actions{display:flex;gap:7px;flex-shrink:0}
+@media(max-width:760px){
+  .ops-store-session-head,.ops-continue-prompt{flex-direction:column}
+  .ops-store-session-head-actions,.ops-continue-prompt-actions{width:100%}
+  .ops-store-session-head-actions>*,.ops-continue-prompt-actions .btn{flex:1}
+  .ops-store-session-ticket{grid-template-columns:1fr}
+}
+
 </style>
 </head>
 <body>
@@ -5286,12 +5347,13 @@ function claimExternalTicketRequest(ticket,token){
   },30000);
 }
 
-function arriveExternalTicketRequest(ticket,token){
+function arriveExternalTicketRequest(ticket,token,storeSessionTicketNumber){
   return jsonpRequest({
     action:'arriveexternalticket',
     token:String(token||''),
     rowNumber:String(ticket&&ticket.rowNumber||''),
-    ticketNumber:String(ticket&&ticket.ticketNumber||'')
+    ticketNumber:String(ticket&&ticket.ticketNumber||''),
+    storeSessionTicketNumber:String(storeSessionTicketNumber||'')
   },30000);
 }
 
@@ -5674,7 +5736,7 @@ function ticketSubmissionFingerprintClient(ticket){
   ].join('||');
 }
 
-const TECH_OUTBOX_PREFIX='ticketing-tech-outbox-v1122p4hf1:';
+const TECH_OUTBOX_PREFIX='ticketing-tech-outbox-v1123p5:';
 
 function technicianOutboxKey(username){
   return TECH_OUTBOX_PREFIX+normalizeLoginDigits(username||'unknown');
@@ -6590,13 +6652,48 @@ function ExternalMaintenanceQueue({
 }){
   const h=React.createElement;
   const username=String(currentUser&&currentUser.username||'');
+  const sessionStorageKey='ticketing-ops-store-session:'+username;
 
-  const queue=(Array.isArray(tasks)?tasks:[])
+  const readStoredSession=()=>{
+    try{
+      const raw=localStorage.getItem(sessionStorageKey);
+      if(!raw)return null;
+      const parsed=JSON.parse(raw);
+      if(!parsed||!parsed.storeCode||!parsed.anchorTicketNumber)return null;
+
+      const started=new Date(parsed.startedAt||0).getTime();
+      if(!Number.isFinite(started)||Date.now()-started>12*60*60*1000){
+        localStorage.removeItem(sessionStorageKey);
+        return null;
+      }
+      return parsed;
+    }catch(e){
+      return null;
+    }
+  };
+
+  const [storeSession,setStoreSession]=useState(readStoredSession);
+  const [busyKey,setBusyKey]=useState('');
+  const [resolveTicket,setResolveTicket]=useState(null);
+  const [resolveDraft,setResolveDraft]=useState(emptyDraft('active'));
+  const [resolveCost,setResolveCost]=useState(emptyCostDraft());
+  const [completionNote,setCompletionNote]=useState('');
+  const [continuePrompt,setContinuePrompt]=useState(null);
+
+  const allTasks=Array.isArray(tasks)?tasks:[];
+
+  const isOpenOperationTicket=t=>
+    String(t.source||'').toUpperCase()==='CHECKLIST' &&
+    t.reviewStatus!=='cancelled' &&
+    t.workStatus!=='cancelled' &&
+    !['completed','outsourced'].includes(String(t.dispatchStatus||'')) &&
+    t.workStatus!=='completed';
+
+  const queue=allTasks
     .filter(t=>
-      String(t.source||'').toUpperCase()==='CHECKLIST' &&
+      isOpenOperationTicket(t) &&
       !String(t.technicianCode||'').trim() &&
-      String(t.dispatchStatus||'reported')==='reported' &&
-      t.reviewStatus!=='cancelled'
+      String(t.dispatchStatus||'reported')==='reported'
     )
     .sort((a,b)=>
       (String(b.priority||'')==='urgent'?1:0)-
@@ -6604,23 +6701,75 @@ function ExternalMaintenanceQueue({
       Number(a.rowNumber||0)-Number(b.rowNumber||0)
     );
 
-  const assigned=(Array.isArray(tasks)?tasks:[])
+  const assigned=allTasks
     .filter(t=>
-      String(t.source||'').toUpperCase()==='CHECKLIST' &&
+      isOpenOperationTicket(t) &&
       String(t.technicianCode||'')===username &&
       ['claimed','arrived'].includes(
         String(t.dispatchStatus||'')
-      ) &&
-      t.workStatus!=='completed' &&
-      t.reviewStatus!=='cancelled'
+      )
     )
     .sort((a,b)=>Number(a.rowNumber||0)-Number(b.rowNumber||0));
 
-  const [busyKey,setBusyKey]=useState('');
-  const [resolveTicket,setResolveTicket]=useState(null);
-  const [resolveDraft,setResolveDraft]=useState(emptyDraft('active'));
-  const [resolveCost,setResolveCost]=useState(emptyCostDraft());
-  const [completionNote,setCompletionNote]=useState('');
+  const openVisible=[...queue,...assigned];
+
+  const sessionStoreCode=storeSession
+    ?String(storeSession.storeCode||'')
+    :'';
+
+  const sessionTickets=storeSession
+    ?openVisible.filter(t=>String(t.storeCode||'')===sessionStoreCode)
+    :[];
+
+  const queueOutsideSession=storeSession
+    ?queue.filter(t=>String(t.storeCode||'')!==sessionStoreCode)
+    :queue;
+
+  const assignedOutsideSession=storeSession
+    ?assigned.filter(t=>String(t.storeCode||'')!==sessionStoreCode)
+    :assigned;
+
+  useEffect(()=>{
+    if(!storeSession)return;
+    const started=new Date(storeSession.startedAt||0).getTime();
+    if(!Number.isFinite(started)||Date.now()-started>12*60*60*1000){
+      try{localStorage.removeItem(sessionStorageKey);}catch(e){}
+      setStoreSession(null);
+      setContinuePrompt(null);
+    }
+  },[storeSession,sessionStorageKey]);
+
+  const saveStoreSession=session=>{
+    setStoreSession(session);
+    try{
+      localStorage.setItem(sessionStorageKey,JSON.stringify(session));
+    }catch(e){}
+  };
+
+  const clearStoreSession=()=>{
+    setStoreSession(null);
+    setContinuePrompt(null);
+    try{localStorage.removeItem(sessionStorageKey);}catch(e){}
+  };
+
+  const beginStoreSession=(ticket,result)=>{
+    saveStoreSession({
+      storeCode:String(ticket.storeCode||''),
+      storeName:String(ticket.storeName||''),
+      region:String(ticket.region||''),
+      anchorTicketNumber:String(
+        result&&result.storeSessionTicketNumber||
+        ticket.ticketNumber||
+        ''
+      ),
+      arrivedAt:String(
+        result&&result.arrivedAt||
+        ticket.arrivedAt||
+        ''
+      ),
+      startedAt:new Date().toISOString()
+    });
+  };
 
   const resetResolution=()=>{
     setResolveTicket(null);
@@ -6629,26 +6778,58 @@ function ExternalMaintenanceQueue({
     setCompletionNote('');
   };
 
-  const claim=async ticket=>{
+  const serverTime=value=>{
+    if(!value)return '—';
+    try{
+      return new Date(value).toLocaleString('fa-IR',{
+        year:'numeric',
+        month:'2-digit',
+        day:'2-digit',
+        hour:'2-digit',
+        minute:'2-digit'
+      });
+    }catch(e){
+      return String(value);
+    }
+  };
+
+  const claim=async(ticket,continueInStore=false)=>{
     const key='claim-'+ticketClientKey(ticket);
     setBusyKey(key);
 
     try{
-      const result=await claimExternalTicketRequest(
-        ticket,
-        currentUser.token
-      );
+      const result=await claimExternalTicketRequest(ticket,currentUser.token);
 
-      if(result&&result.success){
-        showToast(result.message||'تیکت به نام شما ثبت شد');
+      if(!(result&&result.success)){
+        showToast((result&&result.message)||'پذیرش تیکت انجام نشد');
         await refreshTasks({silent:true});
-      }else{
-        showToast(
-          (result&&result.message)||
-          'پذیرش تیکت انجام نشد'
-        );
-        await refreshTasks({silent:true});
+        return;
       }
+
+      if(
+        continueInStore &&
+        storeSession &&
+        String(ticket.storeCode||'')===String(storeSession.storeCode||'')
+      ){
+        const arriveResult=await arriveExternalTicketRequest(
+          ticket,
+          currentUser.token,
+          storeSession.anchorTicketNumber
+        );
+
+        if(arriveResult&&arriveResult.success){
+          showToast('تیکت پذیرفته شد و به حضور فعلی شما در فروشگاه متصل شد');
+        }else{
+          showToast(
+            (arriveResult&&arriveResult.message)||
+            'تیکت پذیرفته شد؛ شروع رسیدگی را دوباره ثبت کنید'
+          );
+        }
+      }else{
+        showToast(result.message||'تیکت به نام شما ثبت شد');
+      }
+
+      await refreshTasks({silent:true});
     }catch(e){
       showToast('ارتباط با سرور برای پذیرش تیکت برقرار نشد');
     }finally{
@@ -6661,19 +6842,26 @@ function ExternalMaintenanceQueue({
     setBusyKey(key);
 
     try{
+      const sameStoreSession=
+        storeSession &&
+        String(storeSession.storeCode||'')===String(ticket.storeCode||'');
+
       const result=await arriveExternalTicketRequest(
         ticket,
-        currentUser.token
+        currentUser.token,
+        sameStoreSession?storeSession.anchorTicketNumber:''
       );
 
       if(result&&result.success){
-        showToast(result.message||'زمان رسیدن ثبت شد');
+        if(!sameStoreSession){
+          beginStoreSession(ticket,result);
+          showToast('حضور شما در فروشگاه ثبت شد؛ همه تیکت‌های باز همین فروشگاه در دسترس می‌مانند');
+        }else{
+          showToast(result.message||'این تیکت به حضور فعلی فروشگاه متصل شد');
+        }
         await refreshTasks({silent:true});
       }else{
-        showToast(
-          (result&&result.message)||
-          'ثبت زمان رسیدن انجام نشد'
-        );
+        showToast((result&&result.message)||'ثبت زمان رسیدن انجام نشد');
         await refreshTasks({silent:true});
       }
     }catch(e){
@@ -6684,6 +6872,7 @@ function ExternalMaintenanceQueue({
   };
 
   const startResolve=ticket=>{
+    setContinuePrompt(null);
     setResolveTicket(ticket);
     setResolveDraft(emptyDraft('active'));
     setResolveCost(emptyCostDraft());
@@ -6715,6 +6904,11 @@ function ExternalMaintenanceQueue({
     setBusyKey(key);
 
     try{
+      const remainingSameStore=openVisible.filter(t=>
+        String(t.storeCode||'')===String(resolveTicket.storeCode||'') &&
+        ticketClientKey(t)!==ticketClientKey(resolveTicket)
+      );
+
       const result=await resolveExternalTicketRequest(
         resolveTicket,
         resolveDraft,
@@ -6724,14 +6918,30 @@ function ExternalMaintenanceQueue({
       );
 
       if(result&&result.success){
+        const finishedStore={
+          storeCode:String(resolveTicket.storeCode||''),
+          storeName:String(resolveTicket.storeName||''),
+          region:String(resolveTicket.region||'')
+        };
+
         showToast(result.message||'نتیجه فنی ثبت شد');
         resetResolution();
         await refreshTasks({silent:true});
+
+        if(remainingSameStore.length>0){
+          setContinuePrompt({
+            ...finishedStore,
+            remainingCount:remainingSameStore.length
+          });
+        }else if(
+          storeSession &&
+          String(storeSession.storeCode||'')===finishedStore.storeCode
+        ){
+          clearStoreSession();
+          showToast('همه تیکت‌های باز این فروشگاه تعیین تکلیف شدند؛ حضور فروشگاه پایان یافت');
+        }
       }else{
-        showToast(
-          (result&&result.message)||
-          'ثبت نتیجه انجام نشد'
-        );
+        showToast((result&&result.message)||'ثبت نتیجه انجام نشد');
         await refreshTasks({silent:true});
       }
     }catch(e){
@@ -6741,22 +6951,89 @@ function ExternalMaintenanceQueue({
     }
   };
 
-  const serverTime=value=>{
-    if(!value)return '—';
+  const continueHere=()=>{
+    setContinuePrompt(null);
     try{
-      return new Date(value).toLocaleString('fa-IR',{
-        year:'numeric',
-        month:'2-digit',
-        day:'2-digit',
-        hour:'2-digit',
-        minute:'2-digit'
-      });
-    }catch(e){
-      return String(value);
-    }
+      const el=document.getElementById('ops-store-session-panel');
+      if(el)el.scrollIntoView({behavior:'smooth',block:'start'});
+    }catch(e){}
   };
 
-  if(!queue.length&&!assigned.length&&!resolveTicket){
+  const endPresence=()=>{
+    resetResolution();
+    clearStoreSession();
+    showToast('پایان حضور در فروشگاه ثبت شد');
+  };
+
+  const renderTicketAction=ticket=>{
+    const key=ticketClientKey(ticket);
+    const status=String(ticket.dispatchStatus||'reported');
+
+    if(status==='reported'&&!String(ticket.technicianCode||'').trim()){
+      return h('button',{
+        className:'btn external-claim-btn',
+        disabled:!!busyKey,
+        onClick:()=>claim(ticket,!!storeSession)
+      },busyKey==='claim-'+key
+        ?'در حال پذیرش...'
+        :(storeSession?'پذیرش و ادامه':'پذیرش تیکت')
+      );
+    }
+
+    if(status==='claimed'){
+      return h('button',{
+        className:'btn external-arrive-btn',
+        disabled:!!busyKey,
+        onClick:()=>arrive(ticket)
+      },busyKey==='arrive-'+key
+        ?'در حال ثبت...'
+        :(storeSession?'شروع رسیدگی':'رسیدم به فروشگاه')
+      );
+    }
+
+    if(status==='arrived'){
+      return h('button',{
+        className:'btn external-resolve-btn',
+        disabled:!!busyKey,
+        onClick:()=>startResolve(ticket)
+      },'ثبت نتیجه فنی');
+    }
+
+    return null;
+  };
+
+  const renderCompactSessionTicket=ticket=>{
+    const status=String(ticket.dispatchStatus||'reported');
+    const statusLabel=
+      status==='arrived'
+        ?'آماده ثبت نتیجه'
+        :status==='claimed'
+          ?'پذیرفته‌شده'
+          :'در انتظار پذیرش';
+
+    return h('article',{
+      className:'ops-store-session-ticket',
+      key:'session-'+ticketClientKey(ticket)
+    },
+      h('div',{className:'ops-store-session-ticket-main'},
+        h('div',{className:'ops-store-session-ticket-head'},
+          h('div',null,
+            h('b',null,ticket.ticketNumber||'تیکت عملیات'),
+            h('span',null,statusLabel)
+          ),
+          String(ticket.priority||'')==='urgent'&&
+            h('span',{className:'external-priority-badge'},'فوری')
+        ),
+        h('p',null,ticket.reportedDescription||ticket.otherText||'—'),
+        h('small',null,'گزارش‌دهنده: '+(ticket.reportedByName||'رئیس ناحیه'))
+      ),
+      h('div',{className:'ops-store-session-ticket-action'},
+        renderTicketAction(ticket)
+      )
+    );
+  };
+
+  if(!queue.length&&!assigned.length&&!resolveTicket&&!storeSession){
     return h('section',{className:'external-maintenance-card empty-state'},
       h('div',{className:'external-maintenance-title'},
         h('div',null,
@@ -6774,19 +7051,75 @@ function ExternalMaintenanceQueue({
       h('div',null,
         h('span',{className:'external-maintenance-kicker'},'OPERATIONS → TECHNICAL'),
         h('h3',null,'تیکت‌های ارجاع‌شده از عملیات'),
-        h('p',null,'گزارش‌هایی که رئیس ناحیه از داخل Checklist ثبت کرده است. پذیرش هر تیکت به‌صورت اتمیک روی سرور انجام می‌شود.')
+        h('p',null,'اگر در یک فروشگاه چند خرابی باز وجود داشته باشد، بعد از ثبت اولین «رسیدم به فروشگاه» همه کارهای همان فروشگاه تا پایان حضور در دسترس می‌مانند.')
       ),
       h('span',{className:'external-maintenance-total'},
-        (queue.length+assigned.length).toLocaleString('fa-IR')
+        openVisible.length.toLocaleString('fa-IR')
       )
     ),
 
-    queue.length>0&&h('div',{className:'external-queue-section'},
+    storeSession&&h('div',{
+      id:'ops-store-session-panel',
+      className:'ops-store-session-panel'
+    },
+      h('div',{className:'ops-store-session-head'},
+        h('div',null,
+          h('span',{className:'ops-store-session-kicker'},'STORE VISIT ACTIVE'),
+          h('h3',null,storeSession.storeName||('فروشگاه '+storeSession.storeCode)),
+          h('p',null,
+            [
+              storeSession.storeCode?'کد '+storeSession.storeCode:'',
+              storeSession.region||'',
+              storeSession.arrivedAt?'ورود '+serverTime(storeSession.arrivedAt):''
+            ].filter(Boolean).join(' · ')
+          )
+        ),
+        h('div',{className:'ops-store-session-head-actions'},
+          h('span',{className:'ops-store-session-count'},
+            sessionTickets.length.toLocaleString('fa-IR')+' کار باز'
+          ),
+          h('button',{
+            type:'button',
+            className:'ops-store-session-end',
+            onClick:endPresence,
+            disabled:!!busyKey
+          },'پایان حضور')
+        )
+      ),
+      sessionTickets.length
+        ?h('div',{className:'ops-store-session-list'},
+          ...sessionTickets.map(renderCompactSessionTicket)
+        )
+        :h('div',{className:'ops-store-session-empty'},
+          'کار باز دیگری از Checklist برای این فروشگاه در صف شما نیست.'
+        )
+    ),
+
+    continuePrompt&&h('div',{className:'ops-continue-prompt'},
+      h('div',null,
+        h('b',null,'هنوز '+Number(continuePrompt.remainingCount||0).toLocaleString('fa-IR')+' تیکت باز دیگر در این فروشگاه وجود دارد'),
+        h('span',null,'می‌توانید بدون خروج از فروشگاه سراغ مورد بعدی بروید؛ زمان ورود همان حضور اول حفظ می‌شود.')
+      ),
+      h('div',{className:'ops-continue-prompt-actions'},
+        h('button',{
+          className:'btn btn-line',
+          onClick:endPresence,
+          disabled:!!busyKey
+        },'پایان حضور در فروشگاه'),
+        h('button',{
+          className:'btn btn-primary',
+          onClick:continueHere,
+          disabled:!!busyKey
+        },'ادامه کار در همین فروشگاه')
+      )
+    ),
+
+    queueOutsideSession.length>0&&h('div',{className:'external-queue-section'},
       h('div',{className:'external-section-head'},
         h('b',null,'تیکت‌های جدید منطقه'),
-        h('span',null,queue.length.toLocaleString('fa-IR')+' مورد')
+        h('span',null,queueOutsideSession.length.toLocaleString('fa-IR')+' مورد')
       ),
-      ...queue.map(ticket=>
+      ...queueOutsideSession.map(ticket=>
         h('article',{
           className:'external-ticket new'+(
             String(ticket.priority||'')==='urgent'?' urgent':''
@@ -6825,25 +7158,18 @@ function ExternalMaintenanceQueue({
             )
           ),
           h('div',{className:'external-ticket-action'},
-            h('button',{
-              className:'btn external-claim-btn',
-              disabled:!!busyKey,
-              onClick:()=>claim(ticket)
-            },busyKey==='claim-'+ticketClientKey(ticket)
-              ?'در حال پذیرش...'
-              :'پذیرش تیکت'
-            )
+            renderTicketAction(ticket)
           )
         )
       )
     ),
 
-    assigned.length>0&&h('div',{className:'external-queue-section active-list'},
+    assignedOutsideSession.length>0&&h('div',{className:'external-queue-section active-list'},
       h('div',{className:'external-section-head'},
         h('b',null,'تیکت‌های پذیرفته‌شده من'),
-        h('span',null,assigned.length.toLocaleString('fa-IR')+' مورد')
+        h('span',null,assignedOutsideSession.length.toLocaleString('fa-IR')+' مورد')
       ),
-      ...assigned.map(ticket=>
+      ...assignedOutsideSession.map(ticket=>
         h('article',{
           className:'external-ticket active',
           key:ticketClientKey(ticket)
@@ -6895,21 +7221,7 @@ function ExternalMaintenanceQueue({
             )
           ),
           h('div',{className:'external-ticket-action stacked'},
-            ticket.dispatchStatus==='claimed'&&
-              h('button',{
-                className:'btn external-arrive-btn',
-                disabled:!!busyKey,
-                onClick:()=>arrive(ticket)
-              },busyKey==='arrive-'+ticketClientKey(ticket)
-                ?'در حال ثبت...'
-                :'رسیدم به فروشگاه'
-              ),
-            ticket.dispatchStatus==='arrived'&&
-              h('button',{
-                className:'btn external-resolve-btn',
-                disabled:!!busyKey,
-                onClick:()=>startResolve(ticket)
-              },'ثبت نتیجه فنی')
+            renderTicketAction(ticket)
           )
         )
       )
@@ -6953,7 +7265,7 @@ function ExternalMaintenanceQueue({
       }),
 
       resolveDraft.type==='outsourced'&&h('div',{className:'external-outsourced-note'},
-        'با ثبت برون‌سپاری، تیکت وارد بخش «برون‌سپاری‌های باز من» می‌شود و بعد از اتمام پیمانکار، پایان کار را از همان بخش ثبت می‌کنید.'
+        'با ثبت برون‌سپاری، این مورد از کارهای حضوری فعال خارج می‌شود و در «برون‌سپاری‌های باز من» ادامه پیدا می‌کند.'
       ),
 
       h('div',{className:'external-resolution-actions'},
@@ -6985,7 +7297,6 @@ function ExternalMaintenanceQueue({
     )
   );
 }
-
 
 function TechView({ tasks, saveTasks, showToast, currentUser, refreshTasks }){
   const name=currentUser.name;
@@ -14276,7 +14587,7 @@ function ExecutiveDashboard({tasks,onRefresh,loading,lastUpdated,currentUser,onL
 
 /* ---------- اپ اصلی ---------- */
 
-/* ---------- Boardroom CEO Dashboard — نسخه 11.22 P4H-F1 ---------- */
+/* ---------- Boardroom CEO Dashboard — نسخه 11.23 P5 ---------- */
 function CEODashboard({tasks,onRefresh,loading,lastUpdated,currentUser,onLogout}){
   const h=React.createElement;
 
@@ -14622,7 +14933,7 @@ function CEODashboard({tasks,onRefresh,loading,lastUpdated,currentUser,onLogout}
         )
       ),
 
-      h('footer',{className:'c8-footer'},h('span',null,'نسخه 11.22 P4H-F1 · دسترسی فقط خواندنی مدیرعامل'),h('span',null,'ریسک فروشگاه‌های فعال و فعالیت‌های پیش‌افتتاح به‌صورت جداگانه تحلیل می‌شوند.'))
+      h('footer',{className:'c8-footer'},h('span',null,'نسخه 11.23 P5 · دسترسی فقط خواندنی مدیرعامل'),h('span',null,'ریسک فروشگاه‌های فعال و فعالیت‌های پیش‌افتتاح به‌صورت جداگانه تحلیل می‌شوند.'))
     ),
 
     modal
@@ -15050,7 +15361,7 @@ function RegionalDashboard({tasks,onRefresh,loading,lastUpdated,currentUser,onLo
       ),
 
       h('footer',{className:'rm-footer'},
-        h('span',null,'نسخه 11.22 P4H-F1 · دسترسی مدیر منطقه · فقط خواندنی'),
+        h('span',null,'نسخه 11.23 P5 · دسترسی مدیر منطقه · فقط خواندنی'),
         h('span',null,'فیلتر دسترسی در سرور انجام می‌شود و فقط اطلاعات مناطق تخصیص‌یافته به این حساب ارسال می‌شود.')
       )
     ),
@@ -15071,7 +15382,7 @@ function LoginView({ onLogin }){
   useEffect(()=>{
     // هیچ تلاش ناموفقی در مرورگر ذخیره یا قفل نمی‌شود.
     // ورود قبلیِ ناقص نیز پاک می‌شود تا کاربران فعلی بتوانند دوباره تلاش کنند.
-    try{ sessionStorage.removeItem('ticketing-user-v1122p4hf1'); }catch(e){}
+    try{ sessionStorage.removeItem('ticketing-user-v1123p5'); }catch(e){}
   },[]);
 
   const clearError = () => {
@@ -15084,7 +15395,7 @@ function LoginView({ onLogin }){
     setError('');
     setUsername('');
     setPassword('');
-    try{ sessionStorage.removeItem('ticketing-user-v1122p4hf1'); }catch(e){}
+    try{ sessionStorage.removeItem('ticketing-user-v1123p5'); }catch(e){}
     setTimeout(()=>usernameRef.current && usernameRef.current.focus(),30);
   };
 
@@ -15121,7 +15432,7 @@ function LoginView({ onLogin }){
 
       if(result && result.success){
         // هیچ خطای قبلی یا نشست ناقصی به ورود درست منتقل نمی‌شود.
-        try{ sessionStorage.removeItem('ticketing-user-v1122p4hf1'); }catch(e){}
+        try{ sessionStorage.removeItem('ticketing-user-v1123p5'); }catch(e){}
         onLogin({
           username: String(result.username || cleanUsername).trim(),
           name: String(result.name || '').trim(),
@@ -15222,7 +15533,7 @@ function LoginView({ onLogin }){
 
 /* ---------- اپ اصلی ---------- */
 function App(){
-  const [currentUser,setCurrentUser]=useState(()=>{try{const raw=sessionStorage.getItem('ticketing-user-v1122p4hf1');return raw?JSON.parse(raw):null;}catch(e){return null;}});
+  const [currentUser,setCurrentUser]=useState(()=>{try{const raw=sessionStorage.getItem('ticketing-user-v1123p5');return raw?JSON.parse(raw):null;}catch(e){return null;}});
   const [tasks,setTasks]=useState([]);
   const [technicianDirectory,setTechnicianDirectory]=useState([]);
   const [activeStoreDirectory,setActiveStoreDirectory]=useState([]);
@@ -15249,7 +15560,7 @@ function App(){
   const showToast=m=>{setToastMsg(m);clearTimeout(toastTimer.current);toastTimer.current=setTimeout(()=>setToastMsg(''),2600);};
 
   const handleLogin=user=>{
-    sessionStorage.setItem('ticketing-user-v1122p4hf1',JSON.stringify(user));
+    sessionStorage.setItem('ticketing-user-v1123p5',JSON.stringify(user));
     dataRevisionRef.current='';
     lastFullSyncRef.current=0;
     pendingManagerReviewRef.current.clear();
@@ -15257,7 +15568,7 @@ function App(){
     setLoaded(false);
   };
   const logout=()=>{
-    sessionStorage.removeItem('ticketing-user-v1122p4hf1');
+    sessionStorage.removeItem('ticketing-user-v1123p5');
     dataRevisionRef.current='';
     lastFullSyncRef.current=0;
     pendingManagerReviewRef.current.clear();
@@ -15617,7 +15928,7 @@ function App(){
 
   return React.createElement('div',{className:'wrap'},
     React.createElement('div',{className:'top'},
-      React.createElement('div',{className:'brand'},React.createElement('span',{className:'dot'}),React.createElement('div',null,React.createElement('h1',null,'پشتیبانی فنی فروشگاه‌ها'),React.createElement('span',null,(role==='tech'?'محیط نیروی فنی':'مرکز کنترل مدیریت فنی')+' • نسخه 11.22 P4H-F1'))),
+      React.createElement('div',{className:'brand'},React.createElement('span',{className:'dot'}),React.createElement('div',null,React.createElement('h1',null,'پشتیبانی فنی فروشگاه‌ها'),React.createElement('span',null,(role==='tech'?'محیط نیروی فنی':'مرکز کنترل مدیریت فنی')+' • نسخه 11.23 P5'))),
       React.createElement('div',{className:'user-bar'},React.createElement('div',{className:'user-info'},React.createElement('b',null,currentUser.name),React.createElement('span',null,role==='manager'?'مدیر فنی':'کد پرسنلی: '+currentUser.username)),React.createElement('button',{className:'logout-btn',onClick:logout},'خروج'))
     ),
     !loaded?React.createElement('div',{className:'empty'},'در حال بارگذاری اطلاعات...'):(role==='tech'?React.createElement(TechView,{tasks,saveTasks,showToast,currentUser,refreshTasks:loadTasks}):React.createElement(ManagerView,{tasks,updateTask:updateManagerTask,showToast,refreshTasks:loadTasks,managerLoading,lastUpdated,currentUser,technicianDirectory,activeStoreDirectory,dataDiagnostics})),
