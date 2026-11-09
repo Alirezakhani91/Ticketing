@@ -5403,6 +5403,194 @@
   .ops3-kpis{grid-template-columns:1fr 1fr}
 }
 
+
+/* ============================================================
+   P7 — Multi-fault split inside Technical Support only
+   ============================================================ */
+.external-action-stack{
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+  width:100%;
+}
+.external-split-btn{
+  width:100%;
+  min-height:36px;
+  border:1px solid #98b9d2!important;
+  background:#f2f8fc!important;
+  color:#315f89!important;
+  border-radius:9px;
+  font-family:inherit;
+  font-size:7.8px;
+  font-weight:950;
+  cursor:pointer;
+}
+.external-split-backdrop{
+  position:fixed;
+  inset:0;
+  z-index:10060;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:18px;
+  background:rgba(20,31,27,.50);
+}
+.external-split-modal{
+  width:min(720px,96vw);
+  max-height:92vh;
+  overflow:auto;
+  padding:16px;
+  border-radius:16px;
+  background:#fff;
+  box-shadow:0 24px 70px rgba(0,0,0,.24);
+}
+.external-split-head{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:12px;
+  padding-bottom:11px;
+  margin-bottom:11px;
+  border-bottom:1px solid #e7ece9;
+}
+.external-split-head h3{
+  margin:6px 0 3px;
+  color:#30483f;
+  font-size:13px;
+}
+.external-split-head p{
+  margin:0;
+  color:#83908a;
+  font-size:7px;
+}
+.external-split-head>button{
+  width:32px;
+  height:32px;
+  border:1px solid #dde5e1;
+  border-radius:8px;
+  background:#fff;
+  color:#68756f;
+  font-size:17px;
+  cursor:pointer;
+}
+.external-split-original{
+  padding:10px;
+  border-radius:9px;
+  background:#f7f9f8;
+}
+.external-split-original span{
+  display:block;
+  color:#7d8984;
+  font-size:6.8px;
+  font-weight:900;
+}
+.external-split-original p{
+  margin:4px 0 0;
+  color:#374d45;
+  font-size:8.4px;
+  line-height:1.8;
+}
+.external-split-help{
+  margin:10px 0;
+  padding:9px 10px;
+  border:1px solid #d9e6ef;
+  border-radius:9px;
+  background:#f4f9fc;
+}
+.external-split-help b{
+  display:block;
+  color:#315f89;
+  font-size:7.8px;
+}
+.external-split-help span{
+  display:block;
+  margin-top:3px;
+  color:#74858f;
+  font-size:6.8px;
+  line-height:1.7;
+}
+.external-split-list{
+  display:grid;
+  gap:8px;
+}
+.external-split-item{
+  padding:10px;
+  border:1px solid #e1e7e4;
+  border-radius:10px;
+  background:#fbfcfc;
+}
+.external-split-item-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+  margin-bottom:6px;
+}
+.external-split-item-head b{
+  color:#384f46;
+  font-size:8px;
+}
+.external-split-item-head button{
+  border:0;
+  background:transparent;
+  color:#a04d46;
+  font-family:inherit;
+  font-size:7px;
+  font-weight:900;
+  cursor:pointer;
+}
+.external-split-item textarea{
+  width:100%;
+  min-height:72px;
+  box-sizing:border-box;
+  border:1px solid #dce4e0;
+  border-radius:8px;
+  background:#fff;
+  padding:9px;
+  font-family:inherit;
+  color:#354a42;
+  font-size:8px;
+  line-height:1.8;
+  resize:vertical;
+}
+.external-split-add{
+  width:100%;
+  margin-top:8px;
+  padding:9px;
+  border:1px dashed #a8bac5;
+  border-radius:9px;
+  background:#fff;
+  color:#456c86;
+  font-family:inherit;
+  font-size:7.8px;
+  font-weight:900;
+  cursor:pointer;
+}
+.external-split-result-note{
+  margin-top:9px;
+  padding:8px 10px;
+  border-radius:8px;
+  background:#edf6f2;
+  color:#326a58;
+  font-size:7px;
+  font-weight:900;
+}
+.external-split-actions{
+  display:flex;
+  justify-content:flex-end;
+  gap:7px;
+  margin-top:12px;
+}
+.ops3-status.split{
+  background:#eaf2f8;
+  color:#3d6788;
+}
+@media(max-width:760px){
+  .external-split-actions{
+    flex-direction:column-reverse;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -5551,6 +5739,16 @@ function claimExternalTicketRequest(ticket,token){
     rowNumber:String(ticket&&ticket.rowNumber||''),
     ticketNumber:String(ticket&&ticket.ticketNumber||'')
   },30000);
+}
+
+function splitExternalTicketRequest(ticket,issues,token){
+  return jsonpRequest({
+    action:'splitexternalticket',
+    token:String(token||''),
+    rowNumber:String(ticket&&ticket.rowNumber||''),
+    ticketNumber:String(ticket&&ticket.ticketNumber||''),
+    issues:JSON.stringify(Array.isArray(issues)?issues:[])
+  },45000);
 }
 
 function returnExternalTicketRequest(ticket,reasonCode,note,token){
@@ -5953,7 +6151,7 @@ function ticketSubmissionFingerprintClient(ticket){
   ].join('||');
 }
 
-const TECH_OUTBOX_PREFIX='ticketing-tech-outbox-v1124p6:';
+const TECH_OUTBOX_PREFIX='ticketing-tech-outbox-v1125p7:';
 
 function technicianOutboxKey(username){
   return TECH_OUTBOX_PREFIX+normalizeLoginDigits(username||'unknown');
@@ -6899,14 +7097,28 @@ function ExternalMaintenanceQueue({
   const [returnTicket,setReturnTicket]=useState(null);
   const [returnReason,setReturnReason]=useState('');
   const [returnNote,setReturnNote]=useState('');
+  const [splitTicket,setSplitTicket]=useState(null);
+  const [splitIssues,setSplitIssues]=useState(['','']);
 
   const allTasks=Array.isArray(tasks)?tasks:[];
 
+  const isOperationSource=t=>
+    ['CHECKLIST','CHECKLIST_CHILD'].includes(
+      String(t.source||'').toUpperCase()
+    );
+
   const isOpenOperationTicket=t=>
-    String(t.source||'').toUpperCase()==='CHECKLIST' &&
+    isOperationSource(t) &&
     t.reviewStatus!=='cancelled' &&
     t.workStatus!=='cancelled' &&
-    !['completed','outsourced'].includes(String(t.dispatchStatus||'')) &&
+    ![
+      'completed',
+      'outsourced',
+      'split_parent',
+      'split_completed',
+      'returned_clarification',
+      'rejected'
+    ].includes(String(t.dispatchStatus||'')) &&
     t.workStatus!=='completed';
 
   const queue=allTasks
@@ -7010,6 +7222,94 @@ function ExternalMaintenanceQueue({
       });
     }catch(e){
       return String(value);
+    }
+  };
+
+  const openSplit=ticket=>{
+    setSplitTicket(ticket);
+
+    const original=String(
+      ticket.reportedDescription||
+      ticket.otherText||
+      ''
+    ).trim();
+
+    setSplitIssues([
+      original,
+      ''
+    ]);
+  };
+
+  const closeSplit=()=>{
+    if(busyKey)return;
+    setSplitTicket(null);
+    setSplitIssues(['','']);
+  };
+
+  const updateSplitIssue=(index,value)=>{
+    setSplitIssues(prev=>
+      prev.map((item,i)=>i===index?value:item)
+    );
+  };
+
+  const addSplitIssue=()=>{
+    setSplitIssues(prev=>
+      prev.length>=10
+        ?prev
+        :[...prev,'']
+    );
+  };
+
+  const removeSplitIssue=index=>{
+    setSplitIssues(prev=>{
+      if(prev.length<=2)return prev;
+      return prev.filter((_,i)=>i!==index);
+    });
+  };
+
+  const cleanSplitIssues=()=>splitIssues
+    .map(x=>String(x||'').trim())
+    .filter(x=>x.length>=3);
+
+  const submitSplit=async()=>{
+    if(!splitTicket)return;
+
+    const issues=cleanSplitIssues();
+
+    if(issues.length<2){
+      showToast('حداقل دو خرابی مجزا را وارد کنید');
+      return;
+    }
+
+    const key='split-'+ticketClientKey(splitTicket);
+    setBusyKey(key);
+
+    try{
+      const result=await splitExternalTicketRequest(
+        splitTicket,
+        issues,
+        currentUser.token
+      );
+
+      if(result&&result.success){
+        showToast(
+          result.message||
+          'خرابی‌ها به تیکت‌های مستقل تفکیک شدند'
+        );
+
+        closeSplit();
+        await refreshTasks({silent:true});
+      }else{
+        showToast(
+          (result&&result.message)||
+          'تفکیک خرابی‌ها انجام نشد'
+        );
+        await refreshTasks({silent:true});
+      }
+    }catch(e){
+      showToast('ارتباط با سرور برای تفکیک خرابی‌ها برقرار نشد');
+    }finally{
+      setBusyKey('');
     }
   };
 
@@ -7273,6 +7573,9 @@ function ExternalMaintenanceQueue({
   const renderTicketAction=ticket=>{
     const key=ticketClientKey(ticket);
     const status=String(ticket.dispatchStatus||'reported');
+    const isChild=
+      String(ticket.source||'').toUpperCase()==='CHECKLIST_CHILD' ||
+      String(ticket.operationRecordType||'').toUpperCase()==='CHILD';
 
     if(status==='reported'&&!String(ticket.technicianCode||'').trim()){
       return h('div',{className:'external-action-pair'},
@@ -7293,29 +7596,43 @@ function ExternalMaintenanceQueue({
     }
 
     if(status==='claimed'){
-      return h('div',{className:'external-action-pair'},
-        h('button',{
-          className:'btn external-arrive-btn',
+      return h('div',{className:'external-action-stack'},
+        !isChild&&h('button',{
+          className:'btn external-split-btn',
           disabled:!!busyKey,
-          onClick:()=>arrive(ticket)
-        },busyKey==='arrive-'+key
-          ?'در حال ثبت...'
-          :(storeSession?'شروع رسیدگی':'رسیدم به فروشگاه')
-        ),
-        h('button',{
-          className:'btn external-return-btn',
-          disabled:!!busyKey,
-          onClick:()=>openReturn(ticket)
-        },'عدم پذیرش / بازگشت')
+          onClick:()=>openSplit(ticket)
+        },'تفکیک چند خرابی'),
+        h('div',{className:'external-action-pair'},
+          h('button',{
+            className:'btn external-arrive-btn',
+            disabled:!!busyKey,
+            onClick:()=>arrive(ticket)
+          },busyKey==='arrive-'+key
+            ?'در حال ثبت...'
+            :(storeSession?'شروع رسیدگی':'رسیدم به فروشگاه')
+          ),
+          h('button',{
+            className:'btn external-return-btn',
+            disabled:!!busyKey,
+            onClick:()=>openReturn(ticket)
+          },'عدم پذیرش / بازگشت')
+        )
       );
     }
 
     if(status==='arrived'){
-      return h('button',{
-        className:'btn external-resolve-btn',
-        disabled:!!busyKey,
-        onClick:()=>startResolve(ticket)
-      },'ثبت نتیجه فنی');
+      return h('div',{className:'external-action-stack'},
+        !isChild&&h('button',{
+          className:'btn external-split-btn',
+          disabled:!!busyKey,
+          onClick:()=>openSplit(ticket)
+        },'تفکیک چند خرابی'),
+        h('button',{
+          className:'btn external-resolve-btn',
+          disabled:!!busyKey,
+          onClick:()=>startResolve(ticket)
+        },'ثبت نتیجه فنی')
+      );
     }
 
     return null;
@@ -7338,7 +7655,13 @@ function ExternalMaintenanceQueue({
         h('div',{className:'ops-store-session-ticket-head'},
           h('div',null,
             h('b',null,ticket.ticketNumber||'تیکت عملیات'),
-            h('span',null,statusLabel)
+            h('span',null,
+              (
+                String(ticket.source||'').toUpperCase()==='CHECKLIST_CHILD'
+                  ?'خرابی تفکیک‌شده · '
+                  :''
+              )+statusLabel
+            )
           ),
           String(ticket.priority||'')==='urgent'&&
             h('span',{className:'external-priority-badge'},'فوری')
@@ -7457,7 +7780,11 @@ function ExternalMaintenanceQueue({
                 )
               ),
               h('div',{className:'external-badges'},
-                h('span',{className:'external-source-badge'},'Checklist'),
+                h('span',{className:'external-source-badge'},
+                  String(ticket.source||'').toUpperCase()==='CHECKLIST_CHILD'
+                    ?'خرابی تفکیک‌شده'
+                    :'Checklist'
+                ),
                 String(ticket.priority||'')==='urgent'&&
                   h('span',{className:'external-priority-badge'},'فوری')
               )
@@ -7541,6 +7868,105 @@ function ExternalMaintenanceQueue({
           ),
           h('div',{className:'external-ticket-action stacked'},
             renderTicketAction(ticket)
+          )
+        )
+      )
+    ),
+
+    splitTicket&&h('div',{
+      className:'external-split-backdrop',
+      onClick:e=>{if(e.target===e.currentTarget)closeSplit();}
+    },
+      h('div',{className:'external-split-modal'},
+        h('div',{className:'external-split-head'},
+          h('div',null,
+            h('span',{className:'external-maintenance-kicker'},'MULTI-FAULT SPLIT'),
+            h('h3',null,'تفکیک خرابی‌های داخل یک درخواست'),
+            h('p',null,
+              [
+                splitTicket.ticketNumber||'',
+                splitTicket.storeCode||'',
+                splitTicket.storeName||''
+              ].filter(Boolean).join(' · ')
+            )
+          ),
+          h('button',{
+            type:'button',
+            onClick:closeSplit,
+            disabled:!!busyKey
+          },'×')
+        ),
+
+        h('div',{className:'external-split-original'},
+          h('span',null,'شرح اصلی رئیس ناحیه'),
+          h('p',null,
+            splitTicket.reportedDescription||
+            splitTicket.otherText||
+            '—'
+          )
+        ),
+
+        h('div',{className:'external-split-help'},
+          h('b',null,'هر خرابی را در یک کادر جدا بنویسید'),
+          h('span',null,'برای هر مورد یک شماره تیکت مستقل ساخته می‌شود. درخواست اصلی حذف نمی‌شود و به‌عنوان درخواست مادر در تاریخچه باقی می‌ماند.')
+        ),
+
+        h('div',{className:'external-split-list'},
+          ...splitIssues.map((value,index)=>
+            h('div',{
+              className:'external-split-item',
+              key:'split-'+index
+            },
+              h('div',{className:'external-split-item-head'},
+                h('b',null,'خرابی '+(index+1).toLocaleString('fa-IR')),
+                splitIssues.length>2&&h('button',{
+                  type:'button',
+                  onClick:()=>removeSplitIssue(index),
+                  disabled:!!busyKey
+                },'حذف')
+              ),
+              h('textarea',{
+                value,
+                onChange:e=>updateSplitIssue(index,e.target.value),
+                disabled:!!busyKey,
+                placeholder:
+                  index===0
+                    ?'مثلاً: یخچال فروشگاه روشن نمی‌شود'
+                    :'مثلاً: کرکره ورودی در نیمه مسیر گیر می‌کند'
+              })
+            )
+          )
+        ),
+
+        splitIssues.length<10&&h('button',{
+          type:'button',
+          className:'external-split-add',
+          onClick:addSplitIssue,
+          disabled:!!busyKey
+        },'+ افزودن خرابی دیگر'),
+
+        h('div',{className:'external-split-result-note'},
+          cleanSplitIssues().length.toLocaleString('fa-IR')+
+          ' خرابی معتبر → '+
+          cleanSplitIssues().length.toLocaleString('fa-IR')+
+          ' تیکت مستقل'
+        ),
+
+        h('div',{className:'external-split-actions'},
+          h('button',{
+            className:'btn btn-line',
+            onClick:closeSplit,
+            disabled:!!busyKey
+          },'انصراف'),
+          h('button',{
+            className:'btn btn-primary',
+            onClick:submitSplit,
+            disabled:
+              !!busyKey||
+              cleanSplitIssues().length<2
+          },busyKey==='split-'+ticketClientKey(splitTicket)
+            ?'در حال ساخت تیکت‌ها...'
+            :'ساخت تیکت‌های مستقل'
           )
         )
       )
@@ -12770,7 +13196,11 @@ function OperationsChecklistDashboard({
 }){
   const h=React.createElement;
   const sourceTasks=(Array.isArray(tasks)?tasks:[])
-    .filter(t=>String(t.source||'').trim().toUpperCase()==='CHECKLIST');
+    .filter(t=>
+      ['CHECKLIST','CHECKLIST_CHILD'].includes(
+        String(t.source||'').trim().toUpperCase()
+      )
+    );
 
   const [range,setRange]=useState('30');
   const [region,setRegion]=useState('all');
@@ -12827,6 +13257,10 @@ function OperationsChecklistDashboard({
 
   const statusInfo=t=>{
     const s=String(t.dispatchStatus||'reported');
+    if(s==='split_parent')
+      return{key:'split_parent',label:'تفکیک‌شده',tone:'split'};
+    if(s==='split_completed')
+      return{key:'split_completed',label:'تفکیک تکمیل‌شده',tone:'done'};
     if(s==='rejected')
       return{key:'rejected',label:'رد شده',tone:'rejected'};
     if(s==='returned_clarification')
@@ -13141,6 +13575,8 @@ function OperationsChecklistDashboard({
         h('option',{value:'claimed'},'پذیرفته‌شده'),
         h('option',{value:'arrived'},'کارشناس در محل'),
         h('option',{value:'outsourced'},'برون‌سپاری'),
+        h('option',{value:'split_parent'},'درخواست تفکیک‌شده'),
+        h('option',{value:'split_completed'},'تفکیک تکمیل‌شده'),
         h('option',{value:'returned_clarification'},'برگشت برای اصلاح'),
         h('option',{value:'rejected'},'رد شده'),
         h('option',{value:'completed'},'تکمیل‌شده')
@@ -13304,7 +13740,11 @@ function ManagerView({ tasks, updateTask, showToast, refreshTasks, managerLoadin
 
   const pendingAll = filtered.filter(t =>
     (!t.reviewStatus || t.reviewStatus==='pending') &&
-    !['returned_clarification','rejected'].includes(String(t.dispatchStatus||''))
+    ![
+      'returned_clarification',
+      'rejected',
+      'split_parent'
+    ].includes(String(t.dispatchStatus||''))
   );
 
   const pendingCategory = t => {
@@ -15032,7 +15472,7 @@ function ExecutiveDashboard({tasks,onRefresh,loading,lastUpdated,currentUser,onL
 
 /* ---------- اپ اصلی ---------- */
 
-/* ---------- Boardroom CEO Dashboard — نسخه 11.24 P6 ---------- */
+/* ---------- Boardroom CEO Dashboard — نسخه 11.25 P7 ---------- */
 function CEODashboard({tasks,onRefresh,loading,lastUpdated,currentUser,onLogout}){
   const h=React.createElement;
 
@@ -15378,7 +15818,7 @@ function CEODashboard({tasks,onRefresh,loading,lastUpdated,currentUser,onLogout}
         )
       ),
 
-      h('footer',{className:'c8-footer'},h('span',null,'نسخه 11.24 P6 · دسترسی فقط خواندنی مدیرعامل'),h('span',null,'ریسک فروشگاه‌های فعال و فعالیت‌های پیش‌افتتاح به‌صورت جداگانه تحلیل می‌شوند.'))
+      h('footer',{className:'c8-footer'},h('span',null,'نسخه 11.25 P7 · دسترسی فقط خواندنی مدیرعامل'),h('span',null,'ریسک فروشگاه‌های فعال و فعالیت‌های پیش‌افتتاح به‌صورت جداگانه تحلیل می‌شوند.'))
     ),
 
     modal
@@ -15806,7 +16246,7 @@ function RegionalDashboard({tasks,onRefresh,loading,lastUpdated,currentUser,onLo
       ),
 
       h('footer',{className:'rm-footer'},
-        h('span',null,'نسخه 11.24 P6 · دسترسی مدیر منطقه · فقط خواندنی'),
+        h('span',null,'نسخه 11.25 P7 · دسترسی مدیر منطقه · فقط خواندنی'),
         h('span',null,'فیلتر دسترسی در سرور انجام می‌شود و فقط اطلاعات مناطق تخصیص‌یافته به این حساب ارسال می‌شود.')
       )
     ),
@@ -15827,7 +16267,7 @@ function LoginView({ onLogin }){
   useEffect(()=>{
     // هیچ تلاش ناموفقی در مرورگر ذخیره یا قفل نمی‌شود.
     // ورود قبلیِ ناقص نیز پاک می‌شود تا کاربران فعلی بتوانند دوباره تلاش کنند.
-    try{ sessionStorage.removeItem('ticketing-user-v1124p6'); }catch(e){}
+    try{ sessionStorage.removeItem('ticketing-user-v1125p7'); }catch(e){}
   },[]);
 
   const clearError = () => {
@@ -15840,7 +16280,7 @@ function LoginView({ onLogin }){
     setError('');
     setUsername('');
     setPassword('');
-    try{ sessionStorage.removeItem('ticketing-user-v1124p6'); }catch(e){}
+    try{ sessionStorage.removeItem('ticketing-user-v1125p7'); }catch(e){}
     setTimeout(()=>usernameRef.current && usernameRef.current.focus(),30);
   };
 
@@ -15877,7 +16317,7 @@ function LoginView({ onLogin }){
 
       if(result && result.success){
         // هیچ خطای قبلی یا نشست ناقصی به ورود درست منتقل نمی‌شود.
-        try{ sessionStorage.removeItem('ticketing-user-v1124p6'); }catch(e){}
+        try{ sessionStorage.removeItem('ticketing-user-v1125p7'); }catch(e){}
         onLogin({
           username: String(result.username || cleanUsername).trim(),
           name: String(result.name || '').trim(),
@@ -15978,7 +16418,7 @@ function LoginView({ onLogin }){
 
 /* ---------- اپ اصلی ---------- */
 function App(){
-  const [currentUser,setCurrentUser]=useState(()=>{try{const raw=sessionStorage.getItem('ticketing-user-v1124p6');return raw?JSON.parse(raw):null;}catch(e){return null;}});
+  const [currentUser,setCurrentUser]=useState(()=>{try{const raw=sessionStorage.getItem('ticketing-user-v1125p7');return raw?JSON.parse(raw):null;}catch(e){return null;}});
   const [tasks,setTasks]=useState([]);
   const [technicianDirectory,setTechnicianDirectory]=useState([]);
   const [activeStoreDirectory,setActiveStoreDirectory]=useState([]);
@@ -16005,7 +16445,7 @@ function App(){
   const showToast=m=>{setToastMsg(m);clearTimeout(toastTimer.current);toastTimer.current=setTimeout(()=>setToastMsg(''),2600);};
 
   const handleLogin=user=>{
-    sessionStorage.setItem('ticketing-user-v1124p6',JSON.stringify(user));
+    sessionStorage.setItem('ticketing-user-v1125p7',JSON.stringify(user));
     dataRevisionRef.current='';
     lastFullSyncRef.current=0;
     pendingManagerReviewRef.current.clear();
@@ -16013,7 +16453,7 @@ function App(){
     setLoaded(false);
   };
   const logout=()=>{
-    sessionStorage.removeItem('ticketing-user-v1124p6');
+    sessionStorage.removeItem('ticketing-user-v1125p7');
     dataRevisionRef.current='';
     lastFullSyncRef.current=0;
     pendingManagerReviewRef.current.clear();
@@ -16373,7 +16813,7 @@ function App(){
 
   return React.createElement('div',{className:'wrap'},
     React.createElement('div',{className:'top'},
-      React.createElement('div',{className:'brand'},React.createElement('span',{className:'dot'}),React.createElement('div',null,React.createElement('h1',null,'پشتیبانی فنی فروشگاه‌ها'),React.createElement('span',null,(role==='tech'?'محیط نیروی فنی':'مرکز کنترل مدیریت فنی')+' • نسخه 11.24 P6'))),
+      React.createElement('div',{className:'brand'},React.createElement('span',{className:'dot'}),React.createElement('div',null,React.createElement('h1',null,'پشتیبانی فنی فروشگاه‌ها'),React.createElement('span',null,(role==='tech'?'محیط نیروی فنی':'مرکز کنترل مدیریت فنی')+' • نسخه 11.25 P7'))),
       React.createElement('div',{className:'user-bar'},React.createElement('div',{className:'user-info'},React.createElement('b',null,currentUser.name),React.createElement('span',null,role==='manager'?'مدیر فنی':'کد پرسنلی: '+currentUser.username)),React.createElement('button',{className:'logout-btn',onClick:logout},'خروج'))
     ),
     !loaded?React.createElement('div',{className:'empty'},'در حال بارگذاری اطلاعات...'):(role==='tech'?React.createElement(TechView,{tasks,saveTasks,showToast,currentUser,refreshTasks:loadTasks}):React.createElement(ManagerView,{tasks,updateTask:updateManagerTask,showToast,refreshTasks:loadTasks,managerLoading,lastUpdated,currentUser,technicianDirectory,activeStoreDirectory,dataDiagnostics})),
