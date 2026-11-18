@@ -6322,7 +6322,7 @@ function ticketSubmissionFingerprintClient(ticket){
   ].join('||');
 }
 
-const TECH_OUTBOX_PREFIX='ticketing-tech-outbox-v1126p77:';
+const TECH_OUTBOX_PREFIX='ticketing-tech-outbox-v1126p79s:';
 
 function technicianOutboxKey(username){
   return TECH_OUTBOX_PREFIX+normalizeLoginDigits(username||'unknown');
@@ -9362,34 +9362,19 @@ function effectiveOperationalDispatchClient(ticket){
 function managerReviewReadinessClient(ticket){
   const t=ticket||{};
   const source=String(t.source||'').trim().toUpperCase();
+
   const operational=
     source==='CHECKLIST' ||
     source==='CHECKLIST_CHILD';
 
+  // ORIGINAL FLOW:
+  // Technician-created internal/outsourced tickets retain the old
+  // manager-review behavior.
   if(!operational){
-    const outsourced=
-      String(t.type||'').trim()==='outsourced';
-
-    if(outsourced){
-      const ready=
-        String(t.workStatus||'').trim()==='completed' ||
-        !!String(t.completedAt||'').trim();
-
-      return{
-        operational:false,
-        outsourced:true,
-        ready,
-        status:ready?'completed':'outsourced',
-        staleDispatchDetected:false
-      };
-    }
-
     return{
       operational:false,
-      outsourced:false,
       ready:true,
-      status:'non_operational',
-      staleDispatchDetected:false
+      status:'technician_created'
     };
   }
 
@@ -9410,7 +9395,6 @@ function managerReviewReadinessClient(ticket){
 
   return{
     operational:true,
-    outsourced:String(t.type||'').trim()==='outsourced',
     ready,
     status:effective||'reported',
     rawDispatch,
@@ -9436,7 +9420,10 @@ function TaskItem({t,onReview,onReject,onEdit,onCostEdit}){
   const managerCanAct=
     !!onReview &&
     reviewStatus==='pending' &&
-    reviewReadiness.ready;
+    (
+      !reviewReadiness.operational ||
+      reviewReadiness.ready
+    );
 
   return React.createElement('div',{className:'task'},
     React.createElement('div',{className:'task-top'},
@@ -9470,7 +9457,7 @@ function TaskItem({t,onReview,onReject,onEdit,onCostEdit}){
       ),
     !!onReview&&
       reviewStatus==='pending'&&
-      (reviewReadiness.operational||reviewReadiness.outsourced)&&
+      reviewReadiness.operational&&
       !reviewReadiness.ready&&
       !editing&&React.createElement(
         'div',
@@ -14097,32 +14084,38 @@ function ManagerView({ tasks, updateTask, showToast, refreshTasks, managerLoadin
     }
 
     const source=String(t.source||'').trim().toUpperCase();
+
     const isOperations=
       source==='CHECKLIST' ||
       source==='CHECKLIST_CHILD';
 
-    // P7.7:
-    // Manager Pending is ONLY the final review queue.
-    // Operations and outsourced tickets enter only after actual completion.
+    // Operations enter Manager Pending ONLY after technical completion.
+    // Technician-created internal / outsourced tickets keep original behavior.
     if(isOperations){
-      return managerReviewReadinessClient(t).ready;
-    }
-
-    if(String(t.type||'').trim()==='outsourced'){
       return managerReviewReadinessClient(t).ready;
     }
 
     return true;
   });
 
+  // ORIGINAL THREE EXCLUSIVE QUEUES:
+  // 1) Operations = only Checklist / Checklist Child
+  // 2) Outsourced = technician-created outsourced
+  // 3) Internal = technician-created internal
   const pendingCategory = t => {
-    if(
-      ['CHECKLIST','CHECKLIST_CHILD'].includes(
-        String(t.source||'').trim().toUpperCase()
-      )
-    ) return 'operations';
+    const source=String(t.source||'').trim().toUpperCase();
 
-    if(String(t.type||'').trim()==='outsourced') return 'outsourced';
+    if(
+      source==='CHECKLIST' ||
+      source==='CHECKLIST_CHILD'
+    ){
+      return 'operations';
+    }
+
+    if(String(t.type||'').trim()==='outsourced'){
+      return 'outsourced';
+    }
+
     return 'internal';
   };
 
@@ -14157,7 +14150,7 @@ function ManagerView({ tasks, updateTask, showToast, refreshTasks, managerLoadin
         React.createElement('div',{className:'manager-pending-type-head'},
           React.createElement('div',null,
             React.createElement('b',null,'نوع تیکت در انتظار'),
-            React.createElement('span',null,'برای تمرکز سریع‌تر، صف موردنظر را انتخاب کنید')
+            React.createElement('span',null,'سه صف مجزا: درون‌سپاری و برون‌سپاریِ ایجادشده توسط کارشناس، و تیکت‌های عملیاتِ آمده از چک‌لیست')
           ),
           React.createElement('small',null,pending.length.toLocaleString('fa-IR')+' مورد نمایش داده می‌شود')
         ),
@@ -15845,7 +15838,7 @@ function ExecutiveDashboard({tasks,onRefresh,loading,lastUpdated,currentUser,onL
 
 /* ---------- اپ اصلی ---------- */
 
-/* ---------- Boardroom CEO Dashboard — نسخه 11.26 P7.7 ---------- */
+/* ---------- Boardroom CEO Dashboard — نسخه 11.26 P7.9 STABLE ---------- */
 function CEODashboard({tasks,onRefresh,loading,lastUpdated,currentUser,onLogout}){
   const h=React.createElement;
 
@@ -16191,7 +16184,7 @@ function CEODashboard({tasks,onRefresh,loading,lastUpdated,currentUser,onLogout}
         )
       ),
 
-      h('footer',{className:'c8-footer'},h('span',null,'نسخه 11.26 P7.7 · دسترسی فقط خواندنی مدیرعامل'),h('span',null,'ریسک فروشگاه‌های فعال و فعالیت‌های پیش‌افتتاح به‌صورت جداگانه تحلیل می‌شوند.'))
+      h('footer',{className:'c8-footer'},h('span',null,'نسخه 11.26 P7.9 STABLE · دسترسی فقط خواندنی مدیرعامل'),h('span',null,'ریسک فروشگاه‌های فعال و فعالیت‌های پیش‌افتتاح به‌صورت جداگانه تحلیل می‌شوند.'))
     ),
 
     modal
@@ -16619,7 +16612,7 @@ function RegionalDashboard({tasks,onRefresh,loading,lastUpdated,currentUser,onLo
       ),
 
       h('footer',{className:'rm-footer'},
-        h('span',null,'نسخه 11.26 P7.7 · دسترسی مدیر منطقه · فقط خواندنی'),
+        h('span',null,'نسخه 11.26 P7.9 STABLE · دسترسی مدیر منطقه · فقط خواندنی'),
         h('span',null,'فیلتر دسترسی در سرور انجام می‌شود و فقط اطلاعات مناطق تخصیص‌یافته به این حساب ارسال می‌شود.')
       )
     ),
@@ -16640,7 +16633,7 @@ function LoginView({ onLogin }){
   useEffect(()=>{
     // هیچ تلاش ناموفقی در مرورگر ذخیره یا قفل نمی‌شود.
     // ورود قبلیِ ناقص نیز پاک می‌شود تا کاربران فعلی بتوانند دوباره تلاش کنند.
-    try{ sessionStorage.removeItem('ticketing-user-v1126p77'); }catch(e){}
+    try{ sessionStorage.removeItem('ticketing-user-v1126p79s'); }catch(e){}
   },[]);
 
   const clearError = () => {
@@ -16653,7 +16646,7 @@ function LoginView({ onLogin }){
     setError('');
     setUsername('');
     setPassword('');
-    try{ sessionStorage.removeItem('ticketing-user-v1126p77'); }catch(e){}
+    try{ sessionStorage.removeItem('ticketing-user-v1126p79s'); }catch(e){}
     setTimeout(()=>usernameRef.current && usernameRef.current.focus(),30);
   };
 
@@ -16690,7 +16683,7 @@ function LoginView({ onLogin }){
 
       if(result && result.success){
         // هیچ خطای قبلی یا نشست ناقصی به ورود درست منتقل نمی‌شود.
-        try{ sessionStorage.removeItem('ticketing-user-v1126p77'); }catch(e){}
+        try{ sessionStorage.removeItem('ticketing-user-v1126p79s'); }catch(e){}
         onLogin({
           username: String(result.username || cleanUsername).trim(),
           name: String(result.name || '').trim(),
@@ -16791,7 +16784,7 @@ function LoginView({ onLogin }){
 
 /* ---------- اپ اصلی ---------- */
 function App(){
-  const [currentUser,setCurrentUser]=useState(()=>{try{const raw=sessionStorage.getItem('ticketing-user-v1126p77');return raw?JSON.parse(raw):null;}catch(e){return null;}});
+  const [currentUser,setCurrentUser]=useState(()=>{try{const raw=sessionStorage.getItem('ticketing-user-v1126p79s');return raw?JSON.parse(raw):null;}catch(e){return null;}});
   const [tasks,setTasks]=useState([]);
   const [technicianDirectory,setTechnicianDirectory]=useState([]);
   const [activeStoreDirectory,setActiveStoreDirectory]=useState([]);
@@ -16818,7 +16811,7 @@ function App(){
   const showToast=m=>{setToastMsg(m);clearTimeout(toastTimer.current);toastTimer.current=setTimeout(()=>setToastMsg(''),2600);};
 
   const handleLogin=user=>{
-    sessionStorage.setItem('ticketing-user-v1126p77',JSON.stringify(user));
+    sessionStorage.setItem('ticketing-user-v1126p79s',JSON.stringify(user));
     dataRevisionRef.current='';
     lastFullSyncRef.current=0;
     pendingManagerReviewRef.current.clear();
@@ -16826,7 +16819,7 @@ function App(){
     setLoaded(false);
   };
   const logout=()=>{
-    sessionStorage.removeItem('ticketing-user-v1126p77');
+    sessionStorage.removeItem('ticketing-user-v1126p79s');
     dataRevisionRef.current='';
     lastFullSyncRef.current=0;
     pendingManagerReviewRef.current.clear();
@@ -17186,7 +17179,7 @@ function App(){
 
   return React.createElement('div',{className:'wrap'},
     React.createElement('div',{className:'top'},
-      React.createElement('div',{className:'brand'},React.createElement('span',{className:'dot'}),React.createElement('div',null,React.createElement('h1',null,'پشتیبانی فنی فروشگاه‌ها'),React.createElement('span',null,(role==='tech'?'محیط نیروی فنی':'مرکز کنترل مدیریت فنی')+' • نسخه 11.26 P7.7'))),
+      React.createElement('div',{className:'brand'},React.createElement('span',{className:'dot'}),React.createElement('div',null,React.createElement('h1',null,'پشتیبانی فنی فروشگاه‌ها'),React.createElement('span',null,(role==='tech'?'محیط نیروی فنی':'مرکز کنترل مدیریت فنی')+' • نسخه 11.26 P7.9 STABLE'))),
       React.createElement('div',{className:'user-bar'},React.createElement('div',{className:'user-info'},React.createElement('b',null,currentUser.name),React.createElement('span',null,role==='manager'?'مدیر فنی':'کد پرسنلی: '+currentUser.username)),React.createElement('button',{className:'logout-btn',onClick:logout},'خروج'))
     ),
     !loaded?React.createElement('div',{className:'empty'},'در حال بارگذاری اطلاعات...'):(role==='tech'?React.createElement(TechView,{tasks,saveTasks,showToast,currentUser,refreshTasks:loadTasks}):React.createElement(ManagerView,{tasks,updateTask:updateManagerTask,showToast,refreshTasks:loadTasks,managerLoading,lastUpdated,currentUser,technicianDirectory,activeStoreDirectory,dataDiagnostics})),
