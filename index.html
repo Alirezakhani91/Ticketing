@@ -8939,14 +8939,26 @@ function TechView({ tasks, saveTasks, showToast, currentUser, refreshTasks }){
       String(t.technicianCode||'')===String(currentUser.username)||
       t.technician===name
     )
-    .filter(t=>
-      !(
-        String(t.source||'').toUpperCase()==='CHECKLIST' &&
-        t.workStatus!=='completed'
-      )
-    )
+    .filter(t=>{
+      const source=String(t.source||'').trim().toUpperCase();
+      return source!=='CHECKLIST'&&source!=='CHECKLIST_CHILD';
+    })
     .slice(0,20);
-  const openOutsources=tasks.filter(t=>(String(t.technicianCode||'')===String(currentUser.username)||t.technician===name)&&t.type==='outsourced'&&t.workStatus!=='completed'&&t.reviewStatus!=='cancelled');
+  const openOutsources=tasks.filter(t=>{
+    const source=String(t.source||'').trim().toUpperCase();
+    const owned=
+      String(t.technicianCode||'')===String(currentUser.username)||
+      t.technician===name;
+
+    return (
+      owned &&
+      source!=='CHECKLIST' &&
+      source!=='CHECKLIST_CHILD' &&
+      t.type==='outsourced' &&
+      t.workStatus!=='completed' &&
+      t.reviewStatus!=='cancelled'
+    );
+  });
 
   const storeResult=storeLoading
     ? React.createElement('div',{className:'store-search-status loading'},'در حال شناسایی فروشگاه...')
@@ -9170,7 +9182,13 @@ function TechnicianTicketItem({t,currentUser,showToast,onEdit,onCancel,onCostUpd
   const [saving,setSaving]=useState(false);
   const normalizedCode=normalizeStoreCodeClient(editStoreCode);
   const reviewStatus=t.reviewStatus||'pending';
-  const canChange=reviewStatus==='pending';
+  const sourceUpper=String(t.source||'').trim().toUpperCase();
+  const isOperationsRecord=
+    sourceUpper==='CHECKLIST' ||
+    sourceUpper==='CHECKLIST_CHILD';
+  const canChange=
+    reviewStatus==='pending' &&
+    !isOperationsRecord;
   const syncState=t.syncState||'confirmed';
   const syncLabel=syncState==='pending'
     ?'در انتظار همگام‌سازی'
