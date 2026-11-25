@@ -3996,6 +3996,25 @@
 @media(max-width:480px){.supervisor-team-actions{flex-direction:column}.supervisor-member-row{grid-template-columns:1fr}}
 
 
+/* ===== Ali Samadi Maman — Tehran multi-region operations overview ===== */
+.supervisor-region-card{margin:0 0 14px;padding:16px;border:1px solid #d8e5df;border-radius:15px;background:linear-gradient(180deg,#fff,#f8fbf9);box-shadow:var(--shadow)}
+.supervisor-region-head{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;margin-bottom:12px}
+.supervisor-region-kicker{display:inline-flex;padding:4px 7px;border-radius:999px;background:#edf7f2;color:#285f50;font-size:7px;font-weight:950;letter-spacing:.6px;direction:ltr}
+.supervisor-region-head h3{margin:6px 0 3px;font-size:15px}.supervisor-region-head p{margin:0;color:#74807b;font-size:9px;line-height:1.75}
+.supervisor-region-scope{display:flex;flex-wrap:wrap;gap:5px;justify-content:flex-end;max-width:520px}.supervisor-region-scope span{padding:5px 8px;border:1px solid #dce7e2;border-radius:999px;background:#fff;color:#486159;font-size:7.5px;font-weight:850;white-space:nowrap}
+.supervisor-region-table-wrap{overflow:auto;border:1px solid #e1e8e4;border-radius:11px;background:#fff}.supervisor-region-table{width:100%;min-width:760px;border-collapse:collapse}
+.supervisor-region-table th,.supervisor-region-table td{padding:10px 11px;border-bottom:1px solid #edf1ef;text-align:right;font-size:8.5px;white-space:nowrap}.supervisor-region-table th{background:#f6f9f7;color:#64726c;font-weight:950}
+.supervisor-region-table tbody tr{cursor:pointer;transition:.12s ease}.supervisor-region-table tbody tr:hover td,.supervisor-region-table tbody tr.selected td{background:#f3f9f6}.supervisor-region-table td b{color:#29453b;font-size:9px}
+.supervisor-region-number{font-size:12px!important;font-weight:950!important;color:#2c4d41!important}.supervisor-region-number.accepted{color:#315f89!important}.supervisor-region-number.completed{color:#28705a!important}.supervisor-region-number.waiting{color:#a36a1d!important}
+.supervisor-region-action{border:1px solid #d6e2dc;border-radius:7px;background:#f7fbf9;color:#2d6657;padding:4px 7px;font-family:inherit;font-size:7.5px;font-weight:900;cursor:pointer}
+.supervisor-region-detail{margin-top:12px;padding:12px;border:1px solid #dfe6e2;border-radius:11px;background:#fafcfb}.supervisor-region-detail-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:9px}.supervisor-region-detail-head b{display:block;color:#2d433b;font-size:11px}.supervisor-region-detail-head span{color:#78837e;font-size:8px}
+.supervisor-region-ticket-list{display:flex;flex-direction:column;gap:6px;max-height:420px;overflow:auto}.supervisor-region-ticket{display:grid;grid-template-columns:120px minmax(160px,1.2fr) minmax(150px,1fr) minmax(120px,.9fr) 110px;gap:9px;align-items:center;padding:9px 10px;border:1px solid #e6ebe8;border-radius:9px;background:#fff}.supervisor-region-ticket>div{min-width:0}.supervisor-region-ticket b{display:block;color:#30473f;font-size:8.7px}.supervisor-region-ticket span{display:block;margin-top:2px;color:#7b8581;font-size:7.2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.supervisor-region-ticket .ticket-no{direction:ltr;color:#315f89;font-weight:950;font-size:8.2px}
+.supervisor-region-state{display:inline-flex!important;width:max-content;padding:4px 7px;border-radius:999px;font-size:7px!important;font-weight:950!important}.supervisor-region-state.reported{background:#fff4df;color:#96651f}.supervisor-region-state.claimed{background:#eef3fb;color:#315f89}.supervisor-region-state.arrived{background:#edf5fb;color:#2f6e8e}.supervisor-region-state.outsourced{background:#f1eefb;color:#65519a}.supervisor-region-state.completed{background:#e9f6f0;color:#28705a}.supervisor-region-state.other{background:#f1f3f2;color:#66726d}
+.supervisor-region-empty{padding:18px;text-align:center;color:#7d8783;font-size:8.5px}
+@media(max-width:900px){.supervisor-region-head{flex-direction:column}.supervisor-region-scope{justify-content:flex-start;max-width:none}.supervisor-region-ticket{grid-template-columns:110px 1fr 1fr}.supervisor-region-ticket>div:nth-child(4),.supervisor-region-ticket>div:nth-child(5){grid-column:auto}}
+@media(max-width:600px){.supervisor-region-ticket{grid-template-columns:1fr 1fr}.supervisor-region-ticket>div:first-child{grid-column:1/-1}.supervisor-region-ticket-list{max-height:520px}}
+
+
 /* ========================================================
    Manager Daily Field Activity — 11.19
    ======================================================== */
@@ -5763,6 +5782,24 @@ const TEHRAN_SUPERVISOR_TEAM=[
   {username:'200667',name:'حامد شهریاری'}
 ];
 
+const TEHRAN_SUPERVISOR_REGIONS=[
+  'اسلامشهر/ساوه',
+  'غرب تهران',
+  'شرق تهران',
+  'ری/سمنان',
+  'البرز/الوند'
+];
+
+function normalizeSupervisorRegionKey(value){
+  return String(value||'')
+    .replace(/[يى]/g,'ی')
+    .replace(/ك/g,'ک')
+    .replace(/[\u200c\u200e\u200f\u202a-\u202e]/g,'')
+    .replace(/[\s\/\\|_\-–—]+/g,'')
+    .trim()
+    .toLowerCase();
+}
+
 function isTehranSupervisorUser(user){
   return normalizeLoginDigits(user&&user.username||'')===TEHRAN_SUPERVISOR_CODE;
 }
@@ -7073,9 +7110,11 @@ function SupervisorTeamPerformance({currentUser,showToast}){
   const h=React.createElement;
   const [loading,setLoading]=useState(false);
   const [tickets,setTickets]=useState([]);
+  const [regionTickets,setRegionTickets]=useState([]);
   const [team,setTeam]=useState(TEHRAN_SUPERVISOR_TEAM);
   const [range,setRange]=useState('30');
   const [selectedTech,setSelectedTech]=useState('');
+  const [selectedRegion,setSelectedRegion]=useState('');
   const [updatedAt,setUpdatedAt]=useState('');
 
   const loadTeam=useCallback(async()=>{
@@ -7086,6 +7125,7 @@ function SupervisorTeamPerformance({currentUser,showToast}){
       if(result&&result.sessionExpired){showToast(result.message||'نشست کاربری منقضی شده است');return;}
       if(result&&result.success){
         setTickets(Array.isArray(result.tickets)?result.tickets:[]);
+        setRegionTickets(Array.isArray(result.regionTickets)?result.regionTickets:[]);
         setTeam(Array.isArray(result.team)&&result.team.length?result.team:TEHRAN_SUPERVISOR_TEAM);
         setUpdatedAt(result.updatedAt||new Date().toISOString());
       }else showToast((result&&result.message)||'اطلاعات تیم دریافت نشد');
@@ -7102,6 +7142,51 @@ function SupervisorTeamPerformance({currentUser,showToast}){
   else if(range==='30')allowedDates=new Set(allDates.slice(-30));
 
   const scoped=tickets.filter(t=>!allowedDates||allowedDates.has(ticketDate(t)));
+  const regionScoped=regionTickets.filter(t=>!allowedDates||allowedDates.has(ticketDate(t)));
+
+  // Region summary is request-level: count only original CHECKLIST requests.
+  // CHECKLIST_CHILD records are technical child tickets and are intentionally excluded
+  // from "registered" so one split request is not counted multiple times.
+  const regionOperations=regionScoped.filter(t=>
+    String(t.source||'').trim().toUpperCase()==='CHECKLIST' &&
+    String(t.reviewStatus||'pending')!=='cancelled'
+  );
+
+  const supervisorStatusInfo=t=>{
+    const s=String(t.dispatchStatus||'reported').trim();
+    if(s==='completed'||s==='split_completed'||t.workStatus==='completed')return{key:'completed',label:'تکمیل‌شده'};
+    if(s==='outsourced')return{key:'outsourced',label:'برون‌سپاری'};
+    if(s==='arrived')return{key:'arrived',label:'کارشناس در محل'};
+    if(s==='claimed')return{key:'claimed',label:'پذیرفته‌شده'};
+    if(s==='split_parent')return{key:'claimed',label:'تفکیک‌شده'};
+    if(s==='returned_clarification')return{key:'other',label:'برگشت برای اصلاح'};
+    if(s==='rejected')return{key:'other',label:'رد شده'};
+    return{key:'reported',label:'در انتظار پذیرش'};
+  };
+
+  const regionMetrics=TEHRAN_SUPERVISOR_REGIONS.map(regionName=>{
+    const key=normalizeSupervisorRegionKey(regionName);
+    const items=regionOperations.filter(t=>normalizeSupervisorRegionKey(t.region)===key);
+    const registered=items.length;
+    const accepted=items.filter(t=>{
+      const s=String(t.dispatchStatus||'reported').trim();
+      return !!t.acceptedAt ||
+        ['claimed','arrived','outsourced','completed','split_parent','split_completed'].includes(s) ||
+        t.workStatus==='completed';
+    }).length;
+    const completed=items.filter(t=>{
+      const s=String(t.dispatchStatus||'').trim();
+      return s==='completed'||s==='split_completed'||t.workStatus==='completed';
+    }).length;
+    const waiting=items.filter(t=>String(t.dispatchStatus||'reported').trim()==='reported').length;
+    return{regionName,key,items,registered,accepted,completed,waiting};
+  });
+
+  const selectedRegionMetric=regionMetrics.find(r=>r.key===selectedRegion)||null;
+  const selectedRegionTickets=selectedRegionMetric
+    ?selectedRegionMetric.items.slice().sort((a,b)=>Number(b.rowNumber||0)-Number(a.rowNumber||0))
+    :[];
+
   const metrics=team.map(member=>{
     const memberTickets=scoped.filter(t=>
       String(t.technicianCode||'')===String(member.username) ||
@@ -7148,6 +7233,69 @@ function SupervisorTeamPerformance({currentUser,showToast}){
       h('div',null,h('span',null,'نرخ تکمیل'),h('b',null,(totalJobs?Math.round(totalCompleted/totalJobs*100):0).toLocaleString('fa-IR')+'٪')),
       h('div',null,h('span',null,'برون‌سپاری'),h('b',null,totalOutsource.toLocaleString('fa-IR')))
     ),
+
+    h('section',{className:'supervisor-region-card'},
+      h('div',{className:'supervisor-region-head'},
+        h('div',null,
+          h('span',{className:'supervisor-region-kicker'},'TEHRAN REGIONS · OPERATIONS TICKETS'),
+          h('h3',null,'وضعیت تیکت‌های عملیات در مناطق تحت پوشش'),
+          h('p',null,'شمارش در سطح درخواست اصلی Checklist است؛ تیکت‌های Child ناشی از تفکیک دوباره در «ثبت‌شده» محاسبه نمی‌شوند.')
+        ),
+        h('div',{className:'supervisor-region-scope'},
+          ...TEHRAN_SUPERVISOR_REGIONS.map(r=>h('span',{key:r},r))
+        )
+      ),
+      h('div',{className:'supervisor-region-table-wrap'},
+        h('table',{className:'supervisor-region-table'},
+          h('thead',null,h('tr',null,
+            h('th',null,'منطقه'),
+            h('th',null,'ثبت‌شده'),
+            h('th',null,'پذیرفته‌شده'),
+            h('th',null,'تکمیل‌شده'),
+            h('th',null,'در انتظار پذیرش'),
+            h('th',null,'جزئیات')
+          )),
+          h('tbody',null,...regionMetrics.map(r=>
+            h('tr',{
+              key:r.key,
+              className:selectedRegion===r.key?'selected':'',
+              onClick:()=>setSelectedRegion(selectedRegion===r.key?'':r.key)
+            },
+              h('td',null,h('b',null,r.regionName)),
+              h('td',null,h('b',{className:'supervisor-region-number'},r.registered.toLocaleString('fa-IR'))),
+              h('td',null,h('b',{className:'supervisor-region-number accepted'},r.accepted.toLocaleString('fa-IR'))),
+              h('td',null,h('b',{className:'supervisor-region-number completed'},r.completed.toLocaleString('fa-IR'))),
+              h('td',null,h('b',{className:'supervisor-region-number waiting'},r.waiting.toLocaleString('fa-IR'))),
+              h('td',null,h('button',{type:'button',className:'supervisor-region-action'},selectedRegion===r.key?'بستن':'مشاهده تیکت‌ها'))
+            )
+          ))
+        )
+      ),
+      selectedRegionMetric&&h('div',{className:'supervisor-region-detail'},
+        h('div',{className:'supervisor-region-detail-head'},
+          h('div',null,
+            h('b',null,'تیکت‌های عملیات — '+selectedRegionMetric.regionName),
+            h('span',null,selectedRegionMetric.registered.toLocaleString('fa-IR')+' درخواست اصلی در بازه انتخاب‌شده')
+          ),
+          h('span',null,'برای جزئیات کامل روی هر ردیف منطقه کلیک کنید')
+        ),
+        selectedRegionTickets.length
+          ?h('div',{className:'supervisor-region-ticket-list'},
+            ...selectedRegionTickets.map(t=>{
+              const st=supervisorStatusInfo(t);
+              return h('div',{className:'supervisor-region-ticket',key:ticketClientKey(t)},
+                h('div',null,h('b',{className:'ticket-no'},t.ticketNumber||'—'),h('span',null,ticketDate(t)||'—')),
+                h('div',null,h('b',null,t.storeName||('فروشگاه '+(t.storeCode||'—'))),h('span',null,t.storeCode?'کد '+t.storeCode:'کد فروشگاه ثبت نشده')),
+                h('div',null,h('b',null,t.reportedByName||'رئیس ناحیه'),h('span',null,t.reportedByCode?'کد '+t.reportedByCode:'گزارش‌دهنده')),
+                h('div',null,h('b',null,t.technician||t.acceptedByName||'—'),h('span',null,t.technicianCode?'کد '+t.technicianCode:'کارشناس تخصیص نیافته')),
+                h('div',null,h('span',{className:'supervisor-region-state '+st.key},st.label))
+              );
+            })
+          )
+          :h('div',{className:'supervisor-region-empty'},'در بازه انتخاب‌شده درخواست عملیات برای این منطقه ثبت نشده است.')
+      )
+    ),
+
     h('div',{className:'supervisor-team-table-wrap'},
       h('table',{className:'supervisor-team-table'},
         h('thead',null,h('tr',null,
