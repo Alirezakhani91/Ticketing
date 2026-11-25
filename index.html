@@ -9236,6 +9236,7 @@ function TechView({ tasks, saveTasks, showToast, currentUser, refreshTasks }){
 
   if(!visitActive){
     return React.createElement(React.Fragment,null,
+      isSupervisor&&React.createElement(SupervisorTeamPerformance,{currentUser,showToast}),
       React.createElement(ExternalMaintenanceQueue,{
         tasks,
         currentUser,
@@ -9266,7 +9267,6 @@ function TechView({ tasks, saveTasks, showToast, currentUser, refreshTasks }){
         locationMode==='preopening'&&preOpeningSelection,
         React.createElement('button',{className:'btn btn-primary',disabled:storeLoading||preOpeningLoading||!storeInfo,onClick:startVisit},'ادامه ثبت کار')
       ),
-      isSupervisor&&React.createElement(SupervisorTeamPerformance,{currentUser,showToast}),
       openSection,
       React.createElement(TechnicianDailyHistory,{tasks,currentUser}),
       React.createElement('div',{className:'card'},React.createElement('h3',null,'کارهای اخیر من'),mine.length===0?React.createElement('div',{className:'empty'},'هنوز کاری ثبت نکرده‌اید'):mine.map(t=>React.createElement(TechnicianTicketItem,{key:ticketClientKey(t),t,currentUser,showToast,onEdit:editOwnTicket,onCancel:cancelOwnTicket,onCostUpdate:updateOwnCost})))
