@@ -4601,6 +4601,35 @@
   background:#e8ecea;
   color:#71807a;
 }
+.external-maintenance-head-actions{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  flex-wrap:wrap;
+  justify-content:flex-end;
+}
+.external-region-filter{
+  min-width:150px;
+  height:38px;
+  padding:0 10px;
+  border:1px solid #d7e2dd;
+  border-radius:10px;
+  background:#fff;
+  color:#365248;
+  font-family:inherit;
+  font-size:8.5px;
+  font-weight:850;
+  outline:none;
+  cursor:pointer;
+}
+.external-region-filter:focus{
+  border-color:#78a393;
+  box-shadow:0 0 0 3px rgba(47,107,89,.08);
+}
+@media(max-width:600px){
+  .external-maintenance-head-actions{width:100%;justify-content:space-between}
+  .external-region-filter{flex:1;min-width:0}
+}
 .external-queue-section{
   margin-top:12px;
 }
@@ -5802,6 +5831,13 @@ function normalizeSupervisorRegionKey(value){
 
 function isTehranSupervisorUser(user){
   return normalizeLoginDigits(user&&user.username||'')===TEHRAN_SUPERVISOR_CODE;
+}
+
+function isTehranSharedPoolUser(user){
+  const code=normalizeLoginDigits(user&&user.username||'');
+  return code===TEHRAN_SUPERVISOR_CODE||TEHRAN_SUPERVISOR_TEAM.some(member=>
+    normalizeLoginDigits(member&&member.username||'')===code
+  );
 }
 
 function jsonpRequest(params, timeoutMs=20000){
@@ -7339,6 +7375,8 @@ function ExternalMaintenanceQueue({
 }){
   const h=React.createElement;
   const username=String(currentUser&&currentUser.username||'');
+  const isTehranPool=isTehranSharedPoolUser(currentUser);
+  const [regionFilter,setRegionFilter]=useState('all');
   const sessionStorageKey='ticketing-ops-store-session:'+username;
 
   const readStoredSession=()=>{
@@ -7415,7 +7453,14 @@ function ExternalMaintenanceQueue({
     )
     .sort((a,b)=>Number(a.rowNumber||0)-Number(b.rowNumber||0));
 
-  const openVisible=[...queue,...assigned];
+  const matchesRegion=t=>
+    !isTehranPool||
+    regionFilter==='all'||
+    normalizeSupervisorRegionKey(t&&t.region||'')===normalizeSupervisorRegionKey(regionFilter);
+
+  const visibleQueue=queue.filter(matchesRegion);
+  const visibleAssigned=assigned.filter(matchesRegion);
+  const openVisible=[...visibleQueue,...visibleAssigned];
 
   const sessionStoreCode=storeSession
     ?String(storeSession.storeCode||'')
@@ -7426,12 +7471,12 @@ function ExternalMaintenanceQueue({
     :[];
 
   const queueOutsideSession=storeSession
-    ?queue.filter(t=>String(t.storeCode||'')!==sessionStoreCode)
-    :queue;
+    ?visibleQueue.filter(t=>String(t.storeCode||'')!==sessionStoreCode)
+    :visibleQueue;
 
   const assignedOutsideSession=storeSession
-    ?assigned.filter(t=>String(t.storeCode||'')!==sessionStoreCode)
-    :assigned;
+    ?visibleAssigned.filter(t=>String(t.storeCode||'')!==sessionStoreCode)
+    :visibleAssigned;
 
   useEffect(()=>{
     if(!storeSession)return;
@@ -7962,7 +8007,21 @@ function ExternalMaintenanceQueue({
     );
   };
 
-  if(!queue.length&&!assigned.length&&!resolveTicket&&!storeSession){
+  const regionFilterControl=isTehranPool
+    ?h('select',{
+        className:'external-region-filter',
+        value:regionFilter,
+        onChange:e=>setRegionFilter(e.target.value),
+        title:'فیلتر تیکت‌های عملیات بر اساس منطقه'
+      },
+        h('option',{value:'all'},'همه ۵ منطقه'),
+        ...TEHRAN_SUPERVISOR_REGIONS.map(region=>
+          h('option',{key:region,value:region},region)
+        )
+      )
+    :null;
+
+  if(!visibleQueue.length&&!visibleAssigned.length&&!resolveTicket&&!storeSession){
     return h('section',{className:'external-maintenance-card empty-state'},
       h('div',{className:'external-maintenance-title'},
         h('div',null,
@@ -7970,7 +8029,10 @@ function ExternalMaintenanceQueue({
           h('h3',null,'تیکت‌های ارجاع‌شده از عملیات'),
           h('p',null,'در حال حاضر تیکت جدید یا در حال انجامی برای شما وجود ندارد.')
         ),
-        h('span',{className:'external-maintenance-total zero'},'۰')
+        h('div',{className:'external-maintenance-head-actions'},
+          regionFilterControl,
+          h('span',{className:'external-maintenance-total zero'},'۰')
+        )
       )
     );
   }
@@ -7982,8 +8044,11 @@ function ExternalMaintenanceQueue({
         h('h3',null,'تیکت‌های ارجاع‌شده از عملیات'),
         h('p',null,'اگر در یک فروشگاه چند خرابی باز وجود داشته باشد، بعد از ثبت اولین «رسیدم به فروشگاه» همه کارهای همان فروشگاه تا پایان حضور در دسترس می‌مانند.')
       ),
-      h('span',{className:'external-maintenance-total'},
-        openVisible.length.toLocaleString('fa-IR')
+      h('div',{className:'external-maintenance-head-actions'},
+        regionFilterControl,
+        h('span',{className:'external-maintenance-total'},
+          openVisible.length.toLocaleString('fa-IR')
+        )
       )
     ),
 
